@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_standardized_errors',
     'rest_framework',
+    'performers',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +86,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    "EXCEPTION_HANDLER": "core.exceptions.ExceptionFormatter",
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
-
-DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
+DRF_STANDARDIZED_ERRORS = {
+    "EXCEPTION_FORMATTER_CLASS": "core.exceptions.ExceptionFormatter",
+}

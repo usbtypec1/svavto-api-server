@@ -13,5 +13,7 @@ class ExceptionFormatter(drf_standardized_errors.formatter.ExceptionFormatter):
         for error in error_response['errors']:
             if extra is not None and error['code'] == self.exc.default_code:
                 error['extra'] = extra
+            if error['attr'] is None:
+                del error['attr']
 
         return error_response
