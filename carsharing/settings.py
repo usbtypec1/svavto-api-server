@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'drf_standardized_errors',
     'rest_framework',
     'performers',
+    'car_washes',
 ]
 
 MIDDLEWARE = [
