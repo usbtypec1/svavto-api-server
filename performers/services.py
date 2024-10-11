@@ -1,9 +1,13 @@
 from django.db import IntegrityError
+from django.utils import timezone
 
-from performers.exceptions import PerformerAlreadyExistsError
+from performers.exceptions import (
+    PerformerAlreadyExistsError,
+    PerformerNotFoundError,
+)
 from performers.models import Performer
 
-__all__ = ('create_performer',)
+__all__ = ('create_performer', 'update_performer')
 
 
 def create_performer(
@@ -22,3 +26,18 @@ def create_performer(
         )
     except IntegrityError:
         raise PerformerAlreadyExistsError
+
+
+def update_performer(
+        *,
+        telegram_id: int,
+        is_banned: bool,
+) -> None:
+    banned_at = timezone.now() if is_banned else None
+    is_updated = (
+        Performer.objects
+        .filter(telegram_id=telegram_id)
+        .update(banned_at=banned_at)
+    )
+    if not is_updated:
+        raise PerformerNotFoundError
