@@ -1,43 +1,43 @@
 from django.db import IntegrityError
 from django.utils import timezone
 
-from performers.exceptions import (
-    PerformerAlreadyExistsError,
-    PerformerNotFoundError,
+from staff.exceptions import (
+    StaffAlreadyExistsError,
+    StaffNotFoundError,
 )
-from performers.models import Performer
+from staff.models import Staff
 
-__all__ = ('create_performer', 'update_performer')
+__all__ = ('create_staff', 'update_staff')
 
 
-def create_performer(
+def create_staff(
         *,
         telegram_id: int,
         full_name: str,
         car_sharing_phone_number: str,
         console_phone_number: str,
-) -> Performer:
+) -> Staff:
     try:
-        return Performer.objects.create(
+        return Staff.objects.create(
             telegram_id=telegram_id,
             full_name=full_name,
             car_sharing_phone_number=car_sharing_phone_number,
             console_phone_number=console_phone_number
         )
     except IntegrityError:
-        raise PerformerAlreadyExistsError
+        raise StaffAlreadyExistsError
 
 
-def update_performer(
+def update_staff(
         *,
         telegram_id: int,
         is_banned: bool,
 ) -> None:
     banned_at = timezone.now() if is_banned else None
     is_updated = (
-        Performer.objects
+        Staff.objects
         .filter(telegram_id=telegram_id)
         .update(banned_at=banned_at)
     )
     if not is_updated:
-        raise PerformerNotFoundError
+        raise StaffNotFoundError

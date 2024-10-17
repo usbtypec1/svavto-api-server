@@ -17,7 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_standardized_errors',
     'rest_framework',
-    'performers',
+    'staff',
     'car_washes',
 ]
 

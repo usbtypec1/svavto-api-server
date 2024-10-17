@@ -3,8 +3,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from performers.selectors import get_performer_by_telegram_id
-from performers.services import update_performer
+from staff.selectors import get_staff_by_telegram_id
+from staff.services import update_staff
 
 __all__ = ('PerformerRetrieveUpdateApi',)
 
@@ -20,7 +20,7 @@ class PerformerRetrieveUpdateApi(APIView):
         console_phone_number = serializers.CharField(max_length=16)
 
     def get(self, request: Request, telegram_id: int) -> Response:
-        performer = get_performer_by_telegram_id(telegram_id)
+        performer = get_staff_by_telegram_id(telegram_id)
         serializer = self.OutputSerializer(performer)
         return Response(serializer.data)
 
@@ -29,5 +29,5 @@ class PerformerRetrieveUpdateApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
         is_banned: bool = serialized_data['is_banned']
-        update_performer(telegram_id=telegram_id, is_banned=is_banned)
+        update_staff(telegram_id=telegram_id, is_banned=is_banned)
         return Response(status=status.HTTP_204_NO_CONTENT)

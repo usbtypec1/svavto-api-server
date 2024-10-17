@@ -1,10 +1,10 @@
 from django.db import models
 
-__all__ = ('Performer',)
+__all__ = ('Staff',)
 
 
-class Performer(models.Model):
-    telegram_id = models.BigIntegerField(unique=True)
+class Staff(models.Model):
+    id = models.BigIntegerField(primary_key=True, db_index=True)
     full_name = models.CharField(max_length=100)
     car_sharing_phone_number = models.CharField(max_length=16)
     console_phone_number = models.CharField(max_length=16)
