@@ -11,14 +11,13 @@ __all__ = ('StaffListCreateApi',)
 
 class StaffListCreateApi(APIView):
     class InputSerializer(serializers.Serializer):
-        telegram_id = serializers.IntegerField()
+        id = serializers.IntegerField()
         full_name = serializers.CharField(max_length=100)
         car_sharing_phone_number = serializers.CharField(max_length=16)
         console_phone_number = serializers.CharField(max_length=16)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
-        telegram_id = serializers.IntegerField()
         full_name = serializers.CharField()
         car_sharing_phone_number = serializers.CharField()
         console_phone_number = serializers.CharField()
@@ -26,8 +25,8 @@ class StaffListCreateApi(APIView):
         created_at = serializers.DateTimeField()
 
     def get(self, request: Request) -> Response:
-        performers = get_all_staff()
-        serializer = self.OutputSerializer(performers, many=True)
+        staff_list = get_all_staff()
+        serializer = self.OutputSerializer(staff_list, many=True)
         response_data = {'staff': serializer.data}
         return Response(response_data, status=status.HTTP_200_OK)
 
@@ -37,7 +36,7 @@ class StaffListCreateApi(APIView):
         serialized_data = serializer.data
 
         create_staff(
-            telegram_id=serialized_data['telegram_id'],
+            staff_id=serialized_data['id'],
             full_name=serialized_data['full_name'],
             car_sharing_phone_number=(
                 serialized_data['car_sharing_phone_number']

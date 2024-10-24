@@ -5,7 +5,7 @@ from staff.views import StaffListCreateApi, PerformerRetrieveUpdateApi
 urlpatterns = [
     path(r'', StaffListCreateApi.as_view(), name='staff-create'),
     path(
-        r'<int:telegram_id>/',
+        r'<int:staff_id>/',
         PerformerRetrieveUpdateApi.as_view(),
         name='staff-retrieve',
     ),

@@ -1,12 +1,18 @@
 from pathlib import Path
 
+from environ import Env
+
+env = Env()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-am2*j9iypcwe3(o36xccv=v%*obtlxp14$2xk+-6%oh_%c#i$!'
+env.read_env(BASE_DIR / '.env')
 
-DEBUG = True
+SECRET_KEY = env.str('SECRET_KEY')
 
-ALLOWED_HOSTS = []
+DEBUG = env.bool('DEBUG')
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -95,3 +101,7 @@ REST_FRAMEWORK = {
 DRF_STANDARDIZED_ERRORS = {
     "EXCEPTION_FORMATTER_CLASS": "core.exceptions.ExceptionFormatter",
 }
+
+CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
+
+TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')

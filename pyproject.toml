@@ -10,6 +10,11 @@ python = "^3.11"
 django = "^5.1.1"
 djangorestframework = "^3.15.2"
 drf-standardized-errors = "^0.14.1"
+celery = "^5.4.0"
+django-celery-beat = "^2.7.0"
+pytelegrambotapi = "^4.23.0"
+redis = "^5.1.1"
+django-environ = "^0.11.2"
 
 
 [build-system]

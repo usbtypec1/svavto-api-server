@@ -10,6 +10,7 @@ class Staff(models.Model):
     console_phone_number = models.CharField(max_length=16)
     banned_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    last_activity_at = models.DateTimeField(auto_now=True)
 
     @property
     def is_banned(self) -> bool:
