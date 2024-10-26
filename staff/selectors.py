@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from staff.exceptions import StaffNotFoundError
 from staff.models import Staff
 
-__all__ = ('get_staff_by_id', 'get_all_staff')
+__all__ = ('get_staff_by_id', 'get_all_staff', 'StaffDTO')
 
 
 @dataclass(frozen=True, slots=True)

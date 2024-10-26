@@ -11,6 +11,14 @@ class Staff(models.Model):
     banned_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_activity_at = models.DateTimeField(auto_now=True)
+    shift_schedule_year = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+    )
+    shift_schedule_month = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+    )
 
     @property
     def is_banned(self) -> bool:

@@ -8,6 +8,8 @@ from telebot.apihelper import ApiTelegramException
 
 __all__ = ('create_telegram_bot', 'try_send_message')
 
+from telebot.types import InlineKeyboardMarkup
+
 logger = logging.getLogger('mailing')
 
 
@@ -19,6 +21,7 @@ def create_telegram_bot() -> TeleBot:
 def try_send_message(
         chat_id: int,
         text: str,
+        reply_markup: InlineKeyboardMarkup | None = None,
 ) -> bool:
     bot = create_telegram_bot()
     try:
@@ -26,6 +29,7 @@ def try_send_message(
             chat_id=chat_id,
             text=text,
             parse_mode='html',
+            reply_markup=reply_markup,
         )
     except ApiTelegramException as error:
         message = f'Could not send message to {chat_id}: {str(error)}'

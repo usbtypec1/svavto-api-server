@@ -7,7 +7,7 @@ from staff.exceptions import (
 )
 from staff.models import Staff
 
-__all__ = ('create_staff', 'update_staff')
+__all__ = ('create_staff', 'update_staff', 'update_staff_shift_schedule')
 
 
 def create_staff(
@@ -40,4 +40,18 @@ def update_staff(
         .update(banned_at=banned_at)
     )
     if not is_updated:
+        raise StaffNotFoundError
+
+
+def update_staff_shift_schedule(
+        *,
+        staff_id: int,
+        year: int,
+        month: int,
+) -> None:
+    is_updated = Staff.objects.filter(id=staff_id).update(
+        shift_schedule_year=year,
+        shift_schedule_month=month,
+    )
+    if is_updated:
         raise StaffNotFoundError

@@ -4,9 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from staff.selectors import get_staff_by_id
-from staff.services import update_staff
+from staff.services import update_staff, update_staff_shift_schedule
 
-__all__ = ('PerformerRetrieveUpdateApi',)
+__all__ = (
+    'PerformerRetrieveUpdateApi',
+    'StaffUpdateShiftScheduleYearAndMonthApi',
+)
 
 
 class PerformerRetrieveUpdateApi(APIView):
@@ -32,4 +35,25 @@ class PerformerRetrieveUpdateApi(APIView):
         serialized_data: dict = serializer.data
         is_banned: bool = serialized_data['is_banned']
         update_staff(staff_id=staff_id, is_banned=is_banned)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class StaffUpdateShiftScheduleYearAndMonthApi(APIView):
+    class InputSerializer(serializers.Serializer):
+        year = serializers.IntegerField()
+        month = serializers.IntegerField()
+
+    def patch(self, request: Request, staff_id: int) -> Response:
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data: dict = serializer.data
+
+        year: int = serialized_data['year']
+        month: int = serialized_data['month']
+
+        update_staff_shift_schedule(
+            staff_id=staff_id,
+            year=year,
+            month=month,
+        )
         return Response(status=status.HTTP_204_NO_CONTENT)
