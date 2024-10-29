@@ -1,10 +1,17 @@
-from collections.abc import Iterable
 import datetime
+from collections.abc import Iterable
+from dataclasses import dataclass
 
 from shifts.models import Shift
-from shifts.selectors import ShiftDTO
 
 __all__ = ('create_unconfirmed_shifts', 'confirm_shifts')
+
+
+@dataclass(frozen=True, slots=True)
+class ShiftDTO:
+    id: int
+    performer_telegram_id: int
+    date: datetime.date
 
 
 def create_unconfirmed_shifts(
