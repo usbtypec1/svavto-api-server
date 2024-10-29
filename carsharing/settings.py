@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'staff',
     'economics',
     'car_washes',
+    'shifts',
 ]
 
 MIDDLEWARE = [
