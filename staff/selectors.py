@@ -18,7 +18,11 @@ class StaffDTO:
 
 def get_staff_by_id(staff_id: int) -> Staff:
     try:
-        return Staff.objects.get(id=staff_id)
+        return (
+            Staff.objects
+            .prefetch_related('staffavailabledate_set')
+            .get(id=staff_id)
+        )
     except Staff.DoesNotExist:
         raise StaffNotFoundError
 

@@ -5,6 +5,7 @@ from shifts.views import (
     StaffShiftConfirmationSendApi,
     RetrieveUpdateCarsToWashApi,
     CarToWashListApi,
+    StaffCurrentShiftRetrieveApi,
 )
 
 app_name = 'shifts'
@@ -13,6 +14,11 @@ urlpatterns = [
         r'staff/',
         ShiftDateStaffListApi.as_view(),
         name='staff-list',
+    ),
+    path(
+        r'staff/<int:staff_id>/',
+        StaffCurrentShiftRetrieveApi.as_view(),
+        name='staff-retrieve',
     ),
     path(
         r'send-confirmation/',

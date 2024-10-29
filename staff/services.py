@@ -1,11 +1,11 @@
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from staff.exceptions import (
     StaffAlreadyExistsError,
     StaffNotFoundError,
 )
-from staff.models import Staff
+from staff.models import Staff, StaffAvailableDate
 
 __all__ = ('create_staff', 'update_staff', 'update_staff_shift_schedule')
 
@@ -43,15 +43,19 @@ def update_staff(
         raise StaffNotFoundError
 
 
+@transaction.atomic
 def update_staff_shift_schedule(
         *,
         staff_id: int,
-        year: int,
-        month: int,
+        years_and_months: list[dict],
 ) -> None:
-    is_updated = Staff.objects.filter(id=staff_id).update(
-        shift_schedule_year=year,
-        shift_schedule_month=month,
-    )
-    if is_updated:
-        raise StaffNotFoundError
+    StaffAvailableDate.objects.filter(staff_id=staff_id).delete()
+    available_dates = [
+        StaffAvailableDate(
+            staff_id=staff_id,
+            year=year_and_month['year'],
+            month=year_and_month['month'],
+        )
+        for year_and_month in years_and_months
+    ]
+    StaffAvailableDate.objects.bulk_create(available_dates)

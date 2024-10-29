@@ -1,6 +1,6 @@
 from django.db import models
 
-__all__ = ('Staff',)
+__all__ = ('Staff', 'StaffAvailableDate')
 
 
 class Staff(models.Model):
@@ -11,14 +11,6 @@ class Staff(models.Model):
     banned_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_activity_at = models.DateTimeField(auto_now=True)
-    shift_schedule_year = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-    )
-    shift_schedule_month = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-    )
 
     def __str__(self):
         return self.full_name
@@ -26,3 +18,9 @@ class Staff(models.Model):
     @property
     def is_banned(self) -> bool:
         return self.banned_at is not None
+
+
+class StaffAvailableDate(models.Model):
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    month = models.PositiveSmallIntegerField()
+    year = models.PositiveSmallIntegerField()

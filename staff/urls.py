@@ -3,7 +3,7 @@ from django.urls import path
 from staff.views import (
     StaffListCreateApi,
     PerformerRetrieveUpdateApi,
-    StaffUpdateShiftScheduleYearAndMonthApi,
+    StaffUpdateAvailableDatesApi,
 )
 
 urlpatterns = [
@@ -14,8 +14,8 @@ urlpatterns = [
         name='staff-retrieve',
     ),
     path(
-        r'<int:staff_id>/shift-schedule-year-and-month/',
-        StaffUpdateShiftScheduleYearAndMonthApi.as_view(),
-        name='staff-update-shift-schedule-year-and-month',
+        r'<int:staff_id>/available-dates/',
+        StaffUpdateAvailableDatesApi.as_view(),
+        name='staff-available-dates',
     ),
 ]
