@@ -30,7 +30,10 @@ class ShiftConfirmApi(APIView):
 class StaffShiftConfirmationSendApi(APIView):
     class InputSerializer(serializers.Serializer):
         date = serializers.DateField(default=None)
-        staff_shift_ids = serializers.IntegerField(many=True, default=None)
+        staff_shift_ids = serializers.ListSerializer(
+            child=serializers.IntegerField(),
+            default=None,
+        )
 
         def validate(self, data):
             if not any((data['date'], data['staff_shift_ids'])):
