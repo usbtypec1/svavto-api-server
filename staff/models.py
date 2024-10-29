@@ -20,6 +20,9 @@ class Staff(models.Model):
         blank=True,
     )
 
+    def __str__(self):
+        return self.full_name
+
     @property
     def is_banned(self) -> bool:
         return self.banned_at is not None

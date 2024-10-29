@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from shifts.exceptions import StaffHasNoActiveShiftError
-from shifts.models import Shift
+from shifts.models import Shift, CarToWash, CarToWashAdditionalService
 
 __all__ = (
     'get_staff_ids_by_shift_date',
@@ -11,6 +11,8 @@ __all__ = (
     'get_staff_list_by_shift_date',
     'get_active_shift'
 )
+
+
 
 
 @dataclass(frozen=True, slots=True)

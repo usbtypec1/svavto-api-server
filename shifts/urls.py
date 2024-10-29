@@ -3,8 +3,8 @@ from django.urls import path
 from shifts.views import (
     ShiftDateStaffListApi,
     StaffShiftConfirmationSendApi,
-    UpdateCarsToWashApi,
-    CarToWashListCreateApi,
+    RetrieveUpdateCarsToWashApi,
+    CarToWashListApi,
 )
 
 app_name = 'shifts'
@@ -20,13 +20,13 @@ urlpatterns = [
         name='staff-confirmation-send',
     ),
     path(
-        r'cars/',
-        CarToWashListCreateApi.as_view(),
-        name='car-list-create',
+        r'cars/<int:car_id>/',
+        RetrieveUpdateCarsToWashApi.as_view(),
+        name='car-update',
     ),
     path(
-        r'cars/<int:car_id>/',
-        UpdateCarsToWashApi.as_view(),
-        name='car-update',
+        r'cars/staff/<int:staff_id>/',
+        CarToWashListApi.as_view(),
+        name='car-list',
     ),
 ]

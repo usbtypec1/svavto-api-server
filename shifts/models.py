@@ -31,7 +31,7 @@ class CarToWash(models.Model):
         PLANNED = 'planned'
         URGENT = 'urgent'
 
-    number = models.CharField(max_length=20, choices=CarType.choices)
+    number = models.CharField(max_length=20)
     car_wash = models.ForeignKey(
         CarWash,
         on_delete=models.SET_NULL,

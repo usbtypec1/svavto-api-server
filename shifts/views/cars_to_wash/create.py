@@ -8,10 +8,10 @@ from shifts.selectors import get_active_shift
 from shifts.serializers import AdditionalServiceSerializer
 from shifts.services.cars_to_wash import create_car_to_wash
 
-__all__ = ('CarToWashListCreateApi',)
+__all__ = ('CarToWashCreateApi',)
 
 
-class CarToWashListCreateApi(APIView):
+class CarToWashCreateApi(APIView):
     class InputSerializer(serializers.Serializer):
         staff_id = serializers.IntegerField()
         number = serializers.CharField()
@@ -24,9 +24,6 @@ class CarToWashListCreateApi(APIView):
             many=True,
             default=list,
         )
-
-    def get(self, request: Request) -> Response:
-        return Response(status=status.HTTP_200_OK)
 
     def post(self, request: Request) -> Response:
         serializer = self.InputSerializer(data=request.data)
