@@ -1,12 +1,12 @@
 from django.db import transaction
 
-from shifts.models import CarToWash, CarToWashAdditionalService
+from shifts.models import CarToWash, CarToWashAdditionalService, Shift
 
 
 @transaction.atomic
 def create_car_to_wash(
         *,
-        shift_id: int,
+        shift: Shift,
         number: str,
         car_class: str,
         wash_type: str,
@@ -14,13 +14,14 @@ def create_car_to_wash(
         additional_services: list[dict],
 ):
     car_to_wash = CarToWash.objects.create(
-        shift_id=shift_id,
+        shift_id=shift.id,
         number=number,
         car_class=car_class,
         wash_type=wash_type,
         windshield_washer_refilled_bottle_percentage=(
             windshield_washer_refilled_bottle_percentage
-        )
+        ),
+        car_wash_id=shift.car_wash_id,
     )
 
     additional_services = [
