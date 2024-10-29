@@ -2,12 +2,14 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from shifts.exceptions import StaffHasNoActiveShiftError
 from shifts.models import Shift
 
 __all__ = (
     'get_staff_ids_by_shift_date',
     'get_staff_ids_by_shift_ids',
     'get_staff_list_by_shift_date',
+    'get_active_shift'
 )
 
 
@@ -67,3 +69,10 @@ def get_staff_ids_by_shift_ids(
         )
         for shift in shifts
     ]
+
+
+def get_active_shift(staff_id: int) -> Shift:
+    shift = Shift.objects.filter(staff_id=staff_id, is_active=True).first()
+    if shift is None:
+        raise StaffHasNoActiveShiftError
+    return shift
