@@ -10,7 +10,7 @@ class ShiftAdmin(admin.ModelAdmin):
 
 @admin.register(CarToWash)
 class CarToWashAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('id',)
 
 
 @admin.register(CarToWashAdditionalService)

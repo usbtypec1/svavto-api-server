@@ -42,7 +42,7 @@ class CarToWashCreateApi(APIView):
         shift = get_active_shift(staff_id)
 
         create_car_to_wash(
-            shift_id=shift.id,
+            shift=shift,
             number=number,
             car_class=car_class,
             wash_type=wash_type,

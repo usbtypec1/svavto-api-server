@@ -6,6 +6,7 @@ from shifts.views import (
     RetrieveUpdateCarsToWashApi,
     CarToWashListApi,
     StaffCurrentShiftRetrieveApi,
+    CarToWashCreateApi,
 )
 
 app_name = 'shifts'
@@ -29,6 +30,11 @@ urlpatterns = [
         r'cars/<int:car_id>/',
         RetrieveUpdateCarsToWashApi.as_view(),
         name='car-update',
+    ),
+    path(
+        r'cars/',
+        CarToWashCreateApi.as_view(),
+        name='car-create',
     ),
     path(
         r'cars/staff/<int:staff_id>/',

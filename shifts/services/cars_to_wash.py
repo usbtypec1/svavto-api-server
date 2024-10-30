@@ -50,4 +50,4 @@ def update_car_to_wash(
         for service in additional_services
     ]
     CarToWashAdditionalService.objects.filter(car_id=car_id).delete()
-    CarToWash.objects.bulk_create(additional_services)
+    CarToWashAdditionalService.objects.bulk_create(additional_services)
