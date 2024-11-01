@@ -8,5 +8,10 @@ class CarWash(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'car wash'
+        verbose_name_plural = 'car washes'
+
     def __str__(self):
         return self.name
+

@@ -12,6 +12,10 @@ class Staff(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_activity_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'staff'
+        verbose_name_plural = 'staff'
+
     def __str__(self):
         return self.full_name
 
@@ -24,3 +28,8 @@ class StaffAvailableDate(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     month = models.PositiveSmallIntegerField()
     year = models.PositiveSmallIntegerField()
+
+    class Meta:
+        verbose_name = 'staff available date'
+        verbose_name_plural = 'staff available dates'
+        unique_together = ('staff', 'month', 'year')

@@ -21,6 +21,8 @@ class Shift(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        verbose_name = 'shift'
+        verbose_name_plural = 'shifts'
         unique_together = ('staff', 'date')
 
 
@@ -50,8 +52,17 @@ class CarToWash(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = 'car to wash'
+        verbose_name_plural = 'cars to wash'
+        unique_together = ('number', 'shift')
+
 
 class CarToWashAdditionalService(models.Model):
     car = models.ForeignKey(CarToWash, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     count = models.PositiveSmallIntegerField()
+
+    class Meta:
+        verbose_name = 'additional service'
+        verbose_name_plural = 'additional services'
