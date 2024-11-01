@@ -10,10 +10,16 @@ from shifts.views import (
     CarsToWashCountByEachStaffApi,
     CarsWithoutWindshieldWasherApi,
     CurrentShiftCarWashUpdateApi,
+    ShiftStartApi,
 )
 
 app_name = 'shifts'
 urlpatterns = [
+    path(
+        r'start/',
+        ShiftStartApi.as_view(),
+        name='start',
+    ),
     path(
         r'current/<int:staff_id>/car-washes/',
         CurrentShiftCarWashUpdateApi.as_view(),

@@ -3,7 +3,12 @@ from dataclasses import dataclass
 from staff.exceptions import StaffNotFoundError
 from staff.models import Staff
 
-__all__ = ('get_staff_by_id', 'get_all_staff', 'StaffDTO')
+__all__ = (
+    'get_staff_by_id',
+    'get_all_staff',
+    'StaffDTO',
+    'ensure_staff_exists',
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,6 +29,11 @@ def get_staff_by_id(staff_id: int) -> Staff:
             .get(id=staff_id)
         )
     except Staff.DoesNotExist:
+        raise StaffNotFoundError
+
+
+def ensure_staff_exists(staff_id: int) -> None:
+    if not Staff.objects.filter(id=staff_id).exists():
         raise StaffNotFoundError
 
 

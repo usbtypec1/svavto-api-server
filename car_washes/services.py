@@ -7,7 +7,12 @@ from car_washes.exceptions import (
 from car_washes.models import CarWash
 from car_washes.selectors import CarWashDTO
 
-__all__ = ('create_car_wash', 'update_car_wash', 'delete_car_wash')
+__all__ = (
+    'create_car_wash',
+    'update_car_wash',
+    'delete_car_wash',
+    'ensure_car_wash_exists',
+)
 
 
 def create_car_wash(*, name: str) -> CarWashDTO:
@@ -32,4 +37,9 @@ def update_car_wash(*, car_wash_id: int, name: str) -> None:
 def delete_car_wash(*, car_wash_id: int) -> None:
     deleted_count, _ = CarWash.objects.filter(id=car_wash_id).delete()
     if deleted_count == 0:
+        raise CarWashNotFoundError
+
+
+def ensure_car_wash_exists(car_wash_id: int) -> None:
+    if not CarWash.objects.filter(id=car_wash_id).exists():
         raise CarWashNotFoundError

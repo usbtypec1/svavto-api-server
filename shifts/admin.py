@@ -5,7 +5,8 @@ from shifts.models import Shift, CarToWash, CarToWashAdditionalService
 
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('staff', 'date', 'car_wash')
+    list_select_related = ('staff', 'car_wash')
 
 
 @admin.register(CarToWash)

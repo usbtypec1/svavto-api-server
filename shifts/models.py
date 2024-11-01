@@ -20,6 +20,9 @@ class Shift(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('staff', 'date')
+
 
 class CarToWash(models.Model):
     class CarType(models.TextChoices):

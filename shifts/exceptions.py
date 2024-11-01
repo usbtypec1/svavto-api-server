@@ -2,7 +2,13 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.exceptions import APIException
 
-__all__ = ('StaffHasNoActiveShiftError', 'CarWashSameAsCurrentError')
+__all__ = (
+    'StaffHasNoActiveShiftError',
+    'CarWashSameAsCurrentError',
+    'ShiftByDateNotFoundError',
+    'ShiftNotConfirmedError',
+    'StaffHasActiveShiftError',
+)
 
 
 class StaffHasNoActiveShiftError(APIException):
@@ -15,3 +21,21 @@ class CarWashSameAsCurrentError(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_detail = _('Car wash is the same as the current one')
     default_code = 'car_wash_same_as_current'
+
+
+class ShiftByDateNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Shift for the specific date not found')
+    default_code = 'shift_for_specific_date_not_found'
+
+
+class ShiftNotConfirmedError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _('Shift is not confirmed')
+    default_code = 'shift_not_confirmed'
+
+
+class StaffHasActiveShiftError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _('Staff has active shift')
+    default_code = 'staff_has_active_shift'
