@@ -23,6 +23,7 @@ class ShiftIdAndStaffId:
 @dataclass(frozen=True, slots=True)
 class ShiftIdAndStaffFullName:
     shift_id: int
+    staff_id: int
     staff_full_name: str
 
 
@@ -38,6 +39,7 @@ def get_staff_list_by_shift_date(
     return [
         ShiftIdAndStaffFullName(
             shift_id=shift['id'],
+            staff_id=shift['staff_id'],
             staff_full_name=shift['staff__full_name'],
         )
         for shift in shifts

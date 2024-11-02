@@ -16,6 +16,7 @@ class ShiftDateStaffListApi(APIView):
 
     class OutputSerializer(serializers.Serializer):
         shift_id = serializers.IntegerField()
+        staff_id = serializers.IntegerField()
         staff_full_name = serializers.CharField()
 
     def get(self, request: Request) -> Response:
