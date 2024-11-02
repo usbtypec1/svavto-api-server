@@ -9,7 +9,7 @@ __all__ = ('Shift', 'CarToWash', 'CarToWashAdditionalService')
 class Shift(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     date = models.DateField()
-    is_confirmed = models.BooleanField(default=False)
+    confirmed_at = models.DateTimeField(null=True, blank=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     car_wash = models.ForeignKey(
@@ -33,6 +33,10 @@ class Shift(models.Model):
     @property
     def is_finished(self) -> bool:
         return self.finished_at is not None
+
+    @property
+    def is_confirmed(self) -> bool:
+        return self.confirmed_at is not None
 
 
 class CarToWash(models.Model):

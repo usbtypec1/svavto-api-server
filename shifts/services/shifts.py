@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from django.utils import timezone
 
 from shifts.exceptions import (
-    ShiftAlreadyFinishedError,
+    ShiftAlreadyConfirmedError, ShiftAlreadyFinishedError,
     ShiftByDateNotFoundError,
     ShiftNotConfirmedError,
     StaffHasActiveShiftError,
@@ -15,7 +15,7 @@ from shifts.models import CarToWash, Shift
 
 __all__ = (
     'create_unconfirmed_shifts',
-    'confirm_shifts',
+    'confirm_shift',
     'start_shift',
     'ensure_staff_has_no_active_shift',
     'finish_shift',
@@ -50,14 +50,26 @@ def create_unconfirmed_shifts(
     ]
 
 
-def confirm_shifts(shift_ids: Iterable[int]):
-    Shift.objects.filter(id__in=shift_ids).update(is_confirmed=True)
+def confirm_shift(
+        *,
+        date: datetime.date,
+        staff_id: int,
+) -> None:
+    try:
+        shift = Shift.objects.get(date=date, staff_id=staff_id)
+    except Shift.DoesNotExist:
+        raise ShiftByDateNotFoundError
+
+    if shift.is_confirmed:
+        raise ShiftAlreadyConfirmedError
+
+    shift.confirmed_at = timezone.now()
+    shift.save(update_fields=('confirmed_at',))
 
 
 def start_shift(
         *,
-        staff_id: int,
-        date: datetime.date,
+        shift_id: int,
         car_wash_id: int,
 ) -> Shift:
     try:
@@ -65,10 +77,7 @@ def start_shift(
             Shift.objects
             .select_related('car_wash', 'staff')
             .only('id', 'date', 'car_wash', 'staff')
-            .get(
-                staff_id=staff_id,
-                date=date,
-            )
+            .get(id=shift_id)
         )
     except Shift.DoesNotExist:
         raise ShiftByDateNotFoundError

@@ -9,6 +9,7 @@ __all__ = (
     'ShiftNotConfirmedError',
     'StaffHasActiveShiftError',
     'ShiftAlreadyFinishedError',
+    'ShiftAlreadyConfirmedError',
 )
 
 
@@ -46,3 +47,9 @@ class ShiftAlreadyFinishedError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _('Shift is already finished')
     default_code = 'shift_already_finished'
+
+
+class ShiftAlreadyConfirmedError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('Shift is already confirmed')
+    default_code = 'shift_already_confirmed'
