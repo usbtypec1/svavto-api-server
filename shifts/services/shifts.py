@@ -5,13 +5,14 @@ from dataclasses import dataclass
 from django.utils import timezone
 
 from shifts.exceptions import (
-    ShiftAlreadyConfirmedError, ShiftAlreadyFinishedError,
+    ShiftAlreadyConfirmedError,
+    ShiftAlreadyFinishedError,
     ShiftByDateNotFoundError,
     ShiftNotConfirmedError,
     StaffHasActiveShiftError,
-    StaffHasNoActiveShiftError,
 )
-from shifts.models import CarToWash, Shift
+from shifts.models import Shift
+from shifts.selectors import has_any_finished_shift
 
 __all__ = (
     'create_unconfirmed_shifts',
@@ -19,9 +20,8 @@ __all__ = (
     'start_shift',
     'ensure_staff_has_no_active_shift',
     'finish_shift',
+    'get_shifts_by_staff_id',
 )
-
-from shifts.selectors import has_any_finished_shift
 
 
 @dataclass(frozen=True, slots=True)
@@ -116,3 +116,20 @@ def finish_shift(shift: Shift) -> dict:
         'staff_full_name': shift.staff.full_name,
         'car_numbers': shift.cartowash_set.values_list('number', flat=True),
     }
+
+
+def get_shifts_by_staff_id(
+        *,
+        staff_id: int,
+        month: int,
+        year: int,
+) -> list:
+    return (
+        Shift.objects
+        .select_related('car_wash')
+        .filter(
+            staff_id=staff_id,
+            date__month=month,
+            date__year=year,
+        )
+    )

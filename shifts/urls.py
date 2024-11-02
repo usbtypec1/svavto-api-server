@@ -4,9 +4,9 @@ from shifts.views import (
     CarToWashCreateApi, CarToWashListApi, CarsToWashCountByEachStaffApi,
     CarsWithoutWindshieldWasherApi, CurrentShiftCarWashUpdateApi,
     RetrieveUpdateCarsToWashApi, ShiftConfirmApi, ShiftDateStaffListApi,
-    ShiftStartApi, StaffCurrentShiftRetrieveApi,
+    ShiftStartApi, StaffCurrentShiftRetrieveApi, StaffShiftListApi
 )
-from shifts.views.shifts.finish import ShiftFinishApi
+from shifts.views.shifts.current.finish import ShiftFinishApi
 
 app_name = 'shifts'
 urlpatterns = [
@@ -34,6 +34,10 @@ urlpatterns = [
         r'current/<int:staff_id>/',
         StaffCurrentShiftRetrieveApi.as_view(),
         name='current-shift',
+    ),
+    path(
+        r'staff/<int:staff_id>/',
+        StaffShiftListApi.as_view(),
     ),
     path(
         r'staff/',
