@@ -1,17 +1,12 @@
 from django.urls import path
 
 from shifts.views import (
-    ShiftDateStaffListApi,
-    StaffShiftConfirmationSendApi,
-    RetrieveUpdateCarsToWashApi,
-    CarToWashListApi,
-    StaffCurrentShiftRetrieveApi,
-    CarToWashCreateApi,
-    CarsToWashCountByEachStaffApi,
-    CarsWithoutWindshieldWasherApi,
-    CurrentShiftCarWashUpdateApi,
-    ShiftStartApi,
+    CarToWashCreateApi, CarToWashListApi, CarsToWashCountByEachStaffApi,
+    CarsWithoutWindshieldWasherApi, CurrentShiftCarWashUpdateApi,
+    RetrieveUpdateCarsToWashApi, ShiftDateStaffListApi, ShiftStartApi,
+    StaffCurrentShiftRetrieveApi, StaffShiftConfirmationSendApi,
 )
+from shifts.views.shifts.finish import ShiftFinishApi
 
 app_name = 'shifts'
 urlpatterns = [
@@ -21,19 +16,24 @@ urlpatterns = [
         name='start',
     ),
     path(
+        r'finish/',
+        ShiftFinishApi.as_view(),
+        name='finish',
+    ),
+    path(
         r'current/<int:staff_id>/car-washes/',
         CurrentShiftCarWashUpdateApi.as_view(),
         name='current-shift-car-wash',
     ),
     path(
+        r'current/<int:staff_id>/',
+        StaffCurrentShiftRetrieveApi.as_view(),
+        name='current-shift',
+    ),
+    path(
         r'staff/',
         ShiftDateStaffListApi.as_view(),
         name='staff-list',
-    ),
-    path(
-        r'staff/<int:staff_id>/',
-        StaffCurrentShiftRetrieveApi.as_view(),
-        name='staff-retrieve',
     ),
     path(
         r'send-confirmation/',

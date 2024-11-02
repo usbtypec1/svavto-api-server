@@ -4,6 +4,7 @@ from mailing.views import (
     MailingToAllStaffApi,
     MailingToSpecificStaffApi,
     MailingToStaffWithLatestActivityApi,
+    MailingDelayedTaskApi,
 )
 
 urlpatterns = [
@@ -21,4 +22,9 @@ urlpatterns = [
         r'last-active/',
         MailingToStaffWithLatestActivityApi.as_view(),
     ),
+    path(
+        'delay/',
+        MailingDelayedTaskApi.as_view(),
+        name='mailing-delayed-task',
+    )
 ]

@@ -3,16 +3,15 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from shifts.exceptions import StaffHasNoActiveShiftError
-from shifts.models import Shift, CarToWash, CarToWashAdditionalService
+from shifts.models import Shift
 
 __all__ = (
     'get_staff_ids_by_shift_date',
     'get_staff_ids_by_shift_ids',
     'get_staff_list_by_shift_date',
-    'get_active_shift'
+    'get_active_shift',
+    'has_any_finished_shift',
 )
-
-
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,7 +32,7 @@ def get_staff_list_by_shift_date(
     shifts = (
         Shift.objects
         .select_related('shift')
-        .filter(date=date)
+        .filter(date=date, started_at__isnull=True, finished_at__isnull=True)
         .values('id', 'staff__full_name')
     )
     return [
@@ -74,7 +73,18 @@ def get_staff_ids_by_shift_ids(
 
 
 def get_active_shift(staff_id: int) -> Shift:
-    shift = Shift.objects.filter(staff_id=staff_id, is_active=True).first()
+    shift = Shift.objects.filter(
+        staff_id=staff_id,
+        started_at__isnull=False,
+        finished_at__isnull=True
+    ).first()
     if shift is None:
         raise StaffHasNoActiveShiftError
     return shift
+
+
+def has_any_finished_shift(staff_id: int) -> bool:
+    return Shift.objects.filter(
+        staff_id=staff_id,
+        finished_at__isnull=False
+    ).exists()

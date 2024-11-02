@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_standardized_errors',
     'rest_framework',
+    'django_celery_beat',
     'corsheaders',
     'staff',
     'economics',
@@ -110,5 +111,16 @@ DRF_STANDARDIZED_ERRORS = {
 }
 
 CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_SEND_SENT_EVENT = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = False
+CELERY_TASK_ACKS_LATE = True  # Acknowledge task after completion
+CELERY_TASK_RETRY_POLICY = {
+    'max_retries': 3,
+    'interval_start': 0,
+    'interval_step': 0.2,
+    'interval_max': 0.6,
+}
 
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')

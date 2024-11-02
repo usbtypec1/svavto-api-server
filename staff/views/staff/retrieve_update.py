@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from staff.models import StaffAvailableDate, Staff
+from staff.models import StaffAvailableDate
 from staff.selectors import get_staff_by_id
 from staff.services import update_staff, update_staff_shift_schedule
 

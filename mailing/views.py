@@ -1,3 +1,8 @@
+import json
+from datetime import timedelta
+
+from django.utils import timezone
+from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from rest_framework import serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -14,6 +19,7 @@ __all__ = (
     'MailingToAllStaffApi',
     'MailingToSpecificStaffApi',
     'MailingToStaffWithLatestActivityApi',
+    'MailingDelayedTaskApi',
 )
 
 
@@ -68,4 +74,47 @@ class MailingToStaffWithLatestActivityApi(APIView):
             text=text,
             last_days=last_days,
         )
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+
+class MailingDelayedTaskApi(APIView):
+
+    class InputSerializer(serializers.Serializer):
+        text = serializers.CharField(max_length=4096)
+        chat_id = serializers.IntegerField()
+        delay_in_minutes = serializers.IntegerField(
+            min_value=1,
+            max_value=24 * 60,
+        )
+
+    def post(self, request: Request) -> Response:
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data = serializer.data
+
+        text: str = serialized_data['text']
+        delay_in_minutes: int = serialized_data['delay_in_minutes']
+        chat_id: int = serialized_data['chat_id']
+
+        execution_time = timezone.now() + timedelta(minutes=delay_in_minutes)
+
+        schedule, _ = IntervalSchedule.objects.get_or_create(
+            every=1,
+            period=IntervalSchedule.MINUTES,
+        )
+
+        PeriodicTask.objects.update_or_create(
+            name=f'Delayed task to {chat_id}',
+            defaults={
+                'task': 'mailing.tasks.send_delayed_message',
+                'start_time': execution_time,
+                'one_off': True,
+                'interval': schedule,
+                'kwargs': json.dumps({
+                    'text': text,
+                    'chat_id': chat_id,
+                }),
+            }
+        )
+
         return Response(status=status.HTTP_202_ACCEPTED)

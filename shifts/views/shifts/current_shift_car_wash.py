@@ -1,12 +1,10 @@
-from rest_framework import serializers, status
+from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from car_washes.models import CarWash
 from car_washes.selectors import get_car_wash_by_id
-from car_washes.services import update_car_wash
-from shifts.models import Shift
 from shifts.selectors import get_active_shift
 
 __all__ = ('CurrentShiftCarWashUpdateApi',)

@@ -2,19 +2,26 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from django.utils import timezone
+
 from shifts.exceptions import (
+    ShiftAlreadyFinishedError,
     ShiftByDateNotFoundError,
     ShiftNotConfirmedError,
     StaffHasActiveShiftError,
+    StaffHasNoActiveShiftError,
 )
-from shifts.models import Shift
+from shifts.models import CarToWash, Shift
 
 __all__ = (
     'create_unconfirmed_shifts',
     'confirm_shifts',
     'start_shift',
     'ensure_staff_has_no_active_shift',
+    'finish_shift',
 )
+
+from shifts.selectors import has_any_finished_shift
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,12 +76,12 @@ def start_shift(
     if not shift.is_confirmed:
         raise ShiftNotConfirmedError
 
-    if shift.is_active:
+    if shift.is_started:
         raise StaffHasActiveShiftError
 
-    shift.is_active = True
+    shift.started_at = timezone.now()
     shift.car_wash_id = car_wash_id
-    shift.save(update_fields=('is_active', 'car_wash_id'))
+    shift.save(update_fields=('started_at', 'car_wash_id'))
 
     return shift
 
@@ -84,3 +91,19 @@ def ensure_staff_has_no_active_shift(
 ) -> None:
     if Shift.objects.filter(staff_id=staff_id, is_active=True).exists():
         raise StaffHasActiveShiftError
+
+
+def finish_shift(shift: Shift) -> dict:
+    if shift.finished_at is not None:
+        raise ShiftAlreadyFinishedError
+
+    is_first_shift = not has_any_finished_shift(shift.staff_id)
+
+    shift.finished_at = timezone.now()
+    shift.save(update_fields=('finished_at',))
+
+    return {
+        'is_first_shift': is_first_shift,
+        'staff_full_name': shift.staff.full_name,
+        'car_numbers': shift.cartowash_set.values_list('number', flat=True),
+    }

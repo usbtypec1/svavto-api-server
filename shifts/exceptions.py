@@ -8,6 +8,7 @@ __all__ = (
     'ShiftByDateNotFoundError',
     'ShiftNotConfirmedError',
     'StaffHasActiveShiftError',
+    'ShiftAlreadyFinishedError',
 )
 
 
@@ -39,3 +40,9 @@ class StaffHasActiveShiftError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _('Staff has active shift')
     default_code = 'staff_has_active_shift'
+
+
+class ShiftAlreadyFinishedError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _('Shift is already finished')
+    default_code = 'shift_already_finished'

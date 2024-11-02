@@ -3,6 +3,7 @@ from typing import TypedDict, TypeAlias
 from celery.utils.log import get_task_logger
 
 from django.utils import timezone
+from django_celery_beat.models import PeriodicTask
 from telebot import TeleBot
 from telebot.apihelper import ApiTelegramException
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -102,3 +103,21 @@ def start_mailing_for_specific_staff(
         chat_ids=chat_ids,
         buttons_rows=buttons_rows,
     )
+
+
+@shared_task
+def send_delayed_message(
+        text: str,
+        chat_id: int,
+        **kwargs,
+):
+    print(kwargs)
+    try:
+        bot = create_telegram_bot()
+        bot.send_message(
+            chat_id=chat_id,
+            text=text,
+        )
+        logger.info(f'Message sent to {chat_id}')
+    finally:
+        PeriodicTask.objects.filter(name=kwargs.get('task_name')).delete()
