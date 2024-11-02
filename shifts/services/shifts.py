@@ -23,6 +23,8 @@ __all__ = (
     'get_shifts_by_staff_id',
 )
 
+from staff.models import Staff
+
 
 @dataclass(frozen=True, slots=True)
 class ShiftDTO:
@@ -32,22 +34,12 @@ class ShiftDTO:
 
 
 def create_unconfirmed_shifts(
-        performer_id: int,
+        *,
+        staff: Staff,
         dates: Iterable[datetime.date],
-) -> list[ShiftDTO]:
-    shifts = [
-        Shift(performer_id=performer_id, date=date)
-        for date in dates
-    ]
-    shifts = Shift.objects.bulk_create(shifts)
-    return [
-        ShiftDTO(
-            id=shift.id,
-            performer_telegram_id=shift.performer_id,
-            date=shift.date,
-        )
-        for shift in shifts
-    ]
+) -> None:
+    shifts = [Shift(staff=staff, date=date) for date in dates]
+    Shift.objects.bulk_create(shifts)
 
 
 def confirm_shift(

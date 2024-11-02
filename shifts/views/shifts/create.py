@@ -9,32 +9,30 @@ from shifts.services.shifts import create_unconfirmed_shifts
 
 __all__ = ('ShiftCreateApi',)
 
+from staff.selectors import get_staff_by_id
+
+
+class ShiftCreateInputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    dates = serializers.ListField(child=serializers.DateField())
+
 
 class ShiftCreateApi(APIView):
-    class InputSerializer(serializers.Serializer):
-        performer_id = serializers.IntegerField()
-        dates = serializers.ListField(child=serializers.DateField())
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        date = serializers.DateField()
 
     def post(self, request: Request) -> Response:
-        serializer = self.InputSerializer(data=request.data)
+        serializer = ShiftCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
 
-        performer_id: int = serialized_data['performer_id']
+        staff_id: int = serialized_data['staff_id']
         dates: list[datetime.date] = serialized_data['dates']
 
-        shifts = create_unconfirmed_shifts(
-            performer_id=performer_id,
-            dates=dates
-        )
+        staff = get_staff_by_id(staff_id)
+        create_unconfirmed_shifts(staff=staff, dates=dates)
 
-        serializer = self.OutputSerializer(shifts, many=True)
         response_data = {
-            'shifts': serializer.data,
-            'performer_id': performer_id,
+            'staff_id': staff.id,
+            'staff_full_name': staff.full_name,
+            'dates': dates,
         }
         return Response(response_data, status=status.HTTP_201_CREATED)

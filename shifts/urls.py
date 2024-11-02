@@ -1,15 +1,34 @@
 from django.urls import path
 
 from shifts.views import (
-    CarToWashCreateApi, CarToWashListApi, CarsToWashCountByEachStaffApi,
-    CarsWithoutWindshieldWasherApi, CurrentShiftCarWashUpdateApi,
-    RetrieveUpdateCarsToWashApi, ShiftConfirmApi, ShiftDateStaffListApi,
-    ShiftStartApi, StaffCurrentShiftRetrieveApi, StaffShiftListApi
+    CarToWashCreateApi,
+    CarToWashListApi,
+    CarsToWashCountByEachStaffApi,
+    CarsWithoutWindshieldWasherApi,
+    CurrentShiftCarWashUpdateApi,
+    RetrieveUpdateCarsToWashApi,
+    ShiftConfirmApi,
+    ShiftDateStaffListApi,
+    ShiftStartApi,
+    StaffCurrentShiftRetrieveApi,
+    StaffShiftListApi,
+    ShiftCreateApi,
+    ShiftFinishApi,
+    ShiftLastCreatedDateListApi,
 )
-from shifts.views.shifts.current.finish import ShiftFinishApi
 
 app_name = 'shifts'
 urlpatterns = [
+    path(
+        r'staff/<int:staff_id>/last-created/',
+        ShiftLastCreatedDateListApi.as_view(),
+        name='last-created',
+    ),
+    path(
+        r'create/',
+        ShiftCreateApi.as_view(),
+        name='create',
+    ),
     path(
         r'confirm/',
         ShiftConfirmApi.as_view(),
