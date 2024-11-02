@@ -34,7 +34,7 @@ def get_staff_list_by_shift_date(
         Shift.objects
         .select_related('shift')
         .filter(date=date, started_at__isnull=True, finished_at__isnull=True)
-        .values('id', 'staff__full_name')
+        .values('id', 'staff_id', 'staff__full_name')
     )
     return [
         ShiftIdAndStaffFullName(
