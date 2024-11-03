@@ -15,10 +15,16 @@ from shifts.views import (
     ShiftCreateApi,
     ShiftFinishApi,
     ShiftLastCreatedDateListApi,
+    ReportApi,
 )
 
 app_name = 'shifts'
 urlpatterns = [
+    path(
+        r'reports/staff/<int:staff_id>/',
+        ReportApi.as_view(),
+        name='report',
+    ),
     path(
         r'staff/<int:staff_id>/last-created/',
         ShiftLastCreatedDateListApi.as_view(),
