@@ -11,6 +11,7 @@ __all__ = (
     'ShiftAlreadyFinishedError',
     'ShiftAlreadyConfirmedError',
     'StaffHasNoAnyShiftError',
+    'ShiftNotFoundError',
 )
 
 
@@ -60,3 +61,9 @@ class StaffHasNoAnyShiftError(APIException):
     status_code = status.HTTP_404_NOT_FOUND
     default_detail = _('Staff has no any shift')
     default_code = 'staff_has_no_any_shift'
+
+
+class ShiftNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Shift not found')
+    default_code = 'shift_not_found'

@@ -9,6 +9,7 @@ from shifts.exceptions import (
     ShiftAlreadyFinishedError,
     ShiftByDateNotFoundError,
     ShiftNotConfirmedError,
+    ShiftNotFoundError,
     StaffHasActiveShiftError,
 )
 from shifts.models import Shift
@@ -72,7 +73,7 @@ def start_shift(
             .get(id=shift_id)
         )
     except Shift.DoesNotExist:
-        raise ShiftByDateNotFoundError
+        raise ShiftNotFoundError
 
     if not shift.is_confirmed:
         raise ShiftNotConfirmedError
