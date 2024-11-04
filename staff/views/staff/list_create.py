@@ -3,18 +3,26 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from staff.models import Staff
 from staff.selectors import get_all_staff
 from staff.services import create_staff
 
 __all__ = ('StaffListCreateApi',)
 
 
+class StaffCreateInputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = (
+            'id',
+            'full_name',
+            'car_sharing_phone_number',
+            'console_phone_number',
+        )
+
+
+
 class StaffListCreateApi(APIView):
-    class InputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        full_name = serializers.CharField(max_length=100)
-        car_sharing_phone_number = serializers.CharField(max_length=16)
-        console_phone_number = serializers.CharField(max_length=16)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -31,7 +39,7 @@ class StaffListCreateApi(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
     def post(self, request: Request) -> Response:
-        serializer = self.InputSerializer(data=request.data)
+        serializer = StaffCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
