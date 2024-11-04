@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_beat',
     'corsheaders',
+    'core',
     'staff',
     'economics',
     'car_washes',

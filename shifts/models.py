@@ -19,6 +19,7 @@ class Shift(models.Model):
         null=True,
         blank=True,
     )
+    is_extra = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -70,6 +71,9 @@ class CarToWash(models.Model):
         verbose_name_plural = 'cars to wash'
         unique_together = ('number', 'shift')
 
+    def __str__(self):
+        return f'Гос.номер: {self.number}'
+
 
 class CarToWashAdditionalService(models.Model):
     car = models.ForeignKey(CarToWash, on_delete=models.CASCADE)
@@ -79,3 +83,6 @@ class CarToWashAdditionalService(models.Model):
     class Meta:
         verbose_name = 'additional service'
         verbose_name_plural = 'additional services'
+
+    def __str__(self):
+        return self.name
