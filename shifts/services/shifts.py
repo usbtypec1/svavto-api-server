@@ -90,7 +90,10 @@ def start_shift(
 def ensure_staff_has_no_active_shift(
         staff_id: int,
 ) -> None:
-    if Shift.objects.filter(staff_id=staff_id, is_active=True).exists():
+    if Shift.objects.filter(
+            staff_id=staff_id,
+            finished_at__isnull=True,
+    ).exists():
         raise StaffHasActiveShiftError
 
 

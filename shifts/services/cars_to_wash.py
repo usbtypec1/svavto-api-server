@@ -81,8 +81,8 @@ def get_staff_cars_count_by_date(date: datetime.date) -> list[dict]:
         .select_related('staff')
         .filter(
             date=date,
-            is_confirmed=True,
-            is_active=True,
+            confirmed_at__isnull=False,
+            finished_at__isnull=True,
         )
         .annotate(cars_count=Count('id'))
         .values('staff_id', 'staff__full_name', 'cars_count')
