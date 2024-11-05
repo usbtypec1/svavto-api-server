@@ -1,22 +1,27 @@
 import datetime
+from collections.abc import Iterable
 from dataclasses import dataclass
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, QuerySet
+from telebot.apihelper import ApiException
 
 from car_washes.selectors import CarWashDTO
-from shifts.exceptions import CarWashSameAsCurrentError
+from shifts.exceptions import (
+    CarAlreadyWashedOnShiftError,
+    CarWashSameAsCurrentError,
+)
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
 
 
 @dataclass(frozen=True, slots=True)
 class CarToWashAdditionalServiceCreateResultDTO:
     name: str
+    count: int
 
 
-
-
-@dataclass
+@dataclass(frozen=True, slots=True)
 class CarToWashCreateResultDTO:
     id: int
     shift_id: int
@@ -25,8 +30,54 @@ class CarToWashCreateResultDTO:
     wash_type: str
     windshield_washer_refilled_bottle_percentage: int
     car_wash_id: int
-    additional_services: list
+    additional_services: list[CarToWashAdditionalServiceCreateResultDTO]
 
+
+error_messages_and_exceptions = (
+    (
+        'Car to wash with this Number and Shift already exists.',
+        CarAlreadyWashedOnShiftError,
+    ),
+)
+
+
+def map_create_result_to_dto(
+        car_to_wash: CarToWash,
+        additional_services: Iterable[CarToWashAdditionalService],
+) -> CarToWashCreateResultDTO:
+    additional_services_dto = [
+        CarToWashAdditionalServiceCreateResultDTO(
+            name=service.name,
+            count=service.count,
+        )
+        for service in additional_services
+    ]
+    return CarToWashCreateResultDTO(
+        id=car_to_wash.id,
+        shift_id=car_to_wash.shift_id,
+        number=car_to_wash.number,
+        class_type=car_to_wash.car_class,
+        wash_type=car_to_wash.wash_type,
+        windshield_washer_refilled_bottle_percentage=(
+            car_to_wash.windshield_washer_refilled_bottle_percentage
+        ),
+        car_wash_id=car_to_wash.car_wash_id,
+        additional_services=additional_services_dto,
+    )
+
+def create_car_to_wash_additional_services(
+        car_to_wash: CarToWash,
+        additional_services: list[dict],
+) -> QuerySet[CarToWashAdditionalService]:
+    services = [
+        CarToWashAdditionalService(
+            car=car_to_wash,
+            name=service['name'],
+            count=service['count'],
+        )
+        for service in additional_services
+    ]
+    return CarToWashAdditionalService.objects.bulk_create(services)
 
 
 @transaction.atomic
@@ -39,7 +90,7 @@ def create_car_to_wash(
         windshield_washer_refilled_bottle_percentage: int,
         additional_services: list[dict],
 ):
-    car_to_wash = CarToWash.objects.create(
+    car_to_wash = CarToWash(
         shift_id=shift.id,
         number=number,
         car_class=car_class,
@@ -49,16 +100,21 @@ def create_car_to_wash(
         ),
         car_wash_id=shift.car_wash_id,
     )
+    try:
+        car_to_wash.full_clean()
+        car_to_wash.save()
+    except ValidationError as error:
+        if ('Car to wash with this Number and Shift already exists.' in
+                error.messages):
+            raise CarAlreadyWashedOnShiftError
+        raise
 
-    additional_services = [
-        CarToWashAdditionalService(
-            car=car_to_wash,
-            name=service['name'],
-            count=service['count'],
-        )
-        for service in additional_services
-    ]
-    CarToWashAdditionalService.objects.bulk_create(additional_services)
+    additional_services = create_car_to_wash_additional_services(
+        car_to_wash=car_to_wash,
+        additional_services=additional_services,
+    )
+
+    return map_create_result_to_dto(car_to_wash, additional_services)
 
 
 @transaction.atomic
@@ -87,7 +143,8 @@ def get_staff_cars_count_by_date(date: datetime.date) -> list[dict]:
         date (date): The date to count cars for
 
     Returns:
-        List[Dict]: List of dictionaries containing staff information and their car count
+        List[Dict]: List of dictionaries containing staff information and
+        their car count
         Example: [
             {
                 'staff_id': 1,

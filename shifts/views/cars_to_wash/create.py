@@ -4,13 +4,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shifts.selectors import get_active_shift
-from shifts.serializers import CarToWashCreateInputSerializer
+from shifts.serializers import (
+    CarToWashCreateInputSerializer,
+    CarToWashCreateOutputSerializer,
+)
 from shifts.services.cars_to_wash import create_car_to_wash
 
 __all__ = ('CarToWashCreateApi',)
 
 
 class CarToWashCreateApi(APIView):
+    """Add moved car to car wash."""
 
     def post(self, request: Request) -> Response:
         serializer = CarToWashCreateInputSerializer(data=request.data)
@@ -27,8 +31,7 @@ class CarToWashCreateApi(APIView):
         additional_services = serializer.validated_data["additional_services"]
 
         shift = get_active_shift(staff_id)
-
-        create_car_to_wash(
+        car_wash = create_car_to_wash(
             shift=shift,
             number=number,
             car_class=car_class,
@@ -38,4 +41,6 @@ class CarToWashCreateApi(APIView):
             ),
             additional_services=additional_services,
         )
-        return Response(status=status.HTTP_201_CREATED)
+
+        serializer = CarToWashCreateOutputSerializer(car_wash)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

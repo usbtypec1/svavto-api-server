@@ -83,6 +83,7 @@ class CarToWashAdditionalService(models.Model):
     class Meta:
         verbose_name = 'additional service'
         verbose_name_plural = 'additional services'
+        unique_together = ('car', 'name')
 
     def __str__(self):
         return self.name

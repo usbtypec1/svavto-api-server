@@ -12,6 +12,7 @@ __all__ = (
     'ShiftAlreadyConfirmedError',
     'StaffHasNoAnyShiftError',
     'ShiftNotFoundError',
+    'CarAlreadyWashedOnShiftError',
 )
 
 
@@ -67,3 +68,9 @@ class ShiftNotFoundError(APIException):
     status_code = status.HTTP_404_NOT_FOUND
     default_detail = _('Shift not found')
     default_code = 'shift_not_found'
+
+
+class CarAlreadyWashedOnShiftError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('Car was already washed on the shift')
+    default_code = 'car_already_washed_on_shift'
