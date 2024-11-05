@@ -1,4 +1,5 @@
 import datetime
+from dataclasses import dataclass
 
 from django.db import transaction
 from django.db.models import Count
@@ -6,6 +7,26 @@ from django.db.models import Count
 from car_washes.selectors import CarWashDTO
 from shifts.exceptions import CarWashSameAsCurrentError
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
+
+
+@dataclass(frozen=True, slots=True)
+class CarToWashAdditionalServiceCreateResultDTO:
+    name: str
+
+
+
+
+@dataclass
+class CarToWashCreateResultDTO:
+    id: int
+    shift_id: int
+    number: str
+    class_type: str
+    wash_type: str
+    windshield_washer_refilled_bottle_percentage: int
+    car_wash_id: int
+    additional_services: list
+
 
 
 @transaction.atomic

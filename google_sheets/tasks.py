@@ -4,7 +4,7 @@ from celery import shared_task
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from car_washes.models import CarWash, CarWashServicePrice
+from car_washes.models import CarWash, CarWashService
 from google_sheets.services import create_google_sheets_client
 
 __all__ = ('sync_car_washes',)

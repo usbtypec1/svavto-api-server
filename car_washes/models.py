@@ -1,6 +1,7 @@
 from django.db import models
+from django.utils.translation.trans_null import gettext_lazy as _
 
-__all__ = ('CarWash', 'CarWashServicePrice')
+__all__ = ('CarWash', 'CarWashService')
 
 
 class CarWash(models.Model):
@@ -9,27 +10,26 @@ class CarWash(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'car wash'
-        verbose_name_plural = 'car washes'
+        verbose_name = _('car wash')
+        verbose_name_plural = _('car washes')
 
     def __str__(self):
         return self.name
 
 
-class CarWashServicePrice(models.Model):
-    id = models.CharField(primary_key=True, max_length=100)
+class CarWashService(models.Model):
     car_wash = models.ForeignKey(
         to=CarWash,
         on_delete=models.CASCADE,
     )
-    service_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=64, unique=True)
     price = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'car wash service price'
-        verbose_name_plural = 'car wash service prices'
+        verbose_name = _('car wash service')
+        verbose_name_plural = _('car wash services')
 
     def __str__(self):
-        return f'{self.service_name}'
+        return f'{self.name}'
