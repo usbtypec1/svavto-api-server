@@ -4,7 +4,7 @@ __all__ = ('Staff', 'StaffAvailableDate')
 
 
 class Staff(models.Model):
-    id = models.BigIntegerField(primary_key=True, db_index=True)
+    id = models.BigIntegerField(primary_key=True, db_index=True, editable=True)
     full_name = models.CharField(max_length=100)
     car_sharing_phone_number = models.CharField(max_length=16)
     console_phone_number = models.CharField(max_length=16)
