@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from environ import Env
@@ -14,6 +15,16 @@ DEBUG = env.bool('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+GOOGLE_SHEETS_SERVICE_ACCOUNT_CREDENTIALS_FILE_PATH = (
+        BASE_DIR / 'google_sheets_service_account_credentials.json'
+)
+
+GOOGLE_SHEETS_SERVICE_ACCOUNT_CREDENTIALS = json.loads(
+    GOOGLE_SHEETS_SERVICE_ACCOUNT_CREDENTIALS_FILE_PATH.read_text(
+        encoding='utf-8',
+    )
+)
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -25,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_beat',
     'corsheaders',
+    'google_sheets',
     'core',
     'staff',
     'economics',
@@ -76,16 +88,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.NumericPasswordValidator',
     },
 ]
 
