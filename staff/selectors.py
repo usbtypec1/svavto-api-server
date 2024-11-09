@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from django.db.models import QuerySet
 
 from staff.exceptions import StaffNotFoundError
 from staff.models import Staff
@@ -6,19 +6,8 @@ from staff.models import Staff
 __all__ = (
     'get_staff_by_id',
     'get_all_staff',
-    'StaffDTO',
     'ensure_staff_exists',
 )
-
-
-@dataclass(frozen=True, slots=True)
-class StaffDTO:
-    id: int
-    full_name: str
-    car_sharing_phone_number: str
-    console_phone_number: str
-    is_banned: bool
-    created_at: bool
 
 
 def get_staff_by_id(staff_id: int) -> Staff:
@@ -37,26 +26,8 @@ def ensure_staff_exists(staff_id: int) -> None:
         raise StaffNotFoundError
 
 
-def get_all_staff() -> list[StaffDTO]:
-    staff_list = (
-        Staff.objects
-        .order_by('full_name')
-        .values(
-            'id',
-            'full_name',
-            'car_sharing_phone_number',
-            'console_phone_number',
-            'banned_at',
-            'created_at'
-        )
-    )
-    return [
-        StaffDTO(
-            id=staff['id'],
-            full_name=staff['full_name'],
-            car_sharing_phone_number=staff['car_sharing_phone_number'],
-            console_phone_number=staff['console_phone_number'],
-            is_banned=bool(staff['banned_at']),
-            created_at=staff['created_at']
-        ) for staff in staff_list
-    ]
+def get_all_staff(
+        *,
+        order_by: str
+) -> QuerySet[Staff]:
+    return Staff.objects.order_by(order_by)

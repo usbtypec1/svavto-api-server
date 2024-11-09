@@ -1,40 +1,29 @@
-from rest_framework import serializers, status
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from staff.models import Staff
 from staff.selectors import get_all_staff
+from staff.serializers import (
+    StaffCreateInputSerializer,
+    StaffListInputSerializer,
+    StaffListOutputSerializer,
+)
 from staff.services import create_staff
 
-__all__ = ('StaffListCreateApi',)
-
-
-class StaffCreateInputSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Staff
-        fields = (
-            'id',
-            'full_name',
-            'car_sharing_phone_number',
-            'console_phone_number',
-        )
-
+__all__ = ('StaffListCreateApi', 'StaffListOutputSerializer')
 
 
 class StaffListCreateApi(APIView):
 
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        full_name = serializers.CharField()
-        car_sharing_phone_number = serializers.CharField()
-        console_phone_number = serializers.CharField()
-        is_banned = serializers.BooleanField()
-        created_at = serializers.DateTimeField()
-
     def get(self, request: Request) -> Response:
-        staff_list = get_all_staff()
-        serializer = self.OutputSerializer(staff_list, many=True)
+        serializer = StaffListInputSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        serialized_data: dict = serializer.data
+        order_by: str = serialized_data['order_by']
+
+        staff_list = get_all_staff(order_by=order_by)
+        serializer = StaffListOutputSerializer(staff_list, many=True)
         response_data = {'staff': serializer.data}
         return Response(response_data, status=status.HTTP_200_OK)
 

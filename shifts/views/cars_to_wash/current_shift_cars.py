@@ -5,7 +5,6 @@ from django.db.models import Prefetch
 from shifts.models import CarToWash, CarToWashAdditionalService
 
 
-
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarToWashAdditionalService
@@ -33,12 +32,16 @@ class CarToWashSerializer(serializers.ModelSerializer):
 
 
 class CarToWashListApi(views.APIView):
-    def get(self, request, *args, **kwargs):
-        queryset = CarToWash.objects.all().prefetch_related(
-            Prefetch(
-                'cartowashadditionalservice_set',
-                queryset=CarToWashAdditionalService.objects.all(),
-                to_attr='additional_services_prefetched'
+    def get(self, request, staff_id: int):
+        queryset = (
+            CarToWash.objects
+            .filter(shift__staff_id=staff_id)
+            .prefetch_related(
+                Prefetch(
+                    'cartowashadditionalservice_set',
+                    queryset=CarToWashAdditionalService.objects.all(),
+                    to_attr='additional_services_prefetched'
+                )
             )
         )
 

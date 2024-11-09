@@ -3,20 +3,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from staff.models import StaffAvailableDate
 from staff.selectors import get_staff_by_id
+from staff.serializers import StaffRetrieveOutputSerializer
 from staff.services import update_staff, update_staff_shift_schedule
 
 __all__ = (
     'PerformerRetrieveUpdateApi',
     'StaffUpdateAvailableDatesApi',
 )
-
-
-class StaffAvailableDateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StaffAvailableDate
-        fields = ['month', 'year']
 
 
 class PerformerRetrieveUpdateApi(APIView):
@@ -30,14 +24,10 @@ class PerformerRetrieveUpdateApi(APIView):
         console_phone_number = serializers.CharField(max_length=16)
         created_at = serializers.DateTimeField()
         is_banned = serializers.BooleanField()
-        available_dates = StaffAvailableDateSerializer(
-            many=True,
-            source='staffavailabledate_set',
-        )
 
     def get(self, request: Request, staff_id: int) -> Response:
         staff = get_staff_by_id(staff_id)
-        serializer = self.OutputSerializer(staff)
+        serializer = StaffRetrieveOutputSerializer(staff)
         return Response(serializer.data)
 
     def put(self, request: Request, staff_id: int) -> Response:
