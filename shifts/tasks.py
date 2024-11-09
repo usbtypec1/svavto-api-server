@@ -3,7 +3,6 @@ import datetime
 from celery import shared_task
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from mailing.services import try_send_message
 from shifts.selectors import (
     get_staff_ids_by_shift_date,
     get_staff_ids_by_shift_ids,

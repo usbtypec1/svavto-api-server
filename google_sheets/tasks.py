@@ -4,12 +4,11 @@ from celery import shared_task
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from car_washes.models import CarWash, CarWashService
+from car_washes.models import CarWash
 from google_sheets.services import create_google_sheets_client
+from shifts.models import CarToWash
 
 __all__ = ('sync_car_washes',)
-
-from shifts.models import CarToWash, CarToWashAdditionalService, Shift
 
 
 @shared_task
@@ -28,7 +27,8 @@ def sync_car_washes() -> None:
 
     for car_wash in car_washes:
         if car_wash.name not in worksheet_titles:
-            # TODO если произошло добавление, нужно перезаписать формулы в листе "сумма"
+            # TODO если произошло добавление, нужно перезаписать формулы в
+            #  листе "сумма"
             car_washes_spreadsheet.add_worksheet(
                 title=car_wash.name,
                 rows=10,
@@ -65,6 +65,3 @@ def sync_car_washes() -> None:
                     service_price = service_id_to_price[additional_service.name]
 
         worksheet = car_washes_spreadsheet.worksheet(car_wash.name)
-
-
-
