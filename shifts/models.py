@@ -1,9 +1,32 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from car_washes.models import CarWash
 from staff.models import Staff
 
-__all__ = ('Shift', 'CarToWash', 'CarToWashAdditionalService')
+__all__ = ('Shift', 'CarToWash', 'CarToWashAdditionalService', 'AvailableDate')
+
+
+class AvailableDate(models.Model):
+    month = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(
+                limit_value=1,
+                message="Month must be at least 1"
+            ),
+            MaxValueValidator(
+                limit_value=12,
+                message="Month cannot be greater than 12",
+            )
+        ]
+    )
+    year = models.PositiveSmallIntegerField()
+
+    class Meta:
+        verbose_name = 'available date'
+        verbose_name_plural = 'available dates'
+        unique_together = ('month', 'year')
+        ordering = ('year', 'month')
 
 
 class Shift(models.Model):

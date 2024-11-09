@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from shifts.models import CarToWash
+from shifts.models import AvailableDate, CarToWash
 
 __all__ = (
     'AdditionalServiceSerializer',
     'CarToWashCreateInputSerializer',
     'CarToWashCreateOutputSerializer',
+    'AvailableDateSerializer',
 )
 
 
@@ -38,3 +39,9 @@ class CarToWashCreateOutputSerializer(serializers.Serializer):
     windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
     car_wash_id = serializers.IntegerField()
     additional_services = AdditionalServiceSerializer(many=True)
+
+
+class AvailableDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AvailableDate
+        fields = ('id', 'month', 'year')

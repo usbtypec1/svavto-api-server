@@ -1,7 +1,8 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
 from shifts.views import (
-    CarToWashCreateApi,
+    AvailableDateApi, CarToWashCreateApi,
     CarToWashListApi,
     CarsToWashCountByEachStaffApi,
     CarsWithoutWindshieldWasherApi,
@@ -16,6 +17,13 @@ from shifts.views import (
     ShiftFinishApi,
     ShiftLastCreatedDateListApi,
     ReportApi,
+)
+
+router = DefaultRouter()
+router.register(
+    r'available-dates',
+    AvailableDateApi,
+    basename='available-date',
 )
 
 app_name = 'shifts'
@@ -94,4 +102,5 @@ urlpatterns = [
         CarsWithoutWindshieldWasherApi.as_view(),
         name='car-without-windshield-washer',
     ),
+    path(r'', include(router.urls))
 ]
