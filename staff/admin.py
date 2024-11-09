@@ -33,6 +33,9 @@ class StaffAdmin(admin.ModelAdmin):
     inlines = (ShiftInline,)
     list_filter = (IsBannedFilter,)
     list_display = (
-        'id', 'full_name', 'car_sharing_phone_number', 'console_phone_number',
+        'id',
+        'full_name',
+        'car_sharing_phone_number',
+        'console_phone_number',
         'created_at',
     )

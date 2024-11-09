@@ -1,13 +1,12 @@
 from rest_framework import serializers
 
-from staff.models import Staff, StaffAvailableDate
+from staff.models import Staff
 
 __all__ = (
     'StaffListOutputSerializer',
     'StaffListInputSerializer',
     'StaffCreateInputSerializer',
     'StaffRetrieveOutputSerializer',
-    'StaffAvailableDateSerializer',
 )
 
 
@@ -50,18 +49,7 @@ class StaffListOutputSerializer(serializers.ModelSerializer):
         )
 
 
-class StaffAvailableDateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StaffAvailableDate
-        fields = ['month', 'year']
-
-
 class StaffRetrieveOutputSerializer(serializers.ModelSerializer):
-    available_dates = StaffAvailableDateSerializer(
-        many=True,
-        source='staffavailabledate_set',
-    )
-
     class Meta:
         model = Staff
         fields = (
@@ -72,5 +60,4 @@ class StaffRetrieveOutputSerializer(serializers.ModelSerializer):
             'is_banned',
             'created_at',
             'last_activity_at',
-            'available_dates',
         )

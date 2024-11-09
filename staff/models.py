@@ -1,6 +1,6 @@
 from django.db import models
 
-__all__ = ('Staff', 'StaffAvailableDate')
+__all__ = ('Staff',)
 
 
 class Staff(models.Model):
@@ -22,14 +22,3 @@ class Staff(models.Model):
     @property
     def is_banned(self) -> bool:
         return self.banned_at is not None
-
-
-class StaffAvailableDate(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
-    month = models.PositiveSmallIntegerField()
-    year = models.PositiveSmallIntegerField()
-
-    class Meta:
-        verbose_name = 'staff available date'
-        verbose_name_plural = 'staff available dates'
-        unique_together = ('staff', 'month', 'year')
