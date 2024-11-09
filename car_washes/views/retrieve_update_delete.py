@@ -4,8 +4,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from car_washes.selectors import get_car_wash_by_id
-from car_washes.serializers import CarWashSerializer
-from car_washes.services import update_car_wash, delete_car_wash
+from car_washes.serializers import (
+    CarWashRetrieveOutputSerializer,
+)
+from car_washes.services import delete_car_wash, update_car_wash
 
 
 class CarWashRetrieveUpdateDeleteApi(APIView):
@@ -14,7 +16,7 @@ class CarWashRetrieveUpdateDeleteApi(APIView):
 
     def get(self, request: Request, car_wash_id: int) -> Response:
         car_wash = get_car_wash_by_id(car_wash_id)
-        serializer = CarWashSerializer(car_wash)
+        serializer = CarWashRetrieveOutputSerializer(car_wash)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request: Request, car_wash_id: int) -> Response:

@@ -7,7 +7,7 @@ from django.db import transaction
 from django.db.models import Count, QuerySet
 from telebot.apihelper import ApiException
 
-from car_washes.selectors import CarWashDTO
+from car_washes.selectors import CarWashDetailDTO
 from shifts.exceptions import (
     CarAlreadyWashedOnShiftError,
     CarWashSameAsCurrentError,
@@ -188,7 +188,7 @@ def get_cars_without_windshield_washer_by_date(
 def update_shift_car_wash(
         *,
         shift: Shift,
-        car_wash: CarWashDTO,
+        car_wash: CarWashDetailDTO,
 ) -> None:
     if shift.car_wash_id == car_wash.id:
         raise CarWashSameAsCurrentError

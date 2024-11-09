@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from car_washes.exceptions import (
@@ -5,7 +6,7 @@ from car_washes.exceptions import (
     CarWashNotFoundError,
 )
 from car_washes.models import CarWash
-from car_washes.selectors import CarWashDTO
+from car_washes.selectors import CarWashCreateResultDTO
 
 __all__ = (
     'create_car_wash',
@@ -15,12 +16,16 @@ __all__ = (
 )
 
 
-def create_car_wash(*, name: str) -> CarWashDTO:
+def create_car_wash(*, name: str) -> CarWashCreateResultDTO:
+    car_wash = CarWash(name=name)
     try:
-        car_wash = CarWash.objects.create(name=name)
-    except IntegrityError:
-        raise CarWashAlreadyExistsError
-    return CarWashDTO(
+        car_wash.full_clean()
+    except ValidationError as error:
+        if 'Car wash with this Name already exists.' in error.messages:
+            raise CarWashAlreadyExistsError
+        raise
+    car_wash.save()
+    return CarWashCreateResultDTO(
         id=car_wash.id,
         name=car_wash.name,
         created_at=car_wash.created_at,
