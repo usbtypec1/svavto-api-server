@@ -10,8 +10,8 @@ __all__ = ('StaffShiftListApi',)
 
 
 class StaffShiftListInputSerializer(serializers.Serializer):
-    month = serializers.IntegerField()
-    year = serializers.IntegerField()
+    month = serializers.IntegerField(default=None, allow_null=True)
+    year = serializers.IntegerField(default=None, allow_null=True)
 
 
 class StaffShiftListOutputSerializer(serializers.ModelSerializer):
@@ -36,8 +36,8 @@ class StaffShiftListApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
 
-        month: int = serialized_data['month']
-        year: int = serialized_data['year']
+        month: int | None = serialized_data['month']
+        year: int | None = serialized_data['year']
 
         shifts = get_shifts_by_staff_id(
             staff_id=staff_id,

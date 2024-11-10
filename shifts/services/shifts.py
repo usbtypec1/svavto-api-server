@@ -2,6 +2,7 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from django.db.models import QuerySet
 from django.utils import timezone
 
 from shifts.exceptions import (
@@ -117,15 +118,16 @@ def finish_shift(shift: Shift) -> dict:
 def get_shifts_by_staff_id(
         *,
         staff_id: int,
-        month: int,
-        year: int,
-) -> list:
-    return (
+        month: int | None,
+        year: int | None,
+) -> QuerySet[Shift]:
+    shifts = (
         Shift.objects
         .select_related('car_wash')
-        .filter(
-            staff_id=staff_id,
-            date__month=month,
-            date__year=year,
-        )
+        .filter(staff_id=staff_id)
     )
+    if month is None:
+        shifts = shifts.filter(date__month=month)
+    if year is None:
+        shifts = shifts.filter(date__year=year)
+    return shifts
