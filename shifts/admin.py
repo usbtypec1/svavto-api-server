@@ -1,7 +1,12 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from shifts.models import Shift, CarToWash, CarToWashAdditionalService
+from shifts.models import (
+    Shift,
+    CarToWash,
+    CarToWashAdditionalService,
+    AvailableDate,
+)
 
 
 class CarToWashInline(admin.TabularInline):
@@ -14,6 +19,12 @@ class CarToWashAdditionalServiceInline(admin.TabularInline):
     extra = 0
 
 
+@admin.register(AvailableDate)
+class AvailableDateAdmin(admin.ModelAdmin):
+    list_display = ('year', 'month')
+    list_filter = ('year', 'month')
+
+
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
     list_display = ('staff', 'date', 'car_wash')
@@ -24,6 +35,7 @@ class ShiftAdmin(admin.ModelAdmin):
     search_fields = ('staff__full_name', 'staff__id')
     search_help_text = _('You can search by staff name or staff id.')
     date_hierarchy = 'date'
+
 
 @admin.register(CarToWash)
 class CarToWashAdmin(admin.ModelAdmin):
