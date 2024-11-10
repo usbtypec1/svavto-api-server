@@ -126,8 +126,8 @@ def get_shifts_by_staff_id(
         .select_related('car_wash')
         .filter(staff_id=staff_id)
     )
-    if month is None:
+    if month is not None:
         shifts = shifts.filter(date__month=month)
-    if year is None:
+    if year is not None:
         shifts = shifts.filter(date__year=year)
     return shifts
