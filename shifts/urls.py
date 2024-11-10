@@ -10,6 +10,7 @@ from shifts.views import (
     RetrieveUpdateCarsToWashApi,
     ShiftConfirmApi,
     ShiftDateStaffListApi,
+    ShiftDeleteApi,
     ShiftStartApi,
     StaffCurrentShiftRetrieveApi,
     StaffShiftListApi,
@@ -42,6 +43,11 @@ urlpatterns = [
         r'create/',
         ShiftCreateApi.as_view(),
         name='create',
+    ),
+    path(
+        r'<int:shift_id>/',
+        ShiftDeleteApi.as_view(),
+        name='delete',
     ),
     path(
         r'confirm/',

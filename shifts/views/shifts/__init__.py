@@ -1,6 +1,7 @@
 from .confirm import *
 from .create import *
 from .current import *
+from .delete import *
 from .last_created import *
 from .shift_dates import *
 from .staff import *

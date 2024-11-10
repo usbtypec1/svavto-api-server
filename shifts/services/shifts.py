@@ -15,6 +15,7 @@ from shifts.exceptions import (
 )
 from shifts.models import Shift
 from shifts.selectors import has_any_finished_shift
+from staff.models import Staff
 
 __all__ = (
     'create_unconfirmed_shifts',
@@ -23,9 +24,8 @@ __all__ = (
     'ensure_staff_has_no_active_shift',
     'finish_shift',
     'get_shifts_by_staff_id',
+    'delete_shift_by_id'
 )
-
-from staff.models import Staff
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,3 +131,9 @@ def get_shifts_by_staff_id(
     if year is not None:
         shifts = shifts.filter(date__year=year)
     return shifts
+
+
+def delete_shift_by_id(shift_id: int) -> None:
+    deleted_count, _ = Shift.objects.filter(id=shift_id).delete()
+    if deleted_count == 0:
+        raise ShiftNotFoundError
