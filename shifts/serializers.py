@@ -1,12 +1,19 @@
 from rest_framework import serializers
-from shifts.models import AvailableDate, CarToWash
+
+from shifts.models import AvailableDate, CarToWash, Shift
 
 __all__ = (
     'AdditionalServiceSerializer',
     'CarToWashCreateInputSerializer',
     'CarToWashCreateOutputSerializer',
     'AvailableDateSerializer',
+    'DateSerializer',
+    'ShiftListForSpecificDateOutputSerializer',
 )
+
+
+class DateSerializer(serializers.Serializer):
+    date = serializers.DateField()
 
 
 class AdditionalServiceSerializer(serializers.Serializer):
@@ -45,3 +52,20 @@ class AvailableDateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AvailableDate
         fields = ('id', 'month', 'year')
+
+
+class ShiftListForSpecificDateOutputSerializer(
+    serializers.ModelSerializer,
+):
+    class Meta:
+        model = Shift
+        fields = (
+            'id',
+            'date',
+            'staff',
+            'is_confirmed',
+            'is_started',
+            'is_finished',
+            'created_at',
+        )
+        depth = 1

@@ -8,7 +8,6 @@ from shifts.models import Shift
 __all__ = (
     'get_staff_ids_by_shift_date',
     'get_staff_ids_by_shift_ids',
-    'get_staff_list_by_shift_date',
     'get_active_shift',
     'has_any_finished_shift',
 )
@@ -25,30 +24,6 @@ class ShiftIdAndStaffFullName:
     shift_id: int
     staff_id: int
     staff_full_name: str
-
-
-def get_staff_list_by_shift_date(
-        date: datetime.date,
-) -> list[ShiftIdAndStaffFullName]:
-    shifts = (
-        Shift.objects
-        .select_related('shift')
-        .filter(
-            date=date,
-            confirmed_at__isnull=False,
-            started_at__isnull=True,
-            finished_at__isnull=True,
-        )
-        .values('id', 'staff_id', 'staff__full_name')
-    )
-    return [
-        ShiftIdAndStaffFullName(
-            shift_id=shift['id'],
-            staff_id=shift['staff_id'],
-            staff_full_name=shift['staff__full_name'],
-        )
-        for shift in shifts
-    ]
 
 
 def get_staff_ids_by_shift_date(date: datetime.date) -> list[ShiftIdAndStaffId]:
