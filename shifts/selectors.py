@@ -2,13 +2,14 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from shifts.exceptions import StaffHasNoActiveShiftError
+from shifts.exceptions import ShiftNotFoundError, StaffHasNoActiveShiftError
 from shifts.models import Shift
 
 __all__ = (
     'get_staff_ids_by_shift_date',
     'get_staff_ids_by_shift_ids',
-    'get_active_shift',
+    'get_shift_by_id',
+    'get_staff_current_shift',
     'has_any_finished_shift',
 )
 
@@ -24,6 +25,19 @@ class ShiftIdAndStaffFullName:
     shift_id: int
     staff_id: int
     staff_full_name: str
+
+
+def get_shift_by_id(
+        shift_id: int,
+) -> Shift:
+    try:
+        return (
+            Shift.objects
+            .select_related('staff', 'car_wash')
+            .get(id=shift_id)
+        )
+    except Shift.DoesNotExist:
+        raise ShiftNotFoundError
 
 
 def get_staff_ids_by_shift_date(date: datetime.date) -> list[ShiftIdAndStaffId]:
@@ -54,15 +68,15 @@ def get_staff_ids_by_shift_ids(
     ]
 
 
-def get_active_shift(staff_id: int) -> Shift:
-    shift = Shift.objects.filter(
-        staff_id=staff_id,
-        started_at__isnull=False,
-        finished_at__isnull=True
-    ).first()
-    if shift is None:
+def get_staff_current_shift(staff_id: int) -> Shift:
+    try:
+        return Shift.objects.get(
+            staff_id=staff_id,
+            started_at__isnull=False,
+            finished_at__isnull=True,
+        )
+    except Shift.DoesNotExist:
         raise StaffHasNoActiveShiftError
-    return shift
 
 
 def has_any_finished_shift(staff_id: int) -> bool:

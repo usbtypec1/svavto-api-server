@@ -19,6 +19,7 @@ class ShiftListForSpecificDateApi(APIView):
         serializer = DateSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
+
         shifts_date: datetime.date = serialized_data['date']
 
         shifts = Shift.objects.filter(

@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from shifts.selectors import get_active_shift
+from shifts.selectors import get_staff_current_shift
 from shifts.serializers import (
     CarToWashCreateInputSerializer,
     CarToWashCreateOutputSerializer,
@@ -30,7 +30,7 @@ class CarToWashCreateApi(APIView):
         ]
         additional_services = serializer.validated_data["additional_services"]
 
-        shift = get_active_shift(staff_id)
+        shift = get_staff_current_shift(staff_id)
         car_wash = create_car_to_wash(
             shift=shift,
             number=number,

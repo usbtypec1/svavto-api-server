@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from car_washes.models import CarWash
 from car_washes.selectors import get_car_wash_by_id
-from shifts.selectors import get_active_shift
+from shifts.selectors import get_staff_current_shift
 from shifts.services.cars_to_wash import update_shift_car_wash
 
 __all__ = ('CurrentShiftCarWashUpdateApi',)
@@ -29,7 +29,7 @@ class CurrentShiftCarWashUpdateApi(APIView):
         serialized_data = serializer.data
         car_wash_id: int = serialized_data['car_wash_id']
 
-        shift = get_active_shift(staff_id)
+        shift = get_staff_current_shift(staff_id)
         car_wash = get_car_wash_by_id(car_wash_id)
         update_shift_car_wash(
             shift=shift,

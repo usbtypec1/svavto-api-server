@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from shifts.selectors import get_active_shift
+from shifts.selectors import get_staff_current_shift
 from shifts.services.shifts import finish_shift
 
 __all__ = ('ShiftFinishApi',)
@@ -22,7 +22,7 @@ class ShiftFinishApi(APIView):
 
         staff_id: int = serialized_data['staff_id']
 
-        shift = get_active_shift(staff_id=staff_id)
+        shift = get_staff_current_shift(staff_id=staff_id)
         finish_result = finish_shift(shift)
 
         return Response(finish_result)

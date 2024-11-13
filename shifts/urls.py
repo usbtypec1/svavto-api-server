@@ -9,7 +9,7 @@ from shifts.views import (
     CarsWithoutWindshieldWasherApi,
     CurrentShiftCarWashUpdateApi,
     RetrieveUpdateCarsToWashApi,
-    ShiftDeleteApi,
+    ShiftRetrieveDeleteApi,
     ShiftStartApi,
     StaffCurrentShiftRetrieveApi,
     StaffShiftListApi,
@@ -18,6 +18,7 @@ from shifts.views import (
     ShiftLastCreatedDateListApi,
     ReportApi,
     ShiftListForSpecificDateApi,
+    ShiftListApi,
 )
 
 router = DefaultRouter()
@@ -29,6 +30,11 @@ router.register(
 
 app_name = 'shifts'
 urlpatterns = [
+    path(
+        r'',
+        ShiftListApi.as_view(),
+        name='list',
+    ),
     path(
         'specific-date/',
         ShiftListForSpecificDateApi.as_view(),
@@ -51,7 +57,7 @@ urlpatterns = [
     ),
     path(
         r'<int:shift_id>/',
-        ShiftDeleteApi.as_view(),
+        ShiftRetrieveDeleteApi.as_view(),
         name='delete',
     ),
     path(

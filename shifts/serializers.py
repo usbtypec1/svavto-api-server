@@ -9,6 +9,10 @@ __all__ = (
     'AvailableDateSerializer',
     'DateSerializer',
     'ShiftListForSpecificDateOutputSerializer',
+    'ShiftRetrieveOutputSerializer',
+    'StaffCurrentShiftRetrieveOutputSerializer',
+    'ShiftListInputSerializer',
+    'ShiftListOutputSerializer',
 )
 
 
@@ -62,6 +66,64 @@ class ShiftListForSpecificDateOutputSerializer(
         fields = (
             'id',
             'date',
+            'staff',
+            'is_started',
+            'is_finished',
+            'created_at',
+        )
+        depth = 1
+
+
+class ShiftRetrieveOutputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shift
+        fields = (
+            'id',
+            'date',
+            'car_wash',
+            'staff',
+            'is_started',
+            'is_finished',
+            'created_at',
+        )
+        depth = 1
+
+
+class StaffCurrentShiftRetrieveOutputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shift
+        fields = (
+            'id',
+            'date',
+            'car_wash',
+            'staff',
+            'is_started',
+            'is_finished',
+            'created_at',
+        )
+        depth = 1
+
+
+class ShiftListInputSerializer(serializers.Serializer):
+    date_from = serializers.DateField(default=None, allow_null=True)
+    date_to = serializers.DateField(default=None, allow_null=True)
+    staff_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        default=None,
+        allow_null=True,
+        allow_empty=False,
+    )
+    limit = serializers.IntegerField(default=10, min_value=1, max_value=1000)
+    offset = serializers.IntegerField(default=0, min_value=0)
+
+
+class ShiftListOutputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shift
+        fields = (
+            'id',
+            'date',
+            'car_wash',
             'staff',
             'is_started',
             'is_finished',
