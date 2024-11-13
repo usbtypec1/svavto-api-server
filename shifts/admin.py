@@ -41,7 +41,7 @@ class ShiftAdmin(admin.ModelAdmin):
 class CarToWashAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
     inlines = (CarToWashAdditionalServiceInline,)
-    list_display = ('number', 'shift__date', 'car_class', 'wash_type')
+    list_display = ('number', 'car_class', 'wash_type')
     list_filter = ('car_class', 'wash_type')
     list_select_related = ('shift',)
 

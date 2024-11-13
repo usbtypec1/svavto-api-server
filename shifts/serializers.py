@@ -63,7 +63,6 @@ class ShiftListForSpecificDateOutputSerializer(
             'id',
             'date',
             'staff',
-            'is_confirmed',
             'is_started',
             'is_finished',
             'created_at',

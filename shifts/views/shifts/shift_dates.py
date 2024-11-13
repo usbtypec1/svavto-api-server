@@ -20,7 +20,6 @@ class StaffShiftListOutputSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'date',
-            'confirmed_at',
             'started_at',
             'finished_at',
             'created_at',

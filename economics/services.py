@@ -70,19 +70,10 @@ def create_surcharge_and_send_notification(
         reason=reason,
         amount=amount,
     )
-    notification_text = format_surcharge_notification_text(
-        reason=reason,
-        amount=amount,
-    )
-    is_notification_delivered = try_send_message(
-        chat_id=staff_id,
-        text=notification_text,
-    )
     return SurchargeCreateResult(
         id=surcharge.id,
         staff_id=surcharge.staff_id,
         reason=surcharge.reason,
         amount=surcharge.amount,
         created_at=surcharge.created_at,
-        is_notification_delivered=is_notification_delivered,
     )

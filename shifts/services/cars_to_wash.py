@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Count, QuerySet
-from telebot.apihelper import ApiException
 
 from car_washes.selectors import CarWashDetailDTO
 from shifts.exceptions import (
@@ -64,6 +63,7 @@ def map_create_result_to_dto(
         car_wash_id=car_to_wash.car_wash_id,
         additional_services=additional_services_dto,
     )
+
 
 def create_car_to_wash_additional_services(
         car_to_wash: CarToWash,

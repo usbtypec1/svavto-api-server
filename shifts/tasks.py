@@ -46,8 +46,3 @@ def send_staff_shift_confirmation(
         reply_markup = build_shift_confirm_reply_markup(
             shift_id=shift_and_staff_id.shift_id,
         )
-        try_send_message(
-            text=text,
-            chat_id=shift_and_staff_id.staff_id,
-            reply_markup=reply_markup,
-        )

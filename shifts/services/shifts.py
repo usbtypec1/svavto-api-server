@@ -6,9 +6,7 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from shifts.exceptions import (
-    ShiftAlreadyConfirmedError,
     ShiftAlreadyFinishedError,
-    ShiftByDateNotFoundError,
     ShiftNotConfirmedError,
     ShiftNotFoundError,
     StaffHasActiveShiftError,
@@ -19,7 +17,6 @@ from staff.models import Staff
 
 __all__ = (
     'create_unconfirmed_shifts',
-    'confirm_shift',
     'start_shift',
     'ensure_staff_has_no_active_shift',
     'finish_shift',
@@ -42,23 +39,6 @@ def create_unconfirmed_shifts(
 ) -> None:
     shifts = [Shift(staff=staff, date=date) for date in dates]
     Shift.objects.bulk_create(shifts)
-
-
-def confirm_shift(
-        *,
-        date: datetime.date,
-        staff_id: int,
-) -> None:
-    try:
-        shift = Shift.objects.get(date=date, staff_id=staff_id)
-    except Shift.DoesNotExist:
-        raise ShiftByDateNotFoundError
-
-    if shift.is_confirmed:
-        raise ShiftAlreadyConfirmedError
-
-    shift.confirmed_at = timezone.now()
-    shift.save(update_fields=('confirmed_at',))
 
 
 def start_shift(

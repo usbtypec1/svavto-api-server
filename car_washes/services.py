@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 
 from car_washes.exceptions import (
     CarWashAlreadyExistsError,

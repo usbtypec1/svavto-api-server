@@ -2,7 +2,6 @@ import datetime
 from typing import List, TypedDict
 
 from django.db.models import Count, Q, Sum
-from django.db.models.functions import TruncDate
 
 from economics.models import Penalty, Surcharge
 from shifts.models import CarToWash, CarToWashAdditionalService

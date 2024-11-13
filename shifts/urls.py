@@ -2,13 +2,13 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from shifts.views import (
-    AvailableDateApi, CarToWashCreateApi,
+    AvailableDateApi,
+    CarToWashCreateApi,
     CarToWashListApi,
     CarsToWashCountByEachStaffApi,
     CarsWithoutWindshieldWasherApi,
     CurrentShiftCarWashUpdateApi,
     RetrieveUpdateCarsToWashApi,
-    ShiftConfirmApi,
     ShiftDeleteApi,
     ShiftStartApi,
     StaffCurrentShiftRetrieveApi,
@@ -53,11 +53,6 @@ urlpatterns = [
         r'<int:shift_id>/',
         ShiftDeleteApi.as_view(),
         name='delete',
-    ),
-    path(
-        r'confirm/',
-        ShiftConfirmApi.as_view(),
-        name='confirm',
     ),
     path(
         r'start/',
