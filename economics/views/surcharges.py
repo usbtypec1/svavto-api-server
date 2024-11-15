@@ -1,9 +1,9 @@
+from rest_framework import serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import serializers, status
 
-from economics.services import create_surcharge_and_send_notification
+from economics.services.surcharges import create_surcharge
 
 __all__ = ('SurchargeCreateApi',)
 
@@ -31,7 +31,7 @@ class SurchargeCreateApi(APIView):
         reason: str = serialized_data['reason']
         amount: int = serialized_data['amount']
 
-        surcharge_create_result = create_surcharge_and_send_notification(
+        surcharge_create_result = create_surcharge(
             staff_id=staff_id,
             reason=reason,
             amount=amount,

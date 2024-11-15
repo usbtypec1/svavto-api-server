@@ -39,13 +39,7 @@ class ShiftListApi(APIView):
         if staff_ids is not None:
             shifts = shifts.filter(staff_id__in=staff_ids)
 
-        pagination_slice = slice(offset, offset + limit + 1)
-
-        shifts = (
-            shifts
-            .order_by('date', 'started_at', 'finished_at')[pagination_slice]
-        )
-
+        shifts = shifts[offset:offset + limit + 1]
         is_end_of_list_reached = len(shifts) <= limit
         shifts = shifts[:limit]
 
