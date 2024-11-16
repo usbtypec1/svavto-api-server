@@ -55,3 +55,4 @@ class PenaltyListOutputSerializer(serializers.ModelSerializer):
             'consequence',
             'created_at',
         )
+        depth = 1
