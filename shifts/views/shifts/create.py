@@ -22,7 +22,8 @@ class ShiftCreateApi(APIView):
         staff_id: int = serialized_data['staff_id']
         dates: list[datetime.date] = serialized_data['dates']
         immediate_start: bool = serialized_data['immediate_start']
-        car_wash_id: int | None = serialized_data.get('car_wash_id')
+        car_wash_id: int | None = serialized_data['car_wash_id']
+        is_extra: bool = serialized_data['is_extra']
 
         staff = get_staff_by_id(staff_id)
 
@@ -31,9 +32,14 @@ class ShiftCreateApi(APIView):
                 staff=staff,
                 dates=dates,
                 car_wash_id=car_wash_id,
+                is_extra=is_extra,
             )
         else:
-            create_shifts(staff=staff, dates=dates)
+            create_shifts(
+                staff=staff,
+                dates=dates,
+                is_extra=is_extra,
+            )
 
         response_data = {
             'staff_id': staff.id,

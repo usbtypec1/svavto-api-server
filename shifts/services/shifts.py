@@ -2,11 +2,12 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from django.db import IntegrityError
 from django.db.models import QuerySet
 from django.utils import timezone
 
 from shifts.exceptions import (
-    ShiftAlreadyFinishedError,
+    ShiftAlreadyExistsError, ShiftAlreadyFinishedError,
     ShiftNotConfirmedError,
     ShiftNotFoundError,
     StaffHasActiveShiftError,
@@ -37,9 +38,20 @@ def create_shifts(
         *,
         staff: Staff,
         dates: Iterable[datetime.date],
+        is_extra: bool,
 ) -> QuerySet[Shift]:
-    shifts = [Shift(staff=staff, date=date) for date in dates]
-    return Shift.objects.bulk_create(shifts)
+    shifts = [
+        Shift(
+            staff=staff,
+            date=date,
+            is_extra=is_extra,
+        )
+        for date in dates
+    ]
+    try:
+        return Shift.objects.bulk_create(shifts)
+    except IntegrityError:
+        raise ShiftAlreadyExistsError
 
 
 def create_and_start_shifts(
@@ -47,6 +59,7 @@ def create_and_start_shifts(
         staff: Staff,
         dates: Iterable[datetime.date],
         car_wash_id: int,
+        is_extra: bool,
 ) -> QuerySet[Shift]:
     now = timezone.now()
     shifts = [
@@ -55,9 +68,13 @@ def create_and_start_shifts(
             date=date,
             car_wash_id=car_wash_id,
             started_at=now,
+            is_extra=is_extra,
         ) for date in dates
     ]
-    return Shift.objects.bulk_create(shifts)
+    try:
+        return Shift.objects.bulk_create(shifts)
+    except IntegrityError:
+        raise ShiftAlreadyExistsError
 
 
 def start_shift(

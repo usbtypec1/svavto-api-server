@@ -47,7 +47,7 @@ class Shift(models.Model):
     class Meta:
         verbose_name = 'shift'
         verbose_name_plural = 'shifts'
-        unique_together = ('staff', 'date')
+        unique_together = ('staff', 'date', 'is_extra')
 
     @property
     def is_started(self) -> bool:

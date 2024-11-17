@@ -13,6 +13,7 @@ __all__ = (
     'StaffHasNoAnyShiftError',
     'ShiftNotFoundError',
     'CarAlreadyWashedOnShiftError',
+    'ShiftAlreadyExistsError',
 )
 
 
@@ -74,3 +75,9 @@ class CarAlreadyWashedOnShiftError(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_detail = _('Car was already washed on the shift')
     default_code = 'car_already_washed_on_shift'
+
+
+class ShiftAlreadyExistsError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('Shift already exists')
+    default_code = 'shift_already_exists'
