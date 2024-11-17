@@ -16,12 +16,13 @@ from shifts.selectors import has_any_finished_shift
 from staff.models import Staff
 
 __all__ = (
-    'create_unconfirmed_shifts',
+    'create_shifts',
     'start_shift',
     'ensure_staff_has_no_active_shift',
     'finish_shift',
     'get_shifts_by_staff_id',
-    'delete_shift_by_id'
+    'delete_shift_by_id',
+    'create_and_start_shifts',
 )
 
 
@@ -32,13 +33,31 @@ class ShiftDTO:
     date: datetime.date
 
 
-def create_unconfirmed_shifts(
+def create_shifts(
         *,
         staff: Staff,
         dates: Iterable[datetime.date],
-) -> None:
+) -> QuerySet[Shift]:
     shifts = [Shift(staff=staff, date=date) for date in dates]
-    Shift.objects.bulk_create(shifts)
+    return Shift.objects.bulk_create(shifts)
+
+
+def create_and_start_shifts(
+        *,
+        staff: Staff,
+        dates: Iterable[datetime.date],
+        car_wash_id: int,
+) -> QuerySet[Shift]:
+    now = timezone.now()
+    shifts = [
+        Shift(
+            staff=staff,
+            date=date,
+            car_wash_id=car_wash_id,
+            started_at=now,
+        ) for date in dates
+    ]
+    return Shift.objects.bulk_create(shifts)
 
 
 def start_shift(

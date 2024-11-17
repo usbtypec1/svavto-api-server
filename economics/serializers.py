@@ -25,12 +25,13 @@ class PenaltyCreateOutputSerializer(serializers.ModelSerializer):
         model = Penalty
         fields = (
             'id',
-            'staff_id',
+            'staff',
             'reason',
             'amount',
             'consequence',
             'created_at',
         )
+        depth = 1
 
 
 class PenaltyListInputSerializer(serializers.Serializer):

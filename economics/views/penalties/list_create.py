@@ -50,11 +50,11 @@ class PenaltyListCreateApi(APIView):
         reason: str = serialized_data['reason']
         amount: int | None = serialized_data['amount']
 
-        penalty_create_result = create_penalty(
+        penalty = create_penalty(
             staff_id=staff_id,
             reason=reason,
             amount=amount,
         )
 
-        serializer = PenaltyCreateOutputSerializer(penalty_create_result)
+        serializer = PenaltyCreateOutputSerializer(penalty)
         return Response(serializer.data, status.HTTP_201_CREATED)

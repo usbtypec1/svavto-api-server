@@ -1,4 +1,3 @@
-import datetime
 from dataclasses import dataclass
 from enum import StrEnum, auto
 
@@ -16,16 +15,6 @@ class PenaltyReason(StrEnum):
 class PenaltyAmountAndConsequence:
     amount: int
     consequence: str | None
-
-
-@dataclass(frozen=True, slots=True)
-class PenaltyCreateResult:
-    id: int
-    staff_id: int
-    reason: str
-    amount: int
-    consequence: str
-    created_at: datetime.datetime
 
 
 def compute_penalty_amount(
@@ -48,7 +37,7 @@ def compute_penalty_amount(
     if reason == PenaltyReason.LATE_REPORT:
         if penalties_count == 0:
             amount = 0
-            consequence = 'warn'
+            consequence = Penalty.Consequence.WARN
         elif penalties_count == 1:
             amount = 100
             consequence = None
@@ -71,10 +60,10 @@ def compute_penalty_amount(
             consequence = None
         elif penalties_count == 2:
             amount = 1000
-            consequence = 'fire'
+            consequence = Penalty.Consequence.DISMISSAL
         else:
             amount = 0
-            consequence = 'fire'
+            consequence = Penalty.Consequence.DISMISSAL
         return PenaltyAmountAndConsequence(
             amount=amount,
             consequence=consequence,
@@ -87,7 +76,7 @@ def create_penalty(
         staff_id: int,
         reason: str,
         amount: int | None,
-) -> PenaltyCreateResult:
+) -> Penalty:
     consequence: str | None = None
     if amount is None:
         penalty_amount_and_consequence = compute_penalty_amount(
@@ -97,16 +86,9 @@ def create_penalty(
         amount = penalty_amount_and_consequence.amount
         consequence = penalty_amount_and_consequence.consequence
 
-    penalty = Penalty.objects.create(
+    return Penalty.objects.create(
         staff_id=staff_id,
         reason=reason,
-        amount=amount
-    )
-    return PenaltyCreateResult(
-        id=penalty.id,
-        staff_id=penalty.staff_id,
-        reason=penalty.reason,
         amount=amount,
         consequence=consequence,
-        created_at=penalty.created_at,
     )
