@@ -1,48 +1,59 @@
-import datetime
+from datetime import datetime, timedelta
 
 from celery import shared_task
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from django.utils import timezone
 
-from shifts.selectors import (
-    get_staff_ids_by_shift_date,
-    get_staff_ids_by_shift_ids,
-)
-
-__all__ = ('send_staff_shift_confirmation',)
+from shifts.models import Shift
+from staff.models import AdminStaff
+from telegram.services import get_telegram_bot, try_send_message
 
 
-def build_shift_confirm_reply_markup(
-        shift_id: int,
-) -> InlineKeyboardMarkup:
-    accept_button = InlineKeyboardButton(
-        text='Подтвердить',
-        callback_data=f'shift_confirm_accept:{shift_id}'
-    )
-    reject_button = InlineKeyboardButton(
-        text='Отклонить',
-        callback_data=f'shift_confirm_reject:{shift_id}',
-    )
-    return InlineKeyboardMarkup(keyboard=[[accept_button, reject_button]])
-
-
-def format_shift_confirm_text(date: datetime.date) -> str:
-    return (
-        f'📆 Подтвердите выход на смену на выбранную дату {date:%d.%m.%Y}'
-    )
+def to_moscow_time(date: datetime):
+    return date + timedelta(hours=3)
 
 
 @shared_task
-def send_staff_shift_confirmation(
-        staff_shift_ids: list[int] | None,
-        date: datetime.date | None,
-) -> None:
-    if staff_shift_ids is None:
-        shift_and_staff_ids = get_staff_ids_by_shift_date(date)
-    else:
-        shift_and_staff_ids = get_staff_ids_by_shift_ids(staff_shift_ids)
+def send_today_shifts_report():
+    now = to_moscow_time(timezone.now())
+    bot = get_telegram_bot()
 
-    text = format_shift_confirm_text(date)
-    for shift_and_staff_id in shift_and_staff_ids:
-        reply_markup = build_shift_confirm_reply_markup(
-            shift_id=shift_and_staff_id.shift_id,
+    shifts = Shift.objects.select_related('staff').filter(date=now.date())
+
+    admin_staff_ids = AdminStaff.objects.values_list('id', flat=True)
+
+    started_shifts = [shift for shift in shifts if shift.is_started]
+    not_started_shifts = [shift for shift in shifts if not shift.is_started]
+
+    started_shifts_staff = [
+        f'{shift.staff.full_name} - в {to_moscow_time(shift.started_at):H:M}'
+        for shift in started_shifts
+    ]
+    not_started_shifts_staff = [
+        shift.staff.full_name for shift in not_started_shifts
+    ]
+
+    started_shifts_message_lines: list[str] = [
+        f'Список подтвердивших смену на сегодня:'
+    ]
+    started_shifts_message_lines += started_shifts_staff
+    started_shifts_message = '\n'.join(started_shifts_message_lines)
+
+    for admin_staff_id in admin_staff_ids:
+        try_send_message(
+            bot=bot,
+            chat_id=admin_staff_id,
+            text=started_shifts_message,
+        )
+
+    not_started_shifts_message_lines: list[str] = [
+        f'Список не подтвердивших смену на сегодня:'
+    ]
+    not_started_shifts_message_lines += not_started_shifts_staff
+    not_started_shifts_message = '\n'.join(not_started_shifts_message_lines)
+
+    for admin_staff_id in admin_staff_ids:
+        try_send_message(
+            bot=bot,
+            chat_id=admin_staff_id,
+            text=not_started_shifts_message,
         )

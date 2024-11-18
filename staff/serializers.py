@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
-from staff.models import Staff
+from staff.models import AdminStaff, Staff
 
 __all__ = (
     'StaffListOutputSerializer',
     'StaffListInputSerializer',
     'StaffCreateInputSerializer',
     'StaffRetrieveOutputSerializer',
+    'AdminStaffListSerializer',
 )
 
 
@@ -61,3 +62,9 @@ class StaffRetrieveOutputSerializer(serializers.ModelSerializer):
             'created_at',
             'last_activity_at',
         )
+
+
+class AdminStaffListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdminStaff
+        fields = ('id', 'name')

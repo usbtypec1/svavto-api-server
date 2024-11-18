@@ -1,6 +1,6 @@
 from django.db import models
 
-__all__ = ('Staff',)
+__all__ = ('Staff', 'AdminStaff')
 
 
 class Staff(models.Model):
@@ -18,3 +18,16 @@ class Staff(models.Model):
 
     def __str__(self):
         return self.full_name
+
+
+class AdminStaff(models.Model):
+    id = models.BigIntegerField(primary_key=True, db_index=True, editable=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'admin staff'
+        verbose_name_plural = 'admin staff'
+
+    def __str__(self):
+        return self.name or str(self.id)

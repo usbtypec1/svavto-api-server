@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from shifts.models import Shift
-from staff.models import Staff
+from staff.models import Staff, AdminStaff
 
 
 class ShiftInline(admin.TabularInline):
@@ -39,3 +39,8 @@ class StaffAdmin(admin.ModelAdmin):
         'console_phone_number',
         'created_at',
     )
+
+
+@admin.register(AdminStaff)
+class AdminStaffAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'created_at')
