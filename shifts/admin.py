@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from shifts.models import (
@@ -25,12 +26,61 @@ class AvailableDateAdmin(admin.ModelAdmin):
     list_filter = ('year', 'month')
 
 
+class IsStartedFilter(admin.SimpleListFilter):
+    title = _('started')
+    parameter_name = 'started'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('true', _('Started')),
+            ('false', _('Not started')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'true':
+            return queryset.filter(started_at__isnull=False)
+
+        if self.value() == 'false':
+            return queryset.filter(started_at__isnull=True)
+
+
+class IsFinishedFilter(admin.SimpleListFilter):
+    title = _('finished')
+    parameter_name = 'finished'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('true', _('Finished')),
+            ('false', _('Not finished')),
+        )
+
+    def queryset(self, request, queryset: QuerySet):
+        if self.value() == 'true':
+            return queryset.filter(finished_at__isnull=False)
+
+        if self.value() == 'false':
+            return queryset.filter(finished_at__isnull=True)
+
+
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
-    list_display = ('staff', 'date', 'car_wash')
+    list_display = (
+        'staff',
+        'date',
+        'car_wash',
+        'started_at',
+        'finished_at',
+        'created_at',
+    )
     list_select_related = ('staff', 'car_wash')
     ordering = ('-date',)
-    list_filter = ('car_wash', 'staff')
+    list_filter = (
+        'car_wash',
+        'staff',
+        'is_extra',
+        IsStartedFilter,
+        IsFinishedFilter,
+    )
     inlines = (CarToWashInline,)
     search_fields = ('staff__full_name', 'staff__id')
     search_help_text = _('You can search by staff name or staff id.')

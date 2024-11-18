@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from turtledemo.penrose import start
 
 from celery import shared_task
 from django.utils import timezone
@@ -24,36 +25,40 @@ def send_today_shifts_report():
     started_shifts = [shift for shift in shifts if shift.is_started]
     not_started_shifts = [shift for shift in shifts if not shift.is_started]
 
-    started_shifts_staff = [
-        f'{shift.staff.full_name} - в {to_moscow_time(shift.started_at):H:M}'
-        for shift in started_shifts
-    ]
-    not_started_shifts_staff = [
-        shift.staff.full_name for shift in not_started_shifts
-    ]
+    if started_shifts:
+        started_shifts_staff = [
+            (
+                f'📍 {shift.staff.full_name}'
+                f' - в {to_moscow_time(shift.started_at):H:M}'
+            )
+            for shift in started_shifts
+        ]
+        started_shifts_message_lines: list[str] = [
+            f'Список подтвердивших смену на сегодня:'
+        ]
+        started_shifts_message_lines += started_shifts_staff
+        started_shifts_message = '\n'.join(started_shifts_message_lines)
 
-    started_shifts_message_lines: list[str] = [
-        f'Список подтвердивших смену на сегодня:'
-    ]
-    started_shifts_message_lines += started_shifts_staff
-    started_shifts_message = '\n'.join(started_shifts_message_lines)
+        for admin_staff_id in admin_staff_ids:
+            try_send_message(
+                bot=bot,
+                chat_id=admin_staff_id,
+                text=started_shifts_message,
+            )
 
-    for admin_staff_id in admin_staff_ids:
-        try_send_message(
-            bot=bot,
-            chat_id=admin_staff_id,
-            text=started_shifts_message,
-        )
+    if not_started_shifts:
+        not_started_shifts_staff = [
+            f'📍 {shift.staff.full_name}' for shift in not_started_shifts
+        ]
+        not_started_shifts_message_lines: list[str] = [
+            f'Список не подтвердивших смену на сегодня:'
+        ]
+        not_started_shifts_message_lines += not_started_shifts_staff
+        not_started_shifts_message = '\n'.join(not_started_shifts_message_lines)
 
-    not_started_shifts_message_lines: list[str] = [
-        f'Список не подтвердивших смену на сегодня:'
-    ]
-    not_started_shifts_message_lines += not_started_shifts_staff
-    not_started_shifts_message = '\n'.join(not_started_shifts_message_lines)
-
-    for admin_staff_id in admin_staff_ids:
-        try_send_message(
-            bot=bot,
-            chat_id=admin_staff_id,
-            text=not_started_shifts_message,
-        )
+        for admin_staff_id in admin_staff_ids:
+            try_send_message(
+                bot=bot,
+                chat_id=admin_staff_id,
+                text=not_started_shifts_message,
+            )
