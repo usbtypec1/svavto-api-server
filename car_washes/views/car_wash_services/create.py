@@ -12,10 +12,10 @@ from car_washes.serializers import (
     CarWashServicePriceUpsertOutputSerializer,
 )
 
-__all__ = ('CarWashServicePriceUpsertApi',)
+__all__ = ('SpecificCarWashServiceUpdateDeleteApi',)
 
 
-class CarWashServicePriceUpsertApi(APIView):
+class SpecificCarWashServiceUpdateDeleteApi(APIView):
 
     def put(
             self,
@@ -49,3 +49,18 @@ class CarWashServicePriceUpsertApi(APIView):
 
         serializer = CarWashServicePriceUpsertOutputSerializer(service_price)
         return Response(serializer.data, status_code)
+
+    def delete(
+            self,
+            request: Request,
+            car_wash_id: int,
+            service_id: UUID,
+    ) -> Response:
+        ensure_service_exists(service_id)
+        ensure_car_wash_exists(car_wash_id)
+
+        CarWashServicePrice.objects.filter(
+            car_wash_id=car_wash_id,
+            service_id=service_id,
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

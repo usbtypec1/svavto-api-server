@@ -4,8 +4,8 @@ from car_washes.views import (
     CarWashAllServicesApi,
     CarWashListCreateApi,
     CarWashRetrieveUpdateDeleteApi,
-    CarWashServicePriceUpsertApi,
-    CarWashServicesApi,
+    SpecificCarWashServiceUpdateDeleteApi,
+    SpecificCarWashServiceListApi,
 )
 
 app_name = 'car_washes'
@@ -23,12 +23,12 @@ urlpatterns = [
     ),
     path(
         r'<int:car_wash_id>/services/',
-        CarWashServicesApi.as_view(),
-        name='services',
+        SpecificCarWashServiceListApi.as_view(),
+        name='specific-service-list',
     ),
     path(
-        r'<int:car_wash_id>/services/<uuid:service_id>/prices/',
-        CarWashServicePriceUpsertApi.as_view(),
-        name='service-price-upsert',
+        r'<int:car_wash_id>/services/<uuid:service_id>/',
+        SpecificCarWashServiceUpdateDeleteApi.as_view(),
+        name='specific-service-update-delete',
     ),
 ]

@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from car_washes.selectors import get_root_car_wash_services
 from car_washes.serializers import CarWashServicesInputSerializer
 
-__all__ = ('CarWashServicesApi', 'CarWashAllServicesApi')
+__all__ = ('SpecificCarWashServiceListApi', 'CarWashAllServicesApi')
 
 
 class CarWashAllServicesApi(APIView):
@@ -26,7 +26,7 @@ class CarWashAllServicesApi(APIView):
         return Response({'services': car_wash_services})
 
 
-class CarWashServicesApi(APIView):
+class SpecificCarWashServiceListApi(APIView):
 
     def get(self, request: Request, car_wash_id: int) -> Response:
         serializer = CarWashServicesInputSerializer(
