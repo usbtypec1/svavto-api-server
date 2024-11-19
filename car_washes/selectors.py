@@ -197,16 +197,20 @@ def get_all_flatten_car_wash_services() -> list[dict]:
 
 
 def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
-    service_ids = (
+    service_ids_and_prices = (
         CarWashServicePrice.objects
         .filter(car_wash_id=car_wash_id)
-        .values_list('service_id', flat=True)
+        .values_list('service_id', 'price')
     )
-    if not service_ids:
+    if not service_ids_and_prices:
         return []
+    service_id_to_price = {
+        service_id: price
+        for service_id, price in service_ids_and_prices
+    }
     car_wash_services = (
         CarWashService.objects
-        .filter(id__in=service_ids)
+        .filter(id__in=service_id_to_price.keys())
         .values(
             'id',
             'name',
@@ -220,6 +224,7 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             'id': str(service['id']),
             'name': service['name'],
             'is_countable': service['is_countable'],
+            'price': service_id_to_price[service['id']],
             'parent': {
                 'id': str(service['parent__id']),
                 'name': service['parent__name'],
