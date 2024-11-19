@@ -19,6 +19,7 @@ django-cors-headers = "^4.5.0"
 gspread = "^6.1.4"
 aiogram = "^3.14.0"
 fast-depends = "^2.4.12"
+django-import-export = "^4.2.1"
 
 
 [tool.poetry.group.dev.dependencies]

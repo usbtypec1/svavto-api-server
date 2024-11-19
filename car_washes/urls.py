@@ -3,6 +3,7 @@ from django.urls import path
 from car_washes.views import (
     CarWashListCreateApi,
     CarWashRetrieveUpdateDeleteApi,
+    CarWashServicesApi,
 )
 
 urlpatterns = [
@@ -12,4 +13,8 @@ urlpatterns = [
         CarWashRetrieveUpdateDeleteApi.as_view(),
         name='car-wash-detail-update-delete',
     ),
+    path(
+        r'<int:car_wash_id>/services/',
+        CarWashServicesApi.as_view(),
+    )
 ]

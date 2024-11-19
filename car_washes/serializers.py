@@ -8,6 +8,8 @@ __all__ = (
     'CarWashServiceSerializer',
     'CarWashCreateOutputSerializer',
     'CarWashCreateInputSerializer',
+    'CurrentShiftServicesInputSerializer',
+    'CarWashUpdateInputSerializer',
 )
 
 
@@ -45,3 +47,11 @@ class CarWashCreateOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWash
         fields = ('id', 'name', 'created_at', 'updated_at')
+
+
+class CurrentShiftServicesInputSerializer(serializers.Serializer):
+    depth = serializers.IntegerField(
+        default=2,
+        min_value=0,
+        max_value=5,
+    )

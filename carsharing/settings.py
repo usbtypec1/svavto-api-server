@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'drf_standardized_errors',
     'rest_framework',
     'django_celery_beat',
+    'import_export',
     'corsheaders',
     'google_sheets',
     'core',
@@ -141,3 +142,5 @@ CELERY_TASK_RETRY_POLICY = {
 }
 
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')
+
+STATIC_ROOT = BASE_DIR / 'static'
