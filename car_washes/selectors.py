@@ -22,6 +22,8 @@ __all__ = (
     'get_root_car_wash_services',
     'ensure_service_exists',
     'ensure_car_wash_exists',
+    'get_all_flatten_car_wash_services',
+    'get_flatten_specific_car_wash_services',
 )
 
 
@@ -169,6 +171,61 @@ def get_root_car_wash_services(
     return [
         serialize_car_wash_service(service)
         for service in root_services
+    ]
+
+
+def get_all_flatten_car_wash_services() -> list[dict]:
+    car_wash_services = CarWashService.objects.values(
+        'id',
+        'name',
+        'is_countable',
+        'parent__id',
+        'parent__name',
+    )
+    return [
+        {
+            'id': str(service['id']),
+            'name': service['name'],
+            'is_countable': service['is_countable'],
+            'parent': {
+                'id': str(service['parent__id']),
+                'name': service['parent__name'],
+            } if service['parent__id'] else None
+        }
+        for service in car_wash_services
+    ]
+
+
+def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
+    service_ids = (
+        CarWashServicePrice.objects
+        .filter(car_wash_id=car_wash_id)
+        .values_list('service_id', flat=True)
+    )
+    if not service_ids:
+        return []
+    car_wash_services = (
+        CarWashService.objects
+        .filter(id__in=service_ids)
+        .values(
+            'id',
+            'name',
+            'is_countable',
+            'parent__id',
+            'parent__name',
+        )
+    )
+    return [
+        {
+            'id': str(service['id']),
+            'name': service['name'],
+            'is_countable': service['is_countable'],
+            'parent': {
+                'id': str(service['parent__id']),
+                'name': service['parent__name'],
+            } if service['parent__id'] else None
+        }
+        for service in car_wash_services
     ]
 
 

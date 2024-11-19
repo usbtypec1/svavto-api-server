@@ -57,6 +57,7 @@ class CarWashServicesInputSerializer(serializers.Serializer):
         min_value=0,
         max_value=5,
     )
+    flat = serializers.BooleanField(default=False)
 
 
 class CarWashServicePriceUpsertInputSerializer(serializers.Serializer):
