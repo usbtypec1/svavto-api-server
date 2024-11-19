@@ -1,10 +1,14 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
+from uuid import UUID
 
 from django.db.models import Prefetch
 
-from car_washes.exceptions import CarWashNotFoundError
+from car_washes.exceptions import (
+    CarWashNotFoundError,
+    CarWashServiceNotFoundError,
+)
 from car_washes.models import CarWash, CarWashService, CarWashServicePrice
 
 __all__ = (
@@ -16,6 +20,8 @@ __all__ = (
     'CarWashCreateResultDTO',
     'serialize_car_wash_service',
     'get_root_car_wash_services',
+    'ensure_service_exists',
+    'ensure_car_wash_exists',
 )
 
 
@@ -164,3 +170,13 @@ def get_root_car_wash_services(
         serialize_car_wash_service(service)
         for service in root_services
     ]
+
+
+def ensure_car_wash_exists(car_wash_id: int) -> None:
+    if not CarWash.objects.filter(id=car_wash_id).exists():
+        raise CarWashNotFoundError
+
+
+def ensure_service_exists(service_id: UUID) -> None:
+    if not CarWashService.objects.filter(id=service_id).exists():
+        raise CarWashServiceNotFoundError

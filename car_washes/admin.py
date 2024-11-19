@@ -16,6 +16,7 @@ class CarWashServiceAdmin(ImportExportModelAdmin):
     list_display = ('name', 'parent')
     list_select_related = ('parent',)
     search_fields = ('name',)
+    readonly_fields = ('id', 'created_at', 'updated_at')
 
 
 @admin.register(CarWash)

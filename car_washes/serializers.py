@@ -10,6 +10,8 @@ __all__ = (
     'CarWashCreateInputSerializer',
     'CarWashServicesInputSerializer',
     'CarWashUpdateInputSerializer',
+    'CarWashServicePriceUpsertInputSerializer',
+    'CarWashServicePriceUpsertOutputSerializer',
 )
 
 
@@ -56,3 +58,15 @@ class CarWashServicesInputSerializer(serializers.Serializer):
         max_value=5,
     )
     car_wash_id = serializers.IntegerField(default=None, allow_null=True)
+
+
+class CarWashServicePriceUpsertInputSerializer(serializers.Serializer):
+    price = serializers.IntegerField(min_value=1, max_value=1_000_000)
+
+
+class CarWashServicePriceUpsertOutputSerializer(serializers.Serializer):
+    car_wash_id = serializers.IntegerField()
+    service_id = serializers.UUIDField()
+    price = serializers.IntegerField()
+    updated_at = serializers.DateTimeField()
+    created_at = serializers.DateTimeField()

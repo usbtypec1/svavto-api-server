@@ -20,7 +20,7 @@ class CarWash(models.Model):
 
 
 class CarWashService(models.Model):
-    id = models.UUIDField(primary_key=True, editable=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=64)
     is_countable = models.BooleanField(default=False)
     parent = models.ForeignKey(
