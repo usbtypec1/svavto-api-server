@@ -162,3 +162,5 @@ cython_debug/
 
 celerybeat-schedule.db
 google_sheets_service_account_credentials.json
+
+static/

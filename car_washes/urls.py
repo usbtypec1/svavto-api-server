@@ -14,7 +14,7 @@ urlpatterns = [
         name='car-wash-detail-update-delete',
     ),
     path(
-        r'<int:car_wash_id>/services/',
+        r'services/',
         CarWashServicesApi.as_view(),
     )
 ]

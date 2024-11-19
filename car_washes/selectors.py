@@ -124,7 +124,7 @@ def serialize_car_wash_service(service: CarWashService) -> dict[str, Any]:
 
 def get_root_car_wash_services(
         *,
-        car_wash_id: int,
+        car_wash_id: int | None,
         depth: int,
 ) -> list[dict[str, Any]]:
     """
@@ -132,28 +132,33 @@ def get_root_car_wash_services(
     Minimizes database hits through select_related and prefetch_related.
 
     Keyword Args:
+        car_wash_id (int | None): The car wash ID to filter services by.
         depth (int): The depth of nested services to query.
     """
     service_ids = (
         CarWashServicePrice.objects
-        # .filter(car_wash_id=car_wash_id)
+        .filter(car_wash_id=car_wash_id)
         .values_list('service_id', flat=True)
     )
-    print(service_ids, car_wash_id)
 
     prefetch = 'children'
     for _ in range(depth):
+        queryset = CarWashService.objects.prefetch_related(prefetch)
+        if car_wash_id is not None:
+            queryset = queryset.filter(id__in=service_ids)
         prefetch = Prefetch(
             'children',
-            queryset=CarWashService.objects.prefetch_related(prefetch),
+            queryset=queryset,
             to_attr='prefetched_children',
         )
 
     root_services = (
         CarWashService.objects
-        .filter(id__in=service_ids, parent__isnull=True)
+        .filter(parent__isnull=True)
         .prefetch_related(prefetch)
     )
+    if car_wash_id is not None:
+        root_services = root_services.filter(id__in=service_ids)
 
     return [
         serialize_car_wash_service(service)

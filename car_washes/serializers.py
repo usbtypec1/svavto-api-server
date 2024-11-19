@@ -8,7 +8,7 @@ __all__ = (
     'CarWashServiceSerializer',
     'CarWashCreateOutputSerializer',
     'CarWashCreateInputSerializer',
-    'CurrentShiftServicesInputSerializer',
+    'CarWashServicesInputSerializer',
     'CarWashUpdateInputSerializer',
 )
 
@@ -49,9 +49,10 @@ class CarWashCreateOutputSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'created_at', 'updated_at')
 
 
-class CurrentShiftServicesInputSerializer(serializers.Serializer):
+class CarWashServicesInputSerializer(serializers.Serializer):
     depth = serializers.IntegerField(
         default=2,
         min_value=0,
         max_value=5,
     )
+    car_wash_id = serializers.IntegerField(default=None, allow_null=True)
