@@ -57,7 +57,6 @@ class CarWashServicesInputSerializer(serializers.Serializer):
         min_value=0,
         max_value=5,
     )
-    car_wash_id = serializers.IntegerField(default=None, allow_null=True)
 
 
 class CarWashServicePriceUpsertInputSerializer(serializers.Serializer):
