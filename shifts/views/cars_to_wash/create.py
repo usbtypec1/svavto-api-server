@@ -29,7 +29,7 @@ class CarToWashCreateApi(APIView):
             "windshield_washer_refilled_bottle_percentage"
         ]
         additional_services = serializer.validated_data["additional_services"]
-
+    
         shift = get_staff_current_shift(staff_id)
         car_wash = create_car_to_wash(
             shift=shift,

@@ -98,5 +98,5 @@ class CarToWashAdmin(admin.ModelAdmin):
 
 @admin.register(CarToWashAdditionalService)
 class CarToWashAdditionalServiceAdmin(admin.ModelAdmin):
-    list_display = ('car', 'name', 'count')
+    list_display = ('car', 'service', 'count')
     list_select_related = ('car',)

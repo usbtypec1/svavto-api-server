@@ -1,3 +1,6 @@
+from collections.abc import Iterable
+from uuid import UUID
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -14,6 +17,7 @@ __all__ = (
     'ShiftNotFoundError',
     'CarAlreadyWashedOnShiftError',
     'ShiftAlreadyExistsError',
+    'AdditionalServiceCouldNotBeProvidedError',
 )
 
 
@@ -81,3 +85,13 @@ class ShiftAlreadyExistsError(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_detail = _('Shift already exists')
     default_code = 'shift_already_exists'
+
+
+class AdditionalServiceCouldNotBeProvidedError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _('Additional service could not be provided')
+    default_code = 'additional_service_could_not_be_provided'
+
+    def __init__(self, service_ids: Iterable[UUID]):
+        super().__init__(self.default_detail)
+        self.extra = {'service_ids': service_ids}

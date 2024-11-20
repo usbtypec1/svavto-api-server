@@ -1,7 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from car_washes.models import CarWash
+from car_washes.models import CarWash, CarWashService
 from staff.models import Staff
 
 __all__ = ('Shift', 'CarToWash', 'CarToWashAdditionalService', 'AvailableDate')
@@ -95,13 +95,10 @@ class CarToWash(models.Model):
 
 class CarToWashAdditionalService(models.Model):
     car = models.ForeignKey(CarToWash, on_delete=models.CASCADE)
-    name = models.CharField(max_length=64)
-    count = models.PositiveSmallIntegerField()
+    service = models.ForeignKey(CarWashService, on_delete=models.CASCADE)
+    count = models.PositiveSmallIntegerField(default=1)
 
     class Meta:
         verbose_name = 'additional service'
         verbose_name_plural = 'additional services'
-        unique_together = ('car', 'name')
-
-    def __str__(self):
-        return self.name
+        unique_together = ('car', 'service')

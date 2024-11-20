@@ -1,14 +1,16 @@
 import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
+from uuid import UUID
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Count, QuerySet
 
+from car_washes.models import CarWashService, CarWashServicePrice
 from car_washes.selectors import CarWashDetailDTO
 from shifts.exceptions import (
-    CarAlreadyWashedOnShiftError,
+    AdditionalServiceCouldNotBeProvidedError, CarAlreadyWashedOnShiftError,
     CarWashSameAsCurrentError,
 )
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
@@ -65,7 +67,41 @@ def map_create_result_to_dto(
     )
 
 
-def create_car_to_wash_additional_services(
+def validate_car_wash_provides_services(
+        *,
+        car_wash_id: int,
+        service_ids: Iterable[UUID],
+) -> None:
+    """
+    Validate that the car wash provides all needed services.
+
+    Keyword Args:
+        car_wash_id: The ID of the car wash.
+        service_ids: List of service IDs to provide.
+
+    Raises:
+        AdditionalServiceCouldNotBeProvidedError:
+            If the car wash does not provide all needed services.
+    """
+    service_ids_to_provide = set(service_ids)
+
+    service_ids_available_in_car_wash: set[UUID] = set(
+        CarWashServicePrice.objects
+        .filter(car_wash_id=car_wash_id, service_id__in=service_ids_to_provide)
+        .values_list('service_id', flat=True)
+    )
+
+    service_ids_unable_to_provide = (
+            service_ids_to_provide - service_ids_available_in_car_wash
+    )
+
+    if service_ids_unable_to_provide:
+        raise AdditionalServiceCouldNotBeProvidedError(
+            service_ids=service_ids_unable_to_provide,
+        )
+
+
+def update_car_to_wash_additional_services(
         car_to_wash: CarToWash,
         additional_services: list[dict],
 ) -> QuerySet[CarToWashAdditionalService]:
@@ -77,6 +113,7 @@ def create_car_to_wash_additional_services(
         )
         for service in additional_services
     ]
+    CarToWashAdditionalService.objects.filter(car=car_to_wash).delete()
     return CarToWashAdditionalService.objects.bulk_create(services)
 
 
@@ -109,7 +146,7 @@ def create_car_to_wash(
             raise CarAlreadyWashedOnShiftError
         raise
 
-    additional_services = create_car_to_wash_additional_services(
+    additional_services = update_car_to_wash_additional_services(
         car_to_wash=car_to_wash,
         additional_services=additional_services,
     )
@@ -118,21 +155,31 @@ def create_car_to_wash(
 
 
 @transaction.atomic
-def update_car_to_wash(
+def update_car_to_wash_additional_services(
         *,
         car_id: int,
+        car_wash_id: int,
         additional_services: list[dict],
-):
-    additional_services = [
-        CarToWashAdditionalService(
-            car_id=car_id,
-            name=service['name'],
-            count=service['count'],
-        )
-        for service in additional_services
-    ]
-    CarToWashAdditionalService.objects.filter(car_id=car_id).delete()
-    CarToWashAdditionalService.objects.bulk_create(additional_services)
+) -> None:
+    """
+    Update additional services for a car to wash.
+
+    Keyword Args:
+        car_id: The ID of the car to wash
+        additional_services: List of dictionaries containing additional services
+
+    Raises:
+        AdditionalServiceCouldNotBeProvidedError:
+            If the car wash does not provide all needed services.
+    """
+    service_ids: list[UUID] = [service['id'] for service in additional_services]
+    validate_car_wash_provides_services(
+        car_wash_id=car_wash_id, service_ids=service_ids
+    )
+    update_car_to_wash_additional_services(
+        car_id=car_id,
+        additional_services=additional_services,
+    )
 
 
 def get_staff_cars_count_by_date(date: datetime.date) -> list[dict]:

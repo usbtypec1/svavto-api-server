@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from shifts.models import AvailableDate, CarToWash, Shift
+from shifts.models import (
+    AvailableDate,
+    CarToWash,
+    CarToWashAdditionalService,
+    Shift,
+)
 
 __all__ = (
     'AdditionalServiceSerializer',
@@ -14,6 +19,9 @@ __all__ = (
     'ShiftListInputSerializer',
     'ShiftListOutputSerializer',
     'ShiftCreateInputSerializer',
+    'UpdateCarToWashInputSerializer',
+    'CarToWashDetailOutputSerializer',
+    'CarToWashAdditionalServiceSerializer',
 )
 
 
@@ -22,8 +30,8 @@ class DateSerializer(serializers.Serializer):
 
 
 class AdditionalServiceSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    count = serializers.IntegerField()
+    id = serializers.UUIDField()
+    count = serializers.IntegerField(default=1)
 
 
 class CarToWashCreateInputSerializer(serializers.ModelSerializer):
@@ -146,3 +154,34 @@ class ShiftCreateInputSerializer(serializers.Serializer):
                 'car_wash_id is required for immediate_start',
             )
         return data
+
+
+class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarToWashAdditionalService
+        fields = ['name', 'count']
+
+
+class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
+    class_type = serializers.CharField(source='car_class')
+    additional_services = CarToWashAdditionalServiceSerializer(
+        source='cartowashadditionalservice_set',
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = CarToWash
+        fields = [
+            'id',
+            'number',
+            'wash_type',
+            'class_type',
+            'windshield_washer_refilled_bottle_percentage',
+            'created_at',
+            'additional_services',
+        ]
+
+
+class UpdateCarToWashInputSerializer(serializers.Serializer):
+    additional_services = AdditionalServiceSerializer(many=True)
