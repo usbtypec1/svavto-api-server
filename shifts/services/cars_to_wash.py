@@ -187,9 +187,9 @@ def get_cars_without_windshield_washer_by_date(
 def update_shift_car_wash(
         *,
         shift: Shift,
-        car_wash: CarWashDetailDTO,
+        car_wash_id: int,
 ) -> None:
-    if shift.car_wash_id == car_wash.id:
+    if shift.car_wash_id == car_wash_id:
         raise CarWashSameAsCurrentError
-    shift.car_wash_id = car_wash.id
-    shift.save(update_fields=['car_wash'])
+    shift.car_wash_id = car_wash_id
+    shift.save(update_fields=['car_wash_id'])

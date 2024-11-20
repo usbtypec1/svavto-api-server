@@ -78,35 +78,11 @@ def get_car_washes() -> list[CarWashListItemDTO]:
     ]
 
 
-def get_car_wash_by_id(car_wash_id: int) -> CarWashDetailDTO:
-    car_wash = (
-        CarWash.objects
-        .filter(id=car_wash_id)
-        .prefetch_related('carwashservice_set')
-        .first()
-    )
-
-    if car_wash is None:
+def get_car_wash_by_id(car_wash_id: int) -> CarWash:
+    try:
+        return CarWash.objects.get(id=car_wash_id)
+    except CarWash.DoesNotExist:
         raise CarWashNotFoundError
-
-    services = [
-        CarWashServiceDTO(
-            id=service.id,
-            name=service.name,
-            price=service.price,
-            created_at=service.created_at,
-            updated_at=service.updated_at
-        )
-        for service in car_wash.carwashservice_set.all()
-    ]
-
-    return CarWashDetailDTO(
-        id=car_wash.id,
-        name=car_wash.name,
-        created_at=car_wash.created_at,
-        updated_at=car_wash.updated_at,
-        services=services
-    )
 
 
 def serialize_car_wash_service(service: CarWashService) -> dict[str, Any]:

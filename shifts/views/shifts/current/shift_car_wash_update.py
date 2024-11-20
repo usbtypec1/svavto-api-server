@@ -33,7 +33,7 @@ class CurrentShiftCarWashUpdateApi(APIView):
         car_wash = get_car_wash_by_id(car_wash_id)
         update_shift_car_wash(
             shift=shift,
-            car_wash=car_wash,
+            car_wash_id=car_wash.id,
         )
 
         serializer = CurrentShiftCarWashUpdateOutputSerializer(car_wash)
