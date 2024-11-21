@@ -21,6 +21,8 @@ __all__ = (
     'get_flatten_specific_car_wash_services',
 )
 
+from shifts.models import CarToWash
+
 
 @dataclass(frozen=True, slots=True)
 class CarWashCreateResultDTO:
@@ -130,10 +132,7 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             'parent__name',
         )
     )
-    parent_ids = {
-        service['parent__id'] for service in car_wash_services
-        if service['parent__id']
-    }
+    parent_ids = set(CarWashService.objects.values_list('parent_id', flat=True))
     return [
         {
             'id': str(service['id']),
