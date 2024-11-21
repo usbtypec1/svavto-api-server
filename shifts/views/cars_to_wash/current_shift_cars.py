@@ -6,7 +6,7 @@ from shifts.models import CarToWash, CarToWashAdditionalService
 
 
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='service_id')
+    id = serializers.UUIDField(source='service_id')
     class Meta:
         model = CarToWashAdditionalService
         fields = ('id', 'count')

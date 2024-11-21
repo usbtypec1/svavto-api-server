@@ -5,10 +5,9 @@ from uuid import UUID
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Count, QuerySet
+from django.db.models import Count
 
-from car_washes.models import CarWashService, CarWashServicePrice
-from car_washes.selectors import CarWashDetailDTO
+from car_washes.models import CarWashServicePrice
 from shifts.exceptions import (
     AdditionalServiceCouldNotBeProvidedError, CarAlreadyWashedOnShiftError,
     CarWashSameAsCurrentError,
