@@ -20,7 +20,6 @@ class SurchargeCreateApi(APIView):
         reason = serializers.CharField()
         amount = serializers.IntegerField()
         created_at = serializers.DateTimeField()
-        is_notification_delivered = serializers.BooleanField()
 
     def post(self, request: Request) -> Response:
         serializer = self.InputSerializer(data=request.data)
