@@ -115,14 +115,29 @@ def ensure_staff_has_no_active_shift(
         raise StaffHasActiveShiftError
 
 
-def finish_shift(shift: Shift) -> dict:
+def finish_shift(
+        *,
+        shift: Shift,
+        statement_photo_file_id: str,
+        service_app_photo_file_id: str,
+) -> dict:
     if shift.finished_at is not None:
         raise ShiftAlreadyFinishedError
 
     is_first_shift = not has_any_finished_shift(shift.staff_id)
 
     shift.finished_at = timezone.now()
-    shift.save(update_fields=('finished_at',))
+    shift.statement_photo_file_id = statement_photo_file_id
+    shift.service_app_photo_file_id = service_app_photo_file_id
+
+    shift.full_clean()
+    shift.save(
+        update_fields=(
+            'finished_at',
+            'statement_photo_file_id',
+            'service_app_photo_file_id',
+        ),
+    )
 
     return {
         'is_first_shift': is_first_shift,

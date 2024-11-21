@@ -1,5 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash, CarWashService
 from staff.models import Staff
@@ -41,6 +43,16 @@ class Shift(models.Model):
         null=True,
         blank=True,
     )
+    statement_photo_file_id = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    service_app_photo_file_id = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
     is_extra = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -49,6 +61,25 @@ class Shift(models.Model):
         verbose_name_plural = 'shifts'
         unique_together = ('staff', 'date', 'is_extra')
 
+    def full_clean(
+            self,
+            exclude=None,
+            validate_unique=True,
+            validate_constraints=True
+    ):
+        finish_requirements = (
+            self.is_finished,
+            self.has_statement_photo_file_id,
+            self.has_service_app_photo_file_id,
+        )
+        if any(finish_requirements) and not all(finish_requirements):
+            raise ValidationError(
+                message=_('All finish requirements are not satisfied'),
+                code='finish_requirements_not_satisfied',
+            )
+
+        super().full_clean(exclude, validate_unique, validate_constraints)
+
     @property
     def is_started(self) -> bool:
         return self.started_at is not None
@@ -56,6 +87,14 @@ class Shift(models.Model):
     @property
     def is_finished(self) -> bool:
         return self.finished_at is not None
+
+    @property
+    def has_statement_photo_file_id(self) -> bool:
+        return self.statement_photo_file_id is not None
+
+    @property
+    def has_service_app_photo_file_id(self) -> bool:
+        return self.service_app_photo_file_id is not None
 
 
 class CarToWash(models.Model):

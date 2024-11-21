@@ -11,6 +11,8 @@ __all__ = ('ShiftFinishApi',)
 
 class ShiftFinishInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
+    statement_photo_file_id = serializers.CharField()
+    service_app_photo_file_id = serializers.CharField()
 
 
 class ShiftFinishApi(APIView):
@@ -21,8 +23,18 @@ class ShiftFinishApi(APIView):
         serialized_data: dict = serializer.data
 
         staff_id: int = serialized_data['staff_id']
+        statement_photo_file_id: str = (
+            serialized_data['statement_photo_file_id']
+        )
+        service_app_photo_file_id: str = (
+            serialized_data['service_app_photo_file_id']
+        )
 
         shift = get_staff_current_shift(staff_id=staff_id)
-        finish_result = finish_shift(shift)
+        finish_result = finish_shift(
+            shift=shift,
+            statement_photo_file_id=statement_photo_file_id,
+            service_app_photo_file_id=service_app_photo_file_id,
+        )
 
         return Response(finish_result)
