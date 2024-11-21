@@ -34,7 +34,7 @@ class RetrieveUpdateCarsToWashApi(APIView):
         additional_services: list[dict] = serialized_data['additional_services']
 
         update_car_to_wash_additional_services(
-            car_to_wash_id=car_id,
+            car_id=car_id,
             additional_services=additional_services,
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
