@@ -157,7 +157,7 @@ def update_car_to_wash_additional_services(
     car_wash = CarToWash.objects.filter(id=car_id).values('car_wash_id').first()
     car_wash_id = car_wash['car_wash_id']
 
-    service_ids: list[UUID] = [service['id'] for service in additional_services]
+    service_ids = [UUID(service['id']) for service in additional_services]
     validate_car_wash_provides_services(
         car_wash_id=car_wash_id, service_ids=service_ids
     )
