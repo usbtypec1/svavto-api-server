@@ -1,9 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
 from uuid import UUID
-
-from django.db.models import Prefetch
 
 from car_washes.exceptions import (
     CarWashNotFoundError,
@@ -18,8 +15,6 @@ __all__ = (
     'get_car_washes',
     'get_car_wash_by_id',
     'CarWashCreateResultDTO',
-    'serialize_car_wash_service',
-    'get_root_car_wash_services',
     'ensure_service_exists',
     'ensure_car_wash_exists',
     'get_all_flatten_car_wash_services',
@@ -83,71 +78,6 @@ def get_car_wash_by_id(car_wash_id: int) -> CarWash:
         return CarWash.objects.get(id=car_wash_id)
     except CarWash.DoesNotExist:
         raise CarWashNotFoundError
-
-
-def serialize_car_wash_service(service: CarWashService) -> dict[str, Any]:
-    """Recursively serialize a CarWashService with optimized child querying."""
-    if not (
-            hasattr(service, 'prefetched_children')
-            and service.prefetched_children
-    ):
-        return {
-            'id': str(service.id),
-            'name': service.name,
-            'is_countable': service.is_countable,
-        }
-    return {
-        'id': str(service.id),
-        'name': service.name,
-        'children': [
-            serialize_car_wash_service(child)
-            for child in service.prefetched_children
-        ]
-    }
-
-
-def get_root_car_wash_services(
-        *,
-        car_wash_id: int | None,
-        depth: int,
-) -> list[dict[str, Any]]:
-    """
-    Retrieve root services with fully optimized nested querying.
-    Minimizes database hits through select_related and prefetch_related.
-
-    Keyword Args:
-        car_wash_id (int | None): The car wash ID to filter services by.
-        depth (int): The depth of nested services to query.
-    """
-    service_ids = (
-        CarWashServicePrice.objects
-        .filter(car_wash_id=car_wash_id)
-        .values_list('service_id', flat=True)
-    )
-
-    prefetch = 'children'
-    for _ in range(depth):
-        queryset = CarWashService.objects.prefetch_related(prefetch)
-        if car_wash_id is not None:
-            queryset = queryset.filter(id__in=service_ids)
-        prefetch = Prefetch(
-            'children',
-            queryset=queryset,
-            to_attr='prefetched_children',
-        )
-
-    root_services = (
-        CarWashService.objects
-        .filter(parent__isnull=True)
-        .prefetch_related(prefetch)
-    )
-    if car_wash_id is not None:
-        root_services = root_services.filter(id__in=service_ids)
-
-    return [
-        serialize_car_wash_service(service)
-        for service in root_services
-    ]
 
 
 def get_all_flatten_car_wash_services() -> list[dict]:

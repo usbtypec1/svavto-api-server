@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from car_washes.models import CarWash, CarWashService
 from shifts.models import (
     AvailableDate,
     CarToWash,
@@ -157,13 +158,24 @@ class ShiftCreateInputSerializer(serializers.Serializer):
 
 
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source='service_id')
     class Meta:
         model = CarToWashAdditionalService
-        fields = ['name', 'count']
+        fields = ['id', 'count']
+
+
+class CarWashSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarWash
+        fields = [
+            'id',
+            'name',
+        ]
 
 
 class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
     class_type = serializers.CharField(source='car_class')
+    car_wash = CarWashSerializer(allow_null=True)
     additional_services = CarToWashAdditionalServiceSerializer(
         source='cartowashadditionalservice_set',
         many=True,
@@ -180,6 +192,7 @@ class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
             'windshield_washer_refilled_bottle_percentage',
             'created_at',
             'additional_services',
+            'car_wash',
         ]
 
 

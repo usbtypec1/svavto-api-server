@@ -18,6 +18,7 @@ class RetrieveUpdateCarsToWashApi(APIView):
     def get(self, request: Request, car_id: int) -> Response:
         car = (
             CarToWash.objects
+            .select_related('car_wash')
             .prefetch_related('cartowashadditionalservice_set')
             .get(id=car_id)
         )
@@ -33,7 +34,7 @@ class RetrieveUpdateCarsToWashApi(APIView):
         additional_services: list[dict] = serialized_data['additional_services']
 
         update_car_to_wash_additional_services(
-            car_id=car_id,
+            car_to_wash_id=car_id,
             additional_services=additional_services,
         )
         return Response(status=status.HTTP_204_NO_CONTENT)

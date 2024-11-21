@@ -101,22 +101,6 @@ def validate_car_wash_provides_services(
         )
 
 
-def update_car_to_wash_additional_services(
-        car_to_wash: CarToWash,
-        additional_services: list[dict],
-) -> QuerySet[CarToWashAdditionalService]:
-    services = [
-        CarToWashAdditionalService(
-            car=car_to_wash,
-            name=service['name'],
-            count=service['count'],
-        )
-        for service in additional_services
-    ]
-    CarToWashAdditionalService.objects.filter(car=car_to_wash).delete()
-    return CarToWashAdditionalService.objects.bulk_create(services)
-
-
 @transaction.atomic
 def create_car_to_wash(
         *,
@@ -147,7 +131,7 @@ def create_car_to_wash(
         raise
 
     additional_services = update_car_to_wash_additional_services(
-        car_to_wash=car_to_wash,
+        car_id=car_to_wash.id,
         additional_services=additional_services,
     )
 
@@ -158,9 +142,8 @@ def create_car_to_wash(
 def update_car_to_wash_additional_services(
         *,
         car_id: int,
-        car_wash_id: int,
         additional_services: list[dict],
-) -> None:
+) -> list[CarToWashAdditionalService]:
     """
     Update additional services for a car to wash.
 
@@ -172,14 +155,23 @@ def update_car_to_wash_additional_services(
         AdditionalServiceCouldNotBeProvidedError:
             If the car wash does not provide all needed services.
     """
+    car_wash = CarToWash.objects.filter(id=car_id).values('car_wash_id').first()
+    car_wash_id = car_wash['car_wash_id']
+
     service_ids: list[UUID] = [service['id'] for service in additional_services]
     validate_car_wash_provides_services(
         car_wash_id=car_wash_id, service_ids=service_ids
     )
-    update_car_to_wash_additional_services(
-        car_id=car_id,
-        additional_services=additional_services,
-    )
+    services = [
+        CarToWashAdditionalService(
+            car_id=car_id,
+            name=service['name'],
+            count=service['count'],
+        )
+        for service in additional_services
+    ]
+    CarToWashAdditionalService.objects.filter(car_id=car_id).delete()
+    return CarToWashAdditionalService.objects.bulk_create(services)
 
 
 def get_staff_cars_count_by_date(date: datetime.date) -> list[dict]:

@@ -1,13 +1,12 @@
 from rest_framework import serializers
 
-from car_washes.models import CarWash, CarWashService
+from car_washes.models import CarWash
 
 __all__ = (
     'CarWashListOutputSerializer',
     'CarWashRetrieveOutputSerializer',
     'CarWashCreateOutputSerializer',
     'CarWashCreateInputSerializer',
-    'CarWashServicesInputSerializer',
     'CarWashUpdateInputSerializer',
     'CarWashServicePriceUpsertInputSerializer',
     'CarWashServicePriceUpsertOutputSerializer',
@@ -41,15 +40,6 @@ class CarWashCreateOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWash
         fields = ('id', 'name', 'created_at', 'updated_at')
-
-
-class CarWashServicesInputSerializer(serializers.Serializer):
-    depth = serializers.IntegerField(
-        default=2,
-        min_value=0,
-        max_value=5,
-    )
-    flat = serializers.BooleanField(default=False)
 
 
 class CarWashServicePriceUpsertInputSerializer(serializers.Serializer):
