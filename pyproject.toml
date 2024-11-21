@@ -20,6 +20,7 @@ gspread = "^6.1.4"
 aiogram = "^3.14.0"
 fast-depends = "^2.4.12"
 django-import-export = "^4.2.1"
+sentry-sdk = {extras = ["django"], version = "^2.19.0"}
 
 
 [tool.poetry.group.dev.dependencies]
