@@ -148,3 +148,17 @@ CELERY_TASK_RETRY_POLICY = {
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')
 
 STATIC_ROOT = BASE_DIR / 'static'
+
+SENTRY_DSN = env.str('SENTRY_DSN')
+SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.5)
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration(), CeleryIntegration()],
+        traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+    )
