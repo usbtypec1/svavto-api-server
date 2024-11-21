@@ -165,7 +165,7 @@ def update_car_to_wash_additional_services(
     services = [
         CarToWashAdditionalService(
             car_id=car_id,
-            name=service['name'],
+            service_id=service['id'],
             count=service['count'],
         )
         for service in additional_services
