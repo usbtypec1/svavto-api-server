@@ -125,6 +125,10 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             'parent__name',
         )
     )
+    parent_ids = {
+        service['parent__id'] for service in car_wash_services
+        if service['parent__id']
+    }
     return [
         {
             'id': str(service['id']),
@@ -137,6 +141,7 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             } if service['parent__id'] else None
         }
         for service in car_wash_services
+        if service['id'] not in parent_ids
     ]
 
 
