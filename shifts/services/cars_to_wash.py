@@ -18,7 +18,7 @@ from shifts.models import CarToWash, CarToWashAdditionalService, Shift
 
 @dataclass(frozen=True, slots=True)
 class CarToWashAdditionalServiceCreateResultDTO:
-    name: str
+    id: UUID
     count: int
 
 
@@ -48,7 +48,7 @@ def map_create_result_to_dto(
 ) -> CarToWashCreateResultDTO:
     additional_services_dto = [
         CarToWashAdditionalServiceCreateResultDTO(
-            name=service.name,
+            id=service.service_id,
             count=service.count,
         )
         for service in additional_services
