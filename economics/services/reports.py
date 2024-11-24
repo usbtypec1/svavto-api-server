@@ -178,3 +178,22 @@ class ServiceCostsReportGenerator:
                 self.get_services_provided_by_car_wash()
             ),
         }
+
+
+class RevenueReportGenerator:
+
+    def __init__(
+            self,
+            *,
+            car_wash_id: int,
+            from_date: datetime.date,
+            to_date: datetime.date,
+    ):
+        self.__car_wash_id = car_wash_id
+        self.__from_date = from_date
+        self.__to_date = to_date
+
+    def generate_report(self) -> dict:
+        return {
+            'report_by_dates': [],
+        }
