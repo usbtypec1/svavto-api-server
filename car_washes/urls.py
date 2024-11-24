@@ -5,7 +5,6 @@ from car_washes.views import (
     CarWashListCreateApi,
     CarWashRetrieveUpdateDeleteApi,
     SpecificCarWashServiceUpdateDeleteApi,
-    SpecificCarWashServiceListApi,
 )
 
 app_name = 'car_washes'
@@ -20,11 +19,6 @@ urlpatterns = [
         r'services/',
         CarWashAllServicesApi.as_view(),
         name='all-services',
-    ),
-    path(
-        r'<int:car_wash_id>/services/',
-        SpecificCarWashServiceListApi.as_view(),
-        name='specific-service-list',
     ),
     path(
         r'<int:car_wash_id>/services/<uuid:service_id>/',

@@ -5,6 +5,11 @@ from import_export.resources import ModelResource
 from car_washes.models import CarWash, CarWashService, CarWashServicePrice
 
 
+class CarWashServicePriceInline(admin.TabularInline):
+    model = CarWashServicePrice
+    extra = 0
+
+
 class CarWashServiceResource(ModelResource):
     class Meta:
         model = CarWashService
@@ -23,6 +28,7 @@ class CarWashServiceAdmin(ImportExportModelAdmin):
 class CarWashAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at')
     search_fields = ('name',)
+    inlines = (CarWashServicePriceInline,)
 
 
 @admin.register(CarWashServicePrice)

@@ -5,7 +5,6 @@ from car_washes.exceptions import (
     CarWashNotFoundError,
 )
 from car_washes.models import CarWash
-from car_washes.selectors import CarWashCreateResultDTO
 
 __all__ = (
     'create_car_wash',
@@ -15,27 +14,68 @@ __all__ = (
 )
 
 
-def create_car_wash(*, name: str) -> CarWashCreateResultDTO:
-    car_wash = CarWash(name=name)
+def create_car_wash(
+        *,
+        name: str,
+        comfort_class_car_transfer_price: int,
+        business_class_car_transfer_price: int,
+        van_transfer_price: int,
+        windshield_washer_price_per_bottle: int,
+) -> CarWash:
+    car_wash = CarWash(
+        name=name,
+        comfort_class_car_transfer_price=comfort_class_car_transfer_price,
+        business_class_car_transfer_price=business_class_car_transfer_price,
+        van_transfer_price=van_transfer_price,
+        windshield_washer_price_per_bottle=windshield_washer_price_per_bottle,
+    )
+
     try:
         car_wash.full_clean()
     except ValidationError as error:
         if 'Car wash with this Name already exists.' in error.messages:
             raise CarWashAlreadyExistsError
         raise
+
     car_wash.save()
-    return CarWashCreateResultDTO(
-        id=car_wash.id,
-        name=car_wash.name,
-        created_at=car_wash.created_at,
-        updated_at=car_wash.updated_at,
+    return car_wash
+
+
+def update_car_wash(
+        *,
+        car_wash: CarWash,
+        name: str,
+        comfort_class_car_transfer_price: int,
+        business_class_car_transfer_price: int,
+        van_transfer_price: int,
+        windshield_washer_price_per_bottle: int,
+) -> CarWash:
+    car_wash.name = name
+    car_wash.comfort_class_car_transfer_price = comfort_class_car_transfer_price
+    car_wash.business_class_car_transfer_price = (
+        business_class_car_transfer_price
     )
+    car_wash.van_transfer_price = van_transfer_price
+    car_wash.windshield_washer_price_per_bottle = windshield_washer_price_per_bottle
 
+    try:
+        car_wash.full_clean()
+    except ValidationError as error:
+        if 'Car wash with this Name already exists.' in error.messages:
+            raise CarWashAlreadyExistsError
+        raise
 
-def update_car_wash(*, car_wash_id: int, name: str) -> None:
-    updated_count = CarWash.objects.filter(id=car_wash_id).update(name=name)
-    if updated_count == 0:
-        raise CarWashNotFoundError
+    car_wash.save(
+        update_fields=(
+            'name',
+            'comfort_class_car_transfer_price',
+            'business_class_car_transfer_price',
+            'van_transfer_price',
+            'windshield_washer_price_per_bottle',
+            'updated_at',
+        ),
+    )
+    return car_wash
 
 
 def delete_car_wash(*, car_wash_id: int) -> None:

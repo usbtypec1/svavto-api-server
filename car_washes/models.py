@@ -12,6 +12,10 @@ class CarWash(models.Model):
     Can have multiple services and specific prices for each service.
     """
     name = models.CharField(max_length=100, unique=True)
+    comfort_class_car_transfer_price = models.PositiveIntegerField()
+    business_class_car_transfer_price = models.PositiveIntegerField()
+    van_transfer_price = models.PositiveIntegerField()
+    windshield_washer_price_per_bottle = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -45,6 +49,8 @@ class CarWashService(models.Model):
         verbose_name_plural = _('car wash services')
 
     def __str__(self):
+        if self.parent is not None:
+            return f'{self.parent} - {self.name}'
         return f'{self.name}'
 
 

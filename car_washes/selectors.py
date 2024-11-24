@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
+from django.db.models import QuerySet
+
 from car_washes.exceptions import (
     CarWashNotFoundError,
     CarWashServiceNotFoundError,
@@ -14,22 +16,11 @@ __all__ = (
     'CarWashListItemDTO',
     'get_car_washes',
     'get_car_wash_by_id',
-    'CarWashCreateResultDTO',
     'ensure_service_exists',
     'ensure_car_wash_exists',
     'get_all_flatten_car_wash_services',
     'get_flatten_specific_car_wash_services',
 )
-
-from shifts.models import CarToWash
-
-
-@dataclass(frozen=True, slots=True)
-class CarWashCreateResultDTO:
-    id: int
-    name: str
-    created_at: datetime
-    updated_at: datetime
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,21 +49,8 @@ class CarWashDetailDTO:
     services: list[CarWashServiceDTO]
 
 
-def get_car_washes() -> list[CarWashListItemDTO]:
-    car_washes = (
-        CarWash.objects
-        .order_by('name')
-        .values('id', 'name', 'created_at', 'updated_at')
-    )
-    return [
-        CarWashListItemDTO(
-            id=car_wash['id'],
-            name=car_wash['name'],
-            created_at=car_wash['created_at'],
-            updated_at=car_wash['updated_at'],
-        )
-        for car_wash in car_washes
-    ]
+def get_car_washes() -> QuerySet[CarWash]:
+    return CarWash.objects.order_by('name')
 
 
 def get_car_wash_by_id(car_wash_id: int) -> CarWash:
