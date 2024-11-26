@@ -28,13 +28,11 @@ class ShiftIdAndStaffFullName:
 
 
 def get_shift_by_id(
-        shift_id: int,
+    shift_id: int,
 ) -> Shift:
     try:
-        return (
-            Shift.objects
-            .select_related('staff', 'car_wash')
-            .get(id=shift_id)
+        return Shift.objects.select_related('staff', 'car_wash').get(
+            id=shift_id
         )
     except Shift.DoesNotExist:
         raise ShiftNotFoundError
@@ -52,13 +50,9 @@ def get_staff_ids_by_shift_date(date: datetime.date) -> list[ShiftIdAndStaffId]:
 
 
 def get_staff_ids_by_shift_ids(
-        shift_ids: Iterable[int],
+    shift_ids: Iterable[int],
 ) -> list[ShiftIdAndStaffId]:
-    shifts = (
-        Shift.objects
-        .filter(id__in=shift_ids)
-        .values('id', 'staff_id')
-    )
+    shifts = Shift.objects.filter(id__in=shift_ids).values('id', 'staff_id')
     return [
         ShiftIdAndStaffId(
             shift_id=shift['id'],
@@ -81,6 +75,5 @@ def get_staff_current_shift(staff_id: int) -> Shift:
 
 def has_any_finished_shift(staff_id: int) -> bool:
     return Shift.objects.filter(
-        staff_id=staff_id,
-        finished_at__isnull=False
+        staff_id=staff_id, finished_at__isnull=False
     ).exists()

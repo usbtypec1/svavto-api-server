@@ -15,7 +15,6 @@ __all__ = ('StaffListCreateApi', 'StaffListOutputSerializer')
 
 
 class StaffListCreateApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = StaffListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -38,7 +37,7 @@ class StaffListCreateApi(APIView):
             car_sharing_phone_number=(
                 serialized_data['car_sharing_phone_number']
             ),
-            console_phone_number=serialized_data['console_phone_number']
+            console_phone_number=serialized_data['console_phone_number'],
         )
 
         return Response(status=status.HTTP_201_CREATED)

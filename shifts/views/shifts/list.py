@@ -14,7 +14,6 @@ __all__ = ('ShiftListApi',)
 
 
 class ShiftListApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = ShiftListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -26,10 +25,8 @@ class ShiftListApi(APIView):
         limit: int = serialized_data['limit']
         offset: int = serialized_data['offset']
 
-        shifts = (
-            Shift.objects
-            .select_related('staff', 'car_wash')
-            .order_by('-created_at')
+        shifts = Shift.objects.select_related('staff', 'car_wash').order_by(
+            '-created_at'
         )
 
         if date_from is not None:
@@ -39,12 +36,14 @@ class ShiftListApi(APIView):
         if staff_ids is not None:
             shifts = shifts.filter(staff_id__in=staff_ids)
 
-        shifts = shifts[offset:offset + limit + 1]
+        shifts = shifts[offset : offset + limit + 1]
         is_end_of_list_reached = len(shifts) <= limit
         shifts = shifts[:limit]
 
         serializer = ShiftListOutputSerializer(shifts, many=True)
-        return Response({
-            'shifts': serializer.data,
-            'is_end_of_list_reached': is_end_of_list_reached
-        })
+        return Response(
+            {
+                'shifts': serializer.data,
+                'is_end_of_list_reached': is_end_of_list_reached,
+            }
+        )

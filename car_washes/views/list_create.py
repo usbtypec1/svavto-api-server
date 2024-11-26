@@ -15,7 +15,6 @@ __all__ = ('CarWashListCreateApi',)
 
 
 class CarWashListCreateApi(APIView):
-
     def get(self, request: Request) -> Response:
         car_washes = get_car_washes()
         serializer = CarWashListOutputSerializer(car_washes, many=True)
@@ -27,16 +26,16 @@ class CarWashListCreateApi(APIView):
         serialized_data: dict = serializer.data
 
         name: str = serialized_data['name']
-        comfort_class_car_transfer_price: int = (
-            serialized_data['comfort_class_car_transfer_price']
-        )
-        business_class_car_transfer_price: int = (
-            serialized_data['business_class_car_transfer_price']
-        )
+        comfort_class_car_transfer_price: int = serialized_data[
+            'comfort_class_car_transfer_price'
+        ]
+        business_class_car_transfer_price: int = serialized_data[
+            'business_class_car_transfer_price'
+        ]
         van_transfer_price: int = serialized_data['van_transfer_price']
-        windshield_washer_price_per_bottle: int = (
-            serialized_data['windshield_washer_price_per_bottle']
-        )
+        windshield_washer_price_per_bottle: int = serialized_data[
+            'windshield_washer_price_per_bottle'
+        ]
 
         car_wash = create_car_wash(
             name=name,

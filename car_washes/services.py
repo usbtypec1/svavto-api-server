@@ -15,12 +15,12 @@ __all__ = (
 
 
 def create_car_wash(
-        *,
-        name: str,
-        comfort_class_car_transfer_price: int,
-        business_class_car_transfer_price: int,
-        van_transfer_price: int,
-        windshield_washer_price_per_bottle: int,
+    *,
+    name: str,
+    comfort_class_car_transfer_price: int,
+    business_class_car_transfer_price: int,
+    van_transfer_price: int,
+    windshield_washer_price_per_bottle: int,
 ) -> CarWash:
     car_wash = CarWash(
         name=name,
@@ -42,13 +42,13 @@ def create_car_wash(
 
 
 def update_car_wash(
-        *,
-        car_wash: CarWash,
-        name: str,
-        comfort_class_car_transfer_price: int,
-        business_class_car_transfer_price: int,
-        van_transfer_price: int,
-        windshield_washer_price_per_bottle: int,
+    *,
+    car_wash: CarWash,
+    name: str,
+    comfort_class_car_transfer_price: int,
+    business_class_car_transfer_price: int,
+    van_transfer_price: int,
+    windshield_washer_price_per_bottle: int,
 ) -> CarWash:
     car_wash.name = name
     car_wash.comfort_class_car_transfer_price = comfort_class_car_transfer_price
@@ -56,7 +56,9 @@ def update_car_wash(
         business_class_car_transfer_price
     )
     car_wash.van_transfer_price = van_transfer_price
-    car_wash.windshield_washer_price_per_bottle = windshield_washer_price_per_bottle
+    car_wash.windshield_washer_price_per_bottle = (
+        windshield_washer_price_per_bottle
+    )
 
     try:
         car_wash.full_clean()

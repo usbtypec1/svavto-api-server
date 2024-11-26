@@ -1,22 +1,16 @@
 import datetime
 
-from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from economics.serializers import ServiceCostsInputSerializer
 from economics.services.reports import ServiceCostsReportGenerator
 
-
-class ServiceCostsInputSerializer(serializers.Serializer):
-    from_date = serializers.DateField()
-    to_date = serializers.DateField()
-    car_wash_id = serializers.IntegerField()
-
+__all__ = ('ServiceCostsApi',)
 
 
 class ServiceCostsApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = ServiceCostsInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)

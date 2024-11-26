@@ -1,6 +1,7 @@
 from typing import Final
 
 from django.core.management import BaseCommand
+
 from economics.models import StaffServicePrice
 
 SERVICE_TYPE_TO_PRICE: Final[dict[StaffServicePrice.ServiceType, int]] = {
@@ -28,7 +29,7 @@ class Command(BaseCommand):
                 service=service_type,
                 defaults={
                     'price': SERVICE_TYPE_TO_PRICE[service_type],
-                }
+                },
             )
         self.stdout.write(
             self.style.SUCCESS(

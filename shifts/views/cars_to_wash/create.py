@@ -21,15 +21,15 @@ class CarToWashCreateApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
-        staff_id: int = serialized_data["staff_id"]
-        number: str = serialized_data["number"]
-        car_class: str = serialized_data["car_class"]
-        wash_type: str = serialized_data["wash_type"]
+        staff_id: int = serialized_data['staff_id']
+        number: str = serialized_data['number']
+        car_class: str = serialized_data['car_class']
+        wash_type: str = serialized_data['wash_type']
         windshield_washer_refilled_bottle_percentage: int = serialized_data[
-            "windshield_washer_refilled_bottle_percentage"
+            'windshield_washer_refilled_bottle_percentage'
         ]
-        additional_services = serializer.validated_data["additional_services"]
-    
+        additional_services = serializer.validated_data['additional_services']
+
         shift = get_staff_current_shift(staff_id)
         car_wash = create_car_to_wash(
             shift=shift,

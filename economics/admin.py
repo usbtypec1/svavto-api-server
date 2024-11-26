@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from economics.models import StaffServicePrice, Penalty, Surcharge
+from economics.models import Penalty, StaffServicePrice, Surcharge
 
 
 @admin.register(Penalty)
@@ -13,7 +13,11 @@ class PenaltyAdmin(admin.ModelAdmin):
         'created_at',
     )
     list_select_related = ('staff',)
-    list_filter = ('staff', 'reason', 'consequence',)
+    list_filter = (
+        'staff',
+        'reason',
+        'consequence',
+    )
     search_fields = ('staff__full_name', 'staff__id', 'reason')
     search_help_text = 'Search by staff full name, staff id, reason'
 
@@ -27,7 +31,10 @@ class SurchargeAdmin(admin.ModelAdmin):
         'created_at',
     )
     list_select_related = ('staff',)
-    list_filter = ('staff', 'reason',)
+    list_filter = (
+        'staff',
+        'reason',
+    )
     search_fields = ('staff__full_name', 'staff__id', 'reason')
     search_help_text = 'Search by staff full name, staff id, reason'
 

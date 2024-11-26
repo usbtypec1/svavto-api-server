@@ -57,8 +57,7 @@ def send_today_shifts_report():
     bot = get_telegram_bot()
 
     shifts = (
-        Shift.objects
-        .select_related('staff', 'car_wash')
+        Shift.objects.select_related('staff', 'car_wash')
         .prefetch_related(
             'cartowash_set',
             'cartowash_set__cartowashadditionalservice_set',
@@ -130,7 +129,9 @@ def send_today_shifts_report():
             if car_to_wash.windshield_washer_refilled_bottle_percentage != 0:
                 refilled_cars_count += 1
 
-            for additional_service in car_to_wash.cartowashadditionalservice_set.all():
+            for (
+                additional_service
+            ) in car_to_wash.cartowashadditionalservice_set.all():
                 additional_service_id = additional_service.service_id
                 if additional_service_id in DRY_CLEANING_SERVICE_IDS:
                     dry_cleaning_count += additional_service.count

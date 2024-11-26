@@ -159,6 +159,7 @@ class ShiftCreateInputSerializer(serializers.Serializer):
 
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source='service_id')
+
     class Meta:
         model = CarToWashAdditionalService
         fields = ['id', 'count']
@@ -177,9 +178,7 @@ class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
     class_type = serializers.CharField(source='car_class')
     car_wash = CarWashSerializer(allow_null=True)
     additional_services = CarToWashAdditionalServiceSerializer(
-        source='cartowashadditionalservice_set',
-        many=True,
-        read_only=True
+        source='cartowashadditionalservice_set', many=True, read_only=True
     )
 
     class Meta:

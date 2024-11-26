@@ -13,7 +13,6 @@ __all__ = ('ShiftCreateApi',)
 
 
 class ShiftCreateApi(APIView):
-
     def post(self, request: Request) -> Response:
         serializer = ShiftCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

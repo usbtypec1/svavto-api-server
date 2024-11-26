@@ -30,7 +30,6 @@ class CarWashListOutputSerializer(serializers.ModelSerializer):
 
 
 class CarWashRetrieveOutputSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = CarWash
         fields = (

@@ -14,7 +14,6 @@ __all__ = ('ShiftListForSpecificDateApi',)
 
 
 class ShiftListForSpecificDateApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = DateSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)

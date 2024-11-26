@@ -38,9 +38,7 @@ class PeriodStats(TypedDict):
 
 
 def get_detailed_period_report(
-        staff_id: int,
-        from_date: datetime.date,
-        to_date: datetime.date
+    staff_id: int, from_date: datetime.date, to_date: datetime.date
 ) -> dict:
     """
     Generate a detailed report of operations for the specified period.
@@ -58,47 +56,52 @@ def get_detailed_period_report(
         shift__staff_id=staff_id,
         shift__date__gte=from_date,
         shift__date__lte=to_date,
-        shift__finished_at__isnull=False  # Only count completed shifts
+        shift__finished_at__isnull=False,  # Only count completed shifts
     )
 
     # Get daily statistics
-    daily_stats = base_qs.values('shift__date').annotate(
-        cars_washed=Count('id'),
-        comfort_cars=Count(
-            'id',
-            filter=Q(car_class=CarToWash.CarType.COMFORT),
-        ),
-        business_cars=Count(
-            'id',
-            filter=Q(car_class=CarToWash.CarType.BUSINESS),
-        ),
-        van_cars=Count(
-            'id',
-            filter=Q(car_class=CarToWash.CarType.VAN),
-        ),
-        planned_washes=Count(
-            'id',
-            filter=Q(wash_type=CarToWash.WashType.PLANNED),
-        ),
-        urgent_washes=Count(
-            'id',
-            filter=Q(wash_type=CarToWash.WashType.URGENT),
-        ),
-        windshield_refills=Sum('windshield_washer_refilled_bottle_percentage')
-    ).order_by('shift__date')
+    daily_stats = (
+        base_qs.values('shift__date')
+        .annotate(
+            cars_washed=Count('id'),
+            comfort_cars=Count(
+                'id',
+                filter=Q(car_class=CarToWash.CarType.COMFORT),
+            ),
+            business_cars=Count(
+                'id',
+                filter=Q(car_class=CarToWash.CarType.BUSINESS),
+            ),
+            van_cars=Count(
+                'id',
+                filter=Q(car_class=CarToWash.CarType.VAN),
+            ),
+            planned_washes=Count(
+                'id',
+                filter=Q(wash_type=CarToWash.WashType.PLANNED),
+            ),
+            urgent_washes=Count(
+                'id',
+                filter=Q(wash_type=CarToWash.WashType.URGENT),
+            ),
+            windshield_refills=Sum(
+                'windshield_washer_refilled_bottle_percentage'
+            ),
+        )
+        .order_by('shift__date')
+    )
 
     # Get additional services details
-    additional_services_count = (
-        CarToWashAdditionalService.objects
-        .filter(car__in=base_qs)
-        .count()
-    )
+    additional_services_count = CarToWashAdditionalService.objects.filter(
+        car__in=base_qs
+    ).count()
 
     # Calculate period totals
     period_totals = base_qs.aggregate(
         cars_washed=Count('id'),
-        additional_services_count=Count('cartowashadditionalservice',
-                                        distinct=True),
+        additional_services_count=Count(
+            'cartowashadditionalservice', distinct=True
+        ),
         comfort_cars=Count(
             'id',
             filter=Q(car_class=CarToWash.CarType.COMFORT),
@@ -138,7 +141,8 @@ def get_detailed_period_report(
                 'planned_washes': stat.get('planned_washes', 0),
                 'urgent_washes': stat.get('urgent_washes', 0),
                 'additional_services_count': stat.get(
-                    'additional_services_count', 0),
+                    'additional_services_count', 0
+                ),
                 'windshield_refills': stat.get('windshield_refills', 0),
             }
             for stat in daily_stats
@@ -146,15 +150,13 @@ def get_detailed_period_report(
         'period_totals': {
             **cleaned_period_totals,
             'shifts_count': len(daily_stats),
-            'additional_services_count': additional_services_count
-        }
+            'additional_services_count': additional_services_count,
+        },
     }
 
 
 def get_financial_statistics(
-        staff_id: int,
-        from_date: datetime.date,
-        to_date: datetime.date
+    staff_id: int, from_date: datetime.date, to_date: datetime.date
 ) -> StaffStats:
     """
     Calculate statistics for a staff member within a specified date range.
@@ -168,27 +170,18 @@ def get_financial_statistics(
         Dictionary containing counts and sums of surcharges and penalties
     """
     # Get surcharge statistics
-    surcharge_stats = (
-        Surcharge.objects
-        .filter(
-            staff_id=staff_id,
-            created_at__date__gte=from_date,
-            created_at__date__lte=to_date
-        )
-        .aggregate(
-            surcharge_count=Count('id'),
-            surcharge_total=Sum('amount')
-        )
-    )
+    surcharge_stats = Surcharge.objects.filter(
+        staff_id=staff_id,
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    ).aggregate(surcharge_count=Count('id'), surcharge_total=Sum('amount'))
 
     # Get penalty count
-    penalty_count = (
-        Penalty.objects.filter(
-            staff_id=staff_id,
-            created_at__date__gte=from_date,
-            created_at__date__lte=to_date
-        ).count()
-    )
+    penalty_count = Penalty.objects.filter(
+        staff_id=staff_id,
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    ).count()
 
     return {
         'surcharge_count': surcharge_stats.get('surcharge_count', 0),

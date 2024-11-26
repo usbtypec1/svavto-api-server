@@ -13,13 +13,12 @@ class AvailableDate(models.Model):
     month = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(
-                limit_value=1,
-                message="Month must be at least 1"
+                limit_value=1, message='Month must be at least 1'
             ),
             MaxValueValidator(
                 limit_value=12,
-                message="Month cannot be greater than 12",
-            )
+                message='Month cannot be greater than 12',
+            ),
         ]
     )
     year = models.PositiveSmallIntegerField()
@@ -62,10 +61,7 @@ class Shift(models.Model):
         unique_together = ('staff', 'date', 'is_extra')
 
     def full_clean(
-            self,
-            exclude=None,
-            validate_unique=True,
-            validate_constraints=True
+        self, exclude=None, validate_unique=True, validate_constraints=True
     ):
         finish_requirements = (
             self.is_finished,
@@ -121,6 +117,21 @@ class CarToWash(models.Model):
     windshield_washer_refilled_bottle_percentage = (
         models.PositiveSmallIntegerField()
     )
+    transfer_price = models.PositiveIntegerField(
+        help_text=_('Price of car transfer at the moment')
+    )
+    comfort_class_car_washing_price = models.PositiveIntegerField(
+        help_text=_('Price of comfort class car washing at the moment')
+    )
+    business_class_car_washing_price = models.PositiveIntegerField(
+        help_text=_('Price of business class car washing at the moment')
+    )
+    van_washing_price = models.PositiveIntegerField(
+        help_text=_('Price of van washing at the moment')
+    )
+    windshield_washer_price_per_bottle = models.PositiveIntegerField(
+        help_text=_('Price of windshield washer per bottle at the moment')
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -135,6 +146,9 @@ class CarToWash(models.Model):
 class CarToWashAdditionalService(models.Model):
     car = models.ForeignKey(CarToWash, on_delete=models.CASCADE)
     service = models.ForeignKey(CarWashService, on_delete=models.CASCADE)
+    price = models.PositiveIntegerField(
+        help_text=_('Price of additional service at the moment')
+    )
     count = models.PositiveSmallIntegerField(default=1)
 
     class Meta:

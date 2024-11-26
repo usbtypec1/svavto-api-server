@@ -8,7 +8,6 @@ __all__ = ('CarWashAllServicesApi',)
 
 
 class CarWashAllServicesApi(APIView):
-
     def get(self, request: Request) -> Response:
         car_wash_services = get_all_flatten_car_wash_services()
         return Response({'services': car_wash_services})

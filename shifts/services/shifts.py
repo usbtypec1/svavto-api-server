@@ -7,7 +7,8 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from shifts.exceptions import (
-    ShiftAlreadyExistsError, ShiftAlreadyFinishedError,
+    ShiftAlreadyExistsError,
+    ShiftAlreadyFinishedError,
     ShiftNotConfirmedError,
     ShiftNotFoundError,
     StaffHasActiveShiftError,
@@ -35,10 +36,10 @@ class ShiftDTO:
 
 
 def create_shifts(
-        *,
-        staff: Staff,
-        dates: Iterable[datetime.date],
-        is_extra: bool,
+    *,
+    staff: Staff,
+    dates: Iterable[datetime.date],
+    is_extra: bool,
 ) -> QuerySet[Shift]:
     shifts = [
         Shift(
@@ -55,11 +56,11 @@ def create_shifts(
 
 
 def create_and_start_shifts(
-        *,
-        staff: Staff,
-        dates: Iterable[datetime.date],
-        car_wash_id: int,
-        is_extra: bool,
+    *,
+    staff: Staff,
+    dates: Iterable[datetime.date],
+    car_wash_id: int,
+    is_extra: bool,
 ) -> QuerySet[Shift]:
     now = timezone.now()
     shifts = [
@@ -69,7 +70,8 @@ def create_and_start_shifts(
             car_wash_id=car_wash_id,
             started_at=now,
             is_extra=is_extra,
-        ) for date in dates
+        )
+        for date in dates
     ]
     try:
         return Shift.objects.bulk_create(shifts)
@@ -78,14 +80,13 @@ def create_and_start_shifts(
 
 
 def start_shift(
-        *,
-        shift_id: int,
-        car_wash_id: int,
+    *,
+    shift_id: int,
+    car_wash_id: int,
 ) -> Shift:
     try:
         shift = (
-            Shift.objects
-            .select_related('car_wash', 'staff')
+            Shift.objects.select_related('car_wash', 'staff')
             .only('id', 'date', 'car_wash', 'staff')
             .get(id=shift_id)
         )
@@ -106,20 +107,20 @@ def start_shift(
 
 
 def ensure_staff_has_no_active_shift(
-        staff_id: int,
+    staff_id: int,
 ) -> None:
     if Shift.objects.filter(
-            staff_id=staff_id,
-            finished_at__isnull=True,
+        staff_id=staff_id,
+        finished_at__isnull=True,
     ).exists():
         raise StaffHasActiveShiftError
 
 
 def finish_shift(
-        *,
-        shift: Shift,
-        statement_photo_file_id: str,
-        service_app_photo_file_id: str,
+    *,
+    shift: Shift,
+    statement_photo_file_id: str,
+    service_app_photo_file_id: str,
 ) -> dict:
     if shift.finished_at is not None:
         raise ShiftAlreadyFinishedError
@@ -147,16 +148,12 @@ def finish_shift(
 
 
 def get_shifts_by_staff_id(
-        *,
-        staff_id: int,
-        month: int | None,
-        year: int | None,
+    *,
+    staff_id: int,
+    month: int | None,
+    year: int | None,
 ) -> QuerySet[Shift]:
-    shifts = (
-        Shift.objects
-        .select_related('car_wash')
-        .filter(staff_id=staff_id)
-    )
+    shifts = Shift.objects.select_related('car_wash').filter(staff_id=staff_id)
     if month is not None:
         shifts = shifts.filter(date__month=month)
     if year is not None:

@@ -2,11 +2,13 @@ import collections
 import datetime
 from uuid import UUID
 
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from typing_extensions import TypedDict
 
 from car_washes.models import CarWashServicePrice
+from economics.models import Penalty, Surcharge
 from shifts.models import CarToWash, CarToWashAdditionalService
+from staff.models import Staff
 
 __all__ = ('ServiceCostsReportGenerator',)
 
@@ -18,26 +20,23 @@ class ServiceProvidedByCarWash(TypedDict):
 
 
 class ServiceCostsReportGenerator:
-
     def __init__(
-            self,
-            *,
-            car_wash_id: int,
-            from_date: datetime.date,
-            to_date: datetime.date,
+        self,
+        *,
+        car_wash_id: int,
+        from_date: datetime.date,
+        to_date: datetime.date,
     ):
         self.__car_wash_id = car_wash_id
         self.__from_date = from_date
         self.__to_date = to_date
 
     def get_services_provided_by_car_wash(
-            self,
+        self,
     ) -> list[ServiceProvidedByCarWash]:
-        car_wash_service_prices = (
-            CarWashServicePrice.objects
-            .filter(car_wash_id=self.__car_wash_id)
-            .values('service_id', 'price', 'service__name')
-        )
+        car_wash_service_prices = CarWashServicePrice.objects.filter(
+            car_wash_id=self.__car_wash_id
+        ).values('service_id', 'price', 'service__name')
         return [
             {
                 'id': service['service_id'],
@@ -48,11 +47,10 @@ class ServiceCostsReportGenerator:
         ]
 
     def compute_additional_services(
-            self,
+        self,
     ):
         additional_services = (
-            CarToWashAdditionalService.objects
-            .filter(
+            CarToWashAdditionalService.objects.filter(
                 car__shift__date__gte=self.__from_date,
                 car__shift__date__lte=self.__to_date,
                 car__car_wash_id=self.__car_wash_id,
@@ -73,21 +71,24 @@ class ServiceCostsReportGenerator:
                 service_id_to_count[service['service_id']] += service['count']
 
             for service_id, count in service_id_to_count.items():
-                services_grouped_by_date.append({
-                    'id': service_id,
-                    'count': count,
-                })
+                services_grouped_by_date.append(
+                    {
+                        'id': service_id,
+                        'count': count,
+                    }
+                )
 
-            result.append({
-                'date': date,
-                'services': services_grouped_by_date,
-            })
+            result.append(
+                {
+                    'date': date,
+                    'services': services_grouped_by_date,
+                }
+            )
         return result
 
     def compute_cars_count(self):
         cars_to_wash = (
-            CarToWash.objects
-            .select_related('shift')
+            CarToWash.objects.select_related('shift')
             .filter(
                 shift__date__gte=self.__from_date,
                 shift__date__lte=self.__to_date,
@@ -101,7 +102,8 @@ class ServiceCostsReportGenerator:
                         car_class=CarToWash.CarType.COMFORT,
                         shift__is_extra=False,
                         wash_type=CarToWash.WashType.PLANNED,
-                    )),
+                    ),
+                ),
                 planned_business_count=Count(
                     'id',
                     filter=Q(
@@ -136,23 +138,21 @@ class ServiceCostsReportGenerator:
         return list(cars_to_wash)
 
     def get_additional_service_prices(
-            self,
+        self,
     ):
-        car_wash_service_prices = (
-            CarWashServicePrice.objects
-            .filter(car_wash_id=self.__car_wash_id)
-            .values('service_id', 'price')
-        )
+        car_wash_service_prices = CarWashServicePrice.objects.filter(
+            car_wash_id=self.__car_wash_id
+        ).values('service_id', 'price')
         return [
             {
-                "id": service['service_id'],
-                "price": service['price'],
+                'id': service['service_id'],
+                'price': service['price'],
             }
             for service in car_wash_service_prices
         ]
 
     def get_cars_count_with_additional_services(
-            self,
+        self,
     ):
         cars_count = self.compute_cars_count()
         additional_services = self.compute_additional_services()
@@ -165,8 +165,9 @@ class ServiceCostsReportGenerator:
             {
                 **cars_count_for_date,
                 'additional_services': date_to_additional_services.get(
-                    cars_count_for_date['date'], [],
-                )
+                    cars_count_for_date['date'],
+                    [],
+                ),
             }
             for cars_count_for_date in cars_count
         ]
@@ -180,20 +181,145 @@ class ServiceCostsReportGenerator:
         }
 
 
-class RevenueReportGenerator:
-
+class StaffRevenueReportGenerator:
     def __init__(
-            self,
-            *,
-            car_wash_id: int,
-            from_date: datetime.date,
-            to_date: datetime.date,
+        self,
+        *,
+        car_wash_id: int,
+        from_date: datetime.date,
+        to_date: datetime.date,
     ):
         self.__car_wash_id = car_wash_id
         self.__from_date = from_date
         self.__to_date = to_date
 
+    def get_cars(self) -> list[dict]:
+        cars_to_wash = (
+            CarToWash.objects.select_related('shift')
+            .filter(
+                shift__date__gte=self.__from_date,
+                shift__date__lte=self.__to_date,
+                car_wash_id=self.__car_wash_id,
+            )
+            .values('shift__date')
+            .annotate(
+                planned_comfort=Sum(
+                    'price',
+                    filter=Q(
+                        car_class=CarToWash.CarType.COMFORT,
+                        shift__is_extra=False,
+                        wash_type=CarToWash.WashType.PLANNED,
+                    ),
+                ),
+                planned_business=Sum(
+                    'price',
+                    filter=Q(
+                        car_class=CarToWash.CarType.BUSINESS,
+                        shift__is_extra=False,
+                        wash_type=CarToWash.WashType.PLANNED,
+                    ),
+                ),
+                planned_van=Sum(
+                    'price',
+                    filter=Q(
+                        car_class=CarToWash.CarType.VAN,
+                        shift__is_extra=False,
+                        wash_type=CarToWash.WashType.PLANNED,
+                    ),
+                ),
+                extra=Sum(
+                    'price',
+                    filter=Q(shift__is_extra=True),
+                ),
+                urgent=Sum(
+                    'price',
+                    filter=Q(
+                        wash_type=CarToWash.WashType.URGENT,
+                        shift__is_extra=False,
+                    ),
+                ),
+            )
+        )
+        for car in cars_to_wash:
+            car['date'] = car.pop('shift__date')
+        return list(cars_to_wash)
+
+    def get_penalties(self) -> list[dict]:
+        penalties = (
+            Penalty.objects.filter(
+                created_at__date__gte=self.__from_date,
+                created_at__date__lte=self.__to_date,
+            )
+            .values('staff_id', 'created_at__date')
+            .annotate(
+                total_amount=Sum('amount'),
+            )
+        )
+        date_to_penalties = collections.defaultdict(list)
+        for penalty in penalties:
+            date_to_penalties[penalty['created_at__date']].append(
+                {
+                    'staff_id': penalty['staff_id'],
+                    'amount': penalty['total_amount'],
+                }
+            )
+        return [
+            {
+                'date': date,
+                'penalties': penalties,
+            }
+            for date, penalties in date_to_penalties.items()
+        ]
+
+    def get_staff(self) -> tuple[dict, ...]:
+        return tuple(
+            Staff.objects.values(
+                'id',
+                'full_name',
+                'car_sharing_phone_number',
+                'console_phone_number',
+            ).order_by('full_name')
+        )
+
+    def get_surcharges(self):
+        surcharges = (
+            Surcharge.objects.filter(
+                created_at__date__gte=self.__from_date,
+                created_at__date__lte=self.__to_date,
+            )
+            .values('staff_id', 'created_at__date')
+            .annotate(
+                total_amount=Sum('amount'),
+            )
+        )
+        date_to_surcharges = collections.defaultdict(list)
+        for surcharge in surcharges:
+            date_to_surcharges[surcharge['created_at__date']].append(
+                {
+                    'staff_id': surcharge['staff_id'],
+                    'amount': surcharge['total_amount'],
+                }
+            )
+        return [
+            {
+                'date': date,
+                'surcharges': surcharges,
+            }
+            for date, surcharges in date_to_surcharges.items()
+        ]
+
     def generate_report(self) -> dict:
+        # cars_to_wash = CarToWash.objects.filter.filter(
+        #     car_wash_id=self.__car_wash_id,
+        #     shift__date__gte=self.__from_date,
+        #     shift__date__lte=self.__to_date,
+        # )
+
+        staff_list = self.get_staff()
+
+        penalties_by_dates = self.get_penalties()
+        surcharges_by_dates = self.get_surcharges()
+
         return {
-            'report_by_dates': [],
+            'report': self.get_cars(),
         }

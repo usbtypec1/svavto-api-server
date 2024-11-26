@@ -16,19 +16,18 @@ class ShiftFinishInputSerializer(serializers.Serializer):
 
 
 class ShiftFinishApi(APIView):
-
     def post(self, request: Request) -> Response:
         serializer = ShiftFinishInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
 
         staff_id: int = serialized_data['staff_id']
-        statement_photo_file_id: str = (
-            serialized_data['statement_photo_file_id']
-        )
-        service_app_photo_file_id: str = (
-            serialized_data['service_app_photo_file_id']
-        )
+        statement_photo_file_id: str = serialized_data[
+            'statement_photo_file_id'
+        ]
+        service_app_photo_file_id: str = serialized_data[
+            'service_app_photo_file_id'
+        ]
 
         shift = get_staff_current_shift(staff_id=staff_id)
         finish_result = finish_shift(

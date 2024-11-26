@@ -5,7 +5,6 @@ from telebot import TeleBot
 from telebot.types import InputMediaPhoto
 
 __all__ = (
-
     'get_telegram_bot',
     'try_send_message',
     'try_send_photos_media_group',
@@ -17,9 +16,9 @@ def get_telegram_bot() -> TeleBot:
 
 
 def try_send_message(
-        bot: TeleBot,
-        chat_id: int,
-        text: str,
+    bot: TeleBot,
+    chat_id: int,
+    text: str,
 ) -> bool:
     for _ in range(5):
         try:
@@ -32,10 +31,10 @@ def try_send_message(
 
 
 def try_send_photos_media_group(
-        bot: TeleBot,
-        chat_id: int,
-        file_ids: Iterable[str],
-        caption: str | None,
+    bot: TeleBot,
+    chat_id: int,
+    file_ids: Iterable[str],
+    caption: str | None,
 ) -> bool:
     media = []
     file_ids = tuple(file_ids)

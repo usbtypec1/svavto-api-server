@@ -5,7 +5,6 @@ from drf_standardized_errors.types import ErrorResponse
 
 
 class ExceptionFormatter(drf_standardized_errors.formatter.ExceptionFormatter):
-
     def format_error_response(self, error_response: ErrorResponse) -> Any:
         extra: dict | None = getattr(self.exc, 'extra', None)
 

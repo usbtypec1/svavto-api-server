@@ -69,7 +69,8 @@ def get_all_flatten_car_wash_services() -> list[dict]:
         'parent__name',
     )
     parent_ids = {
-        service['parent__id'] for service in car_wash_services
+        service['parent__id']
+        for service in car_wash_services
         if service['parent__id']
     }
     return [
@@ -80,7 +81,9 @@ def get_all_flatten_car_wash_services() -> list[dict]:
             'parent': {
                 'id': str(service['parent__id']),
                 'name': service['parent__name'],
-            } if service['parent__id'] else None
+            }
+            if service['parent__id']
+            else None,
         }
         for service in car_wash_services
         if service['id'] not in parent_ids
@@ -88,20 +91,16 @@ def get_all_flatten_car_wash_services() -> list[dict]:
 
 
 def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
-    service_ids_and_prices = (
-        CarWashServicePrice.objects
-        .filter(car_wash_id=car_wash_id)
-        .values_list('service_id', 'price')
-    )
+    service_ids_and_prices = CarWashServicePrice.objects.filter(
+        car_wash_id=car_wash_id
+    ).values_list('service_id', 'price')
     if not service_ids_and_prices:
         return []
     service_id_to_price = {
-        service_id: price
-        for service_id, price in service_ids_and_prices
+        service_id: price for service_id, price in service_ids_and_prices
     }
     car_wash_services = (
-        CarWashService.objects
-        .filter(id__in=service_id_to_price.keys())
+        CarWashService.objects.filter(id__in=service_id_to_price.keys())
         .values(
             'id',
             'name',
@@ -121,7 +120,9 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             'parent': {
                 'id': str(service['parent__id']),
                 'name': service['parent__name'],
-            } if service['parent__id'] else None
+            }
+            if service['parent__id']
+            else None,
         }
         for service in car_wash_services
         if service['id'] not in parent_ids

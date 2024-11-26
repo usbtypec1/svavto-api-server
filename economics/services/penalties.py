@@ -18,21 +18,17 @@ class PenaltyAmountAndConsequence:
 
 
 def compute_penalty_amount(
-        *,
-        staff_id: int,
-        reason: str,
+    *,
+    staff_id: int,
+    reason: str,
 ) -> PenaltyAmountAndConsequence:
     if reason == PenaltyReason.EARLY_LEAVE:
         return PenaltyAmountAndConsequence(amount=1000, consequence=None)
 
-    penalties_count = (
-        Penalty.objects
-        .filter(
-            staff_id=staff_id,
-            reason=reason,
-        )
-        .count()
-    )
+    penalties_count = Penalty.objects.filter(
+        staff_id=staff_id,
+        reason=reason,
+    ).count()
 
     if reason == PenaltyReason.LATE_REPORT:
         if penalties_count == 0:
@@ -72,10 +68,10 @@ def compute_penalty_amount(
 
 
 def create_penalty(
-        *,
-        staff_id: int,
-        reason: str,
-        amount: int | None,
+    *,
+    staff_id: int,
+    reason: str,
+    amount: int | None,
 ) -> Penalty:
     consequence: str | None = None
     if amount is None:

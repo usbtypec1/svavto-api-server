@@ -1,9 +1,9 @@
 from django.urls import path
 
 from staff.views import (
+    AdminStaffListApi,
     StaffListCreateApi,
     StaffRetrieveUpdateApi,
-    AdminStaffListApi,
 )
 
 urlpatterns = [

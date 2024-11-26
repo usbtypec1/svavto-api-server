@@ -7,7 +7,14 @@ __all__ = (
     'PenaltyCreateOutputSerializer',
     'PenaltyListOutputSerializer',
     'PenaltyListInputSerializer',
+    'ServiceCostsInputSerializer',
 )
+
+
+class ServiceCostsInputSerializer(serializers.Serializer):
+    from_date = serializers.DateField()
+    to_date = serializers.DateField()
+    car_wash_id = serializers.IntegerField()
 
 
 class PenaltyCreateInputSerializer(serializers.Serializer):

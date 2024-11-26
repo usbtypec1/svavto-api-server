@@ -16,12 +16,11 @@ __all__ = ('SpecificCarWashServiceUpdateDeleteApi',)
 
 
 class SpecificCarWashServiceUpdateDeleteApi(APIView):
-
     def put(
-            self,
-            request: Request,
-            car_wash_id: int,
-            service_id: UUID,
+        self,
+        request: Request,
+        car_wash_id: int,
+        service_id: UUID,
     ) -> Response:
         serializer = CarWashServicePriceUpsertInputSerializer(
             data=request.data,
@@ -40,7 +39,8 @@ class SpecificCarWashServiceUpdateDeleteApi(APIView):
                 defaults={
                     'price': price,
                 },
-            ))
+            )
+        )
 
         if is_created:
             status_code = status.HTTP_201_CREATED
@@ -51,10 +51,10 @@ class SpecificCarWashServiceUpdateDeleteApi(APIView):
         return Response(serializer.data, status_code)
 
     def delete(
-            self,
-            request: Request,
-            car_wash_id: int,
-            service_id: UUID,
+        self,
+        request: Request,
+        car_wash_id: int,
+        service_id: UUID,
     ) -> Response:
         ensure_service_exists(service_id)
         ensure_car_wash_exists(car_wash_id)

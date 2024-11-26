@@ -16,10 +16,10 @@ class SurchargeCreateResult:
 
 
 def create_surcharge(
-        *,
-        staff_id: int,
-        reason: str,
-        amount: int,
+    *,
+    staff_id: int,
+    reason: str,
+    amount: int,
 ) -> SurchargeCreateResult:
     surcharge = Surcharge.objects.create(
         staff_id=staff_id,

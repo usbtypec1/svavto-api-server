@@ -15,16 +15,6 @@ DEBUG = env.bool('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
-GOOGLE_SHEETS_SERVICE_ACCOUNT_CREDENTIALS_FILE_PATH = (
-        BASE_DIR / 'google_sheets_service_account_credentials.json'
-)
-
-GOOGLE_SHEETS_SERVICE_ACCOUNT_CREDENTIALS = json.loads(
-    GOOGLE_SHEETS_SERVICE_ACCOUNT_CREDENTIALS_FILE_PATH.read_text(
-        encoding='utf-8',
-    )
-)
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,7 +27,6 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'import_export',
     'corsheaders',
-    'google_sheets',
     'core',
     'staff',
     'economics',
@@ -49,8 +38,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -64,8 +53,7 @@ ROOT_URLCONF = 'carsharing.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,19 +78,19 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation'
-                '.UserAttributeSimilarityValidator',
+        '.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation'
-                '.MinimumLengthValidator',
+        '.MinimumLengthValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation'
-                '.CommonPasswordValidator',
+        '.CommonPasswordValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation'
-                '.NumericPasswordValidator',
+        '.NumericPasswordValidator',
     },
 ]
 
@@ -118,18 +106,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://avtomoykabot.store'
-]
+CSRF_TRUSTED_ORIGINS = ['https://avtomoykabot.store']
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    ),
-    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'EXCEPTION_HANDLER': 'drf_standardized_errors.handler.exception_handler',
 }
 DRF_STANDARDIZED_ERRORS = {
-    "EXCEPTION_FORMATTER_CLASS": "core.exceptions.ExceptionFormatter",
+    'EXCEPTION_FORMATTER_CLASS': 'core.exceptions.ExceptionFormatter',
 }
 
 CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
@@ -154,8 +138,8 @@ SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.5)
 
 if SENTRY_DSN:
     import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,

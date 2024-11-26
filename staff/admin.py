@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from shifts.models import Shift
-from staff.models import Staff, AdminStaff
+from staff.models import AdminStaff, Staff
 
 
 class ShiftInline(admin.TabularInline):

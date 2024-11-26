@@ -42,15 +42,12 @@ def sync_car_washes() -> None:
     for car_wash in car_washes:
         car_wash_service_prices = car_wash.carwashserviceprice_set.all()
         service_id_to_price = {
-            service.id: service.price
-            for service in car_wash_service_prices
+            service.id: service.price for service in car_wash_service_prices
         }
 
-        cars_to_wash: QuerySet[CarToWash] = (
-            CarToWash.objects
-            .filter(shift__date=yesterday)
-            .prefetch_related('cartowashadditionalservice_set')
-        )
+        cars_to_wash: QuerySet[CarToWash] = CarToWash.objects.filter(
+            shift__date=yesterday
+        ).prefetch_related('cartowashadditionalservice_set')
 
         car_class_type_to_count = defaultdict(int)
 

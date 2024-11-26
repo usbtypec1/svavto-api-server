@@ -9,7 +9,6 @@ __all__ = ('StaffCurrentShiftRetrieveApi',)
 
 
 class StaffCurrentShiftRetrieveApi(APIView):
-
     def get(self, request: Request, staff_id: int) -> Response:
         active_shift = get_staff_current_shift(staff_id)
         serializer = StaffCurrentShiftRetrieveOutputSerializer(active_shift)

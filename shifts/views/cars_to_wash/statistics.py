@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shifts.services.cars_to_wash import (
-    get_staff_cars_count_by_date,
     get_cars_without_windshield_washer_by_date,
+    get_staff_cars_count_by_date,
 )
 
 __all__ = ('CarsToWashCountByEachStaffApi', 'CarsWithoutWindshieldWasherApi')
@@ -18,7 +18,6 @@ class DateSerializer(serializers.Serializer):
 
 
 class CarsToWashCountByEachStaffApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = DateSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -36,7 +35,6 @@ class CarsToWashCountByEachStaffApi(APIView):
 
 
 class CarsWithoutWindshieldWasherApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = DateSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)

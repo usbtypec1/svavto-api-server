@@ -37,4 +37,7 @@ class CarWashServicePriceAdmin(admin.ModelAdmin):
     list_select_related = ('car_wash', 'service')
     list_filter = ('car_wash', 'service')
     list_display_links = ('car_wash', 'service', 'price')
-    autocomplete_fields = ('car_wash', 'service',)
+    autocomplete_fields = (
+        'car_wash',
+        'service',
+    )

@@ -3,10 +3,10 @@ from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from shifts.models import (
-    Shift,
+    AvailableDate,
     CarToWash,
     CarToWashAdditionalService,
-    AvailableDate,
+    Shift,
 )
 
 

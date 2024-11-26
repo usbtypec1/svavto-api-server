@@ -33,8 +33,10 @@ class ReportApi(APIView):
         # Get statistics for penalties and surcharges
         financial_stats = get_financial_statistics(staff_id, from_date, to_date)
 
-        return Response({
-            'daily_stats': report['daily_stats'],
-            'period_totals': report['period_totals'],
-            'financial_stats': financial_stats
-        })
+        return Response(
+            {
+                'daily_stats': report['daily_stats'],
+                'period_totals': report['period_totals'],
+                'financial_stats': financial_stats,
+            }
+        )

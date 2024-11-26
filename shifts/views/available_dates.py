@@ -1,5 +1,6 @@
 from rest_framework.mixins import (
-    CreateModelMixin, DestroyModelMixin,
+    CreateModelMixin,
+    DestroyModelMixin,
     ListModelMixin,
 )
 from rest_framework.response import Response

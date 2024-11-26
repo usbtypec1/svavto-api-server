@@ -22,8 +22,5 @@ def ensure_staff_exists(staff_id: int) -> None:
         raise StaffNotFoundError
 
 
-def get_all_staff(
-        *,
-        order_by: str
-) -> QuerySet[Staff]:
+def get_all_staff(*, order_by: str) -> QuerySet[Staff]:
     return Staff.objects.order_by(order_by)

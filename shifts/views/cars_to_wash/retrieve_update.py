@@ -14,11 +14,9 @@ __all__ = ('RetrieveUpdateCarsToWashApi',)
 
 
 class RetrieveUpdateCarsToWashApi(APIView):
-
     def get(self, request: Request, car_id: int) -> Response:
         car = (
-            CarToWash.objects
-            .select_related('car_wash')
+            CarToWash.objects.select_related('car_wash')
             .prefetch_related('cartowashadditionalservice_set')
             .get(id=car_id)
         )

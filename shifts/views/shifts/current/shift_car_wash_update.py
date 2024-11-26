@@ -22,7 +22,6 @@ class CurrentShiftCarWashUpdateOutputSerializer(serializers.ModelSerializer):
 
 
 class CurrentShiftCarWashUpdateApi(APIView):
-
     def patch(self, request: Request, staff_id: int) -> Response:
         serializer = CurrentShiftCarWashUpdateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

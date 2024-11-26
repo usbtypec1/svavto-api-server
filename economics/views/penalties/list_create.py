@@ -16,7 +16,6 @@ __all__ = ('PenaltyListCreateApi',)
 
 
 class PenaltyListCreateApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = PenaltyListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -31,15 +30,17 @@ class PenaltyListCreateApi(APIView):
         if staff_ids is not None:
             penalties = penalties.filter(staff_id__in=staff_ids)
 
-        penalties = penalties[offset:offset + limit + 1]
+        penalties = penalties[offset : offset + limit + 1]
         is_end_of_list_reached = len(penalties) <= limit
         penalties = penalties[:limit]
 
         serializer = PenaltyListOutputSerializer(penalties, many=True)
-        return Response({
-            'penalties': serializer.data,
-            'is_end_of_list_reached': is_end_of_list_reached,
-        })
+        return Response(
+            {
+                'penalties': serializer.data,
+                'is_end_of_list_reached': is_end_of_list_reached,
+            }
+        )
 
     def post(self, request: Request) -> Response:
         serializer = PenaltyCreateInputSerializer(data=request.data)

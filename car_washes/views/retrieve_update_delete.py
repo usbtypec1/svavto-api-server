@@ -8,14 +8,14 @@ from car_washes.selectors import (
     get_flatten_specific_car_wash_services,
 )
 from car_washes.serializers import (
-    CarWashRetrieveOutputSerializer, CarWashUpdateInputSerializer,
+    CarWashRetrieveOutputSerializer,
+    CarWashUpdateInputSerializer,
     CarWashUpdateOutputSerializer,
 )
 from car_washes.services import delete_car_wash, update_car_wash
 
 
 class CarWashRetrieveUpdateDeleteApi(APIView):
-
     def get(self, request: Request, car_wash_id: int) -> Response:
         car_wash = get_car_wash_by_id(car_wash_id)
         car_wash_services = get_flatten_specific_car_wash_services(car_wash_id)
@@ -30,16 +30,16 @@ class CarWashRetrieveUpdateDeleteApi(APIView):
         serialized_data: dict = serializer.data
 
         name: str = serialized_data['name']
-        comfort_class_car_transfer_price: int = (
-            serialized_data['comfort_class_car_transfer_price']
-        )
-        business_class_car_transfer_price: int = (
-            serialized_data['business_class_car_transfer_price']
-        )
+        comfort_class_car_transfer_price: int = serialized_data[
+            'comfort_class_car_transfer_price'
+        ]
+        business_class_car_transfer_price: int = serialized_data[
+            'business_class_car_transfer_price'
+        ]
         van_transfer_price: int = serialized_data['van_transfer_price']
-        windshield_washer_price_per_bottle: int = (
-            serialized_data['windshield_washer_price_per_bottle']
-        )
+        windshield_washer_price_per_bottle: int = serialized_data[
+            'windshield_washer_price_per_bottle'
+        ]
 
         car_wash = get_car_wash_by_id(car_wash_id)
 

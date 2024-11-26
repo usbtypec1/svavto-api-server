@@ -1,12 +1,13 @@
+from django.db.models import Prefetch
 from rest_framework import serializers, views
 from rest_framework.response import Response
-from django.db.models import Prefetch
 
 from shifts.models import CarToWash, CarToWashAdditionalService
 
 
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source='service_id')
+
     class Meta:
         model = CarToWashAdditionalService
         fields = ('id', 'count')
@@ -14,9 +15,7 @@ class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
 
 class CarToWashSerializer(serializers.ModelSerializer):
     additional_services = CarToWashAdditionalServiceSerializer(
-        source='cartowashadditionalservice_set',
-        many=True,
-        read_only=True
+        source='cartowashadditionalservice_set', many=True, read_only=True
     )
 
     class Meta:
@@ -34,15 +33,13 @@ class CarToWashSerializer(serializers.ModelSerializer):
 
 class CarToWashListApi(views.APIView):
     def get(self, request, staff_id: int):
-        queryset = (
-            CarToWash.objects
-            .filter(shift__staff_id=staff_id)
-            .prefetch_related(
-                Prefetch(
-                    'cartowashadditionalservice_set',
-                    queryset=CarToWashAdditionalService.objects.all(),
-                    to_attr='additional_services_prefetched'
-                )
+        queryset = CarToWash.objects.filter(
+            shift__staff_id=staff_id
+        ).prefetch_related(
+            Prefetch(
+                'cartowashadditionalservice_set',
+                queryset=CarToWashAdditionalService.objects.all(),
+                to_attr='additional_services_prefetched',
             )
         )
 
