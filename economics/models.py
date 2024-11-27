@@ -1,5 +1,3 @@
-from typing import Final
-
 from django.db import models
 from django.utils.translation.trans_null import gettext_lazy as _
 

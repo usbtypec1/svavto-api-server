@@ -60,6 +60,9 @@ class Shift(models.Model):
         verbose_name_plural = 'shifts'
         unique_together = ('staff', 'date', 'is_extra')
 
+    def __str__(self):
+        return f'{self.staff.full_name} - {self.date}'
+
     def full_clean(
         self, exclude=None, validate_unique=True, validate_constraints=True
     ):
