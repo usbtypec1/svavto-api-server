@@ -46,6 +46,7 @@ def create_shifts(
             staff=staff,
             date=date,
             is_extra=is_extra,
+            created_at=timezone.now(),
         )
         for date in dates
     ]
@@ -70,6 +71,7 @@ def create_and_start_shifts(
             car_wash_id=car_wash_id,
             started_at=now,
             is_extra=is_extra,
+            created_at=now,
         )
         for date in dates
     ]

@@ -53,7 +53,7 @@ class Shift(models.Model):
         blank=True,
     )
     is_extra = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
 
     class Meta:
         verbose_name = 'shift'
@@ -135,7 +135,7 @@ class CarToWash(models.Model):
     windshield_washer_price_per_bottle = models.PositiveIntegerField(
         help_text=_('Price of windshield washer per bottle at the moment')
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
 
     class Meta:
         verbose_name = 'car to wash'

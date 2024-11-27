@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Count
@@ -132,6 +133,7 @@ def create_car_to_wash(
         business_class_car_washing_price=car_wash.business_class_car_washing_price,
         van_washing_price=car_wash.van_washing_price,
         windshield_washer_price_per_bottle=car_wash.windshield_washer_price_per_bottle,
+        created_at=timezone.now(),
     )
     try:
         car_to_wash.full_clean()
