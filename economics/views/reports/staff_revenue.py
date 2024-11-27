@@ -11,7 +11,6 @@ __all__ = ('StaffRevenueReportApi',)
 
 
 class StaffRevenueReportInputSerializer(serializers.Serializer):
-    car_wash_id = serializers.IntegerField()
     from_date = serializers.DateField()
     to_date = serializers.DateField()
 
@@ -24,12 +23,10 @@ class StaffRevenueReportApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.validated_data
 
-        car_wash_id: int = serialized_data['car_wash_id']
         from_date: datetime.date = serialized_data['from_date']
         to_date: datetime.date = serialized_data['to_date']
 
         report_generator = StaffRevenueReportGenerator(
-            car_wash_id=car_wash_id,
             from_date=from_date,
             to_date=to_date,
         )

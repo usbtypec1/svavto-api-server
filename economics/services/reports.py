@@ -213,11 +213,9 @@ class StaffRevenueReportGenerator:
     def __init__(
         self,
         *,
-        car_wash_id: int,
         from_date: datetime.date,
         to_date: datetime.date,
     ):
-        self.__car_wash_id = car_wash_id
         self.__from_date = from_date
         self.__to_date = to_date
 
@@ -227,7 +225,6 @@ class StaffRevenueReportGenerator:
             .filter(
                 shift__date__gte=self.__from_date,
                 shift__date__lte=self.__to_date,
-                car_wash_id=self.__car_wash_id,
             )
             .values('shift__date', 'shift__staff_id')
             .annotate(
