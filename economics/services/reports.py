@@ -29,12 +29,10 @@ def merge_staff_statistics(
     penalty_amount: int = staff_id_to_penalty_amount.get(staff_id, 0)
     surcharge_amount: int = staff_id_to_surcharge_amount.get(staff_id, 0)
     planned_comfort_cars_washing_cost: int = staff_id_to_cars.get(staff_id, {}).get('planned_comfort', 0)
-    planned_business_cars_washing_cost: int = staff_id_to_cars[staff_id][
-        'planned_business'
-    ]
-    planned_vans_washing_cost: int = staff_id_to_cars[staff_id]['planned_van']
-    extra_shift_washing_cost: int = staff_id_to_cars[staff_id]['extra']
-    urgent_washing_cost: int = staff_id_to_cars[staff_id]['urgent']
+    planned_business_cars_washing_cost: int = staff_id_to_cars.get(staff_id, {}).get('planned_business', 0)
+    planned_vans_washing_cost: int = staff_id_to_cars.get(staff_id, {}).get('planned_van', 0)
+    extra_shift_washing_cost: int = staff_id_to_cars.get(staff_id, {}).get('extra', 0)
+    urgent_washing_cost: int = staff_id_to_cars.get(staff_id, {}).get('urgent', 0)
     return {
         'staff_id': staff_id,
         'penalty_amount': penalty_amount,
