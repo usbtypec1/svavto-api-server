@@ -17,16 +17,16 @@ __all__ = (
 def create_car_wash(
     *,
     name: str,
-    comfort_class_car_transfer_price: int,
-    business_class_car_transfer_price: int,
-    van_transfer_price: int,
+    comfort_class_car_washing_price: int,
+    business_class_car_washing_price: int,
+    van_washing_price: int,
     windshield_washer_price_per_bottle: int,
 ) -> CarWash:
     car_wash = CarWash(
         name=name,
-        comfort_class_car_transfer_price=comfort_class_car_transfer_price,
-        business_class_car_transfer_price=business_class_car_transfer_price,
-        van_transfer_price=van_transfer_price,
+        comfort_class_car_washing_price=comfort_class_car_washing_price,
+        business_class_car_washing_price=business_class_car_washing_price,
+        van_washing_price=van_washing_price,
         windshield_washer_price_per_bottle=windshield_washer_price_per_bottle,
     )
 
@@ -45,17 +45,17 @@ def update_car_wash(
     *,
     car_wash: CarWash,
     name: str,
-    comfort_class_car_transfer_price: int,
-    business_class_car_transfer_price: int,
-    van_transfer_price: int,
+    comfort_class_car_washing_price: int,
+    business_class_car_washing_price: int,
+    van_washing_price: int,
     windshield_washer_price_per_bottle: int,
 ) -> CarWash:
     car_wash.name = name
-    car_wash.comfort_class_car_transfer_price = comfort_class_car_transfer_price
-    car_wash.business_class_car_transfer_price = (
-        business_class_car_transfer_price
+    car_wash.comfort_class_car_washing_price = comfort_class_car_washing_price
+    car_wash.business_class_car_washing_price = (
+        business_class_car_washing_price
     )
-    car_wash.van_transfer_price = van_transfer_price
+    car_wash.van_washing_price = van_washing_price
     car_wash.windshield_washer_price_per_bottle = (
         windshield_washer_price_per_bottle
     )
@@ -70,9 +70,9 @@ def update_car_wash(
     car_wash.save(
         update_fields=(
             'name',
-            'comfort_class_car_transfer_price',
-            'business_class_car_transfer_price',
-            'van_transfer_price',
+            'comfort_class_car_washing_price',
+            'business_class_car_washing_price',
+            'van_washing_price',
             'windshield_washer_price_per_bottle',
             'updated_at',
         ),

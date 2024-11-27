@@ -13,9 +13,9 @@ class CarWash(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True)
-    comfort_class_car_transfer_price = models.PositiveIntegerField()
-    business_class_car_transfer_price = models.PositiveIntegerField()
-    van_transfer_price = models.PositiveIntegerField()
+    comfort_class_car_washing_price = models.PositiveIntegerField()
+    business_class_car_washing_price = models.PositiveIntegerField()
+    van_washing_price = models.PositiveIntegerField()
     windshield_washer_price_per_bottle = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

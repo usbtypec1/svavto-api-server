@@ -7,9 +7,8 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Count
 
-from car_washes.models import CarWashServicePrice
-from economics.models import StaffServicePrice
-from economics.selectors import get_car_to_wash_price
+from car_washes.models import CarWash, CarWashServicePrice
+from economics.selectors import compute_car_transfer_price
 from shifts.exceptions import (
     AdditionalServiceCouldNotBeProvidedError,
     CarAlreadyWashedOnShiftError,
@@ -113,11 +112,12 @@ def create_car_to_wash(
     windshield_washer_refilled_bottle_percentage: int,
     additional_services: list[dict],
 ):
-    price = get_car_to_wash_price(
+    transfer_price = compute_car_transfer_price(
         class_type=car_class,
         wash_type=wash_type,
         is_extra_shift=shift.is_extra,
     )
+    car_wash: CarWash = shift.car_wash
     car_to_wash = CarToWash(
         shift_id=shift.id,
         number=number,
@@ -126,8 +126,12 @@ def create_car_to_wash(
         windshield_washer_refilled_bottle_percentage=(
             windshield_washer_refilled_bottle_percentage
         ),
-        price=price,
-        car_wash_id=shift.car_wash_id,
+        transfer_price=transfer_price,
+        car_wash=shift.car_wash,
+        comfort_class_car_washing_price=car_wash.comfort_class_car_washing_price,
+        business_class_car_washing_price=car_wash.business_class_car_washing_price,
+        van_washing_price=car_wash.van_washing_price,
+        windshield_washer_price_per_bottle=car_wash.windshield_washer_price_per_bottle,
     )
     try:
         car_to_wash.full_clean()

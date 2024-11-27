@@ -1,4 +1,4 @@
-from rest_framework import serializers, status
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,13 +30,13 @@ class CarWashRetrieveUpdateDeleteApi(APIView):
         serialized_data: dict = serializer.data
 
         name: str = serialized_data['name']
-        comfort_class_car_transfer_price: int = serialized_data[
-            'comfort_class_car_transfer_price'
+        comfort_class_car_washing_price: int = serialized_data[
+            'comfort_class_car_washing_price'
         ]
-        business_class_car_transfer_price: int = serialized_data[
-            'business_class_car_transfer_price'
+        business_class_car_washing_price: int = serialized_data[
+            'business_class_car_washing_price'
         ]
-        van_transfer_price: int = serialized_data['van_transfer_price']
+        van_washing_price: int = serialized_data['van_washing_price']
         windshield_washer_price_per_bottle: int = serialized_data[
             'windshield_washer_price_per_bottle'
         ]
@@ -46,9 +46,9 @@ class CarWashRetrieveUpdateDeleteApi(APIView):
         car_wash = update_car_wash(
             car_wash=car_wash,
             name=name,
-            comfort_class_car_transfer_price=comfort_class_car_transfer_price,
-            business_class_car_transfer_price=business_class_car_transfer_price,
-            van_transfer_price=van_transfer_price,
+            comfort_class_car_washing_price=comfort_class_car_washing_price,
+            business_class_car_washing_price=business_class_car_washing_price,
+            van_washing_price=van_washing_price,
             windshield_washer_price_per_bottle=windshield_washer_price_per_bottle,
         )
         serializer = CarWashUpdateOutputSerializer(car_wash)

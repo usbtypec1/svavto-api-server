@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -16,8 +15,39 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StaffServicePrice',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('service', models.CharField(choices=[('comfort_class_car_transfer', 'comfort class car transfer'), ('business_class_car_transfer', 'business class car transfer'), ('van_transfer', 'van transfer'), ('car_transporter_extra_shift', 'car transporter extra shift'), ('urgent_wash', 'urgent wash'), ('item_dry_clean', 'item dry clean')], max_length=255, unique=True)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'service',
+                    models.CharField(
+                        choices=[
+                            (
+                                'comfort_class_car_transfer',
+                                'comfort class car transfer',
+                            ),
+                            (
+                                'business_class_car_transfer',
+                                'business class car transfer',
+                            ),
+                            ('van_transfer', 'van transfer'),
+                            (
+                                'car_transporter_extra_shift',
+                                'car transporter extra shift',
+                            ),
+                            ('urgent_wash', 'urgent wash'),
+                            ('item_dry_clean', 'item dry clean'),
+                        ],
+                        max_length=255,
+                        unique=True,
+                    ),
+                ),
                 ('price', models.PositiveIntegerField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
@@ -26,12 +56,34 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Penalty',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('reason', models.CharField(max_length=255)),
                 ('amount', models.PositiveIntegerField()),
-                ('consequence', models.CharField(blank=True, choices=[('dismissal', 'dismissal'), ('warn', 'warn')], max_length=255, null=True)),
+                (
+                    'consequence',
+                    models.CharField(
+                        blank=True,
+                        choices=[('dismissal', 'dismissal'), ('warn', 'warn')],
+                        max_length=255,
+                        null=True,
+                    ),
+                ),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('staff', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='staff.staff')),
+                (
+                    'staff',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='staff.staff',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'penalty',
@@ -41,11 +93,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Surcharge',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('reason', models.CharField(max_length=255)),
                 ('amount', models.PositiveIntegerField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('staff', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='staff.staff')),
+                (
+                    'staff',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='staff.staff',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'surcharge',

@@ -1,10 +1,10 @@
 from economics.models import StaffServicePrice
 from shifts.models import CarToWash
 
-__all__ = ('get_car_to_wash_price',)
+__all__ = ('compute_car_transfer_price',)
 
 
-def get_car_to_wash_price(
+def compute_car_transfer_price(
     *,
     class_type: str,
     wash_type: str,
