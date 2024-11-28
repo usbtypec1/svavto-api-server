@@ -26,7 +26,7 @@ def compute_car_transfer_price(
             }
             service_name = car_class_type_to_service_name[class_type]
 
-    staff_service_price = StaffServicePrice.objects.filter(
+    staff_service_price = StaffServicePrice.objects.get(
         service=service_name
     ).values('price')
     return staff_service_price['price']
