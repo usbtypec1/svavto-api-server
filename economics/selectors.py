@@ -32,7 +32,7 @@ def compute_car_transfer_price(
     try:
         staff_service_price = StaffServicePrice.objects.get(
             service=service_name
-        ).values('price')
+        )
     except StaffServicePrice.DoesNotExist:
         raise StaffServicePriceNotFoundError
-    return staff_service_price['price']
+    return staff_service_price.price
