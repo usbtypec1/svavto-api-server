@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 __all__ = ('Staff', 'AdminStaff')
 
@@ -13,8 +14,8 @@ class Staff(models.Model):
     last_activity_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'staff'
-        verbose_name_plural = 'staff'
+        verbose_name = _('staff')
+        verbose_name_plural = _('staff')
 
     def __str__(self):
         return self.full_name
@@ -26,8 +27,8 @@ class AdminStaff(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'admin staff'
-        verbose_name_plural = 'admin staff'
+        verbose_name = _('admin staff')
+        verbose_name_plural = _('admin staff list')
 
     def __str__(self):
         return self.name or str(self.id)

@@ -9,7 +9,6 @@ from django.utils import timezone
 from shifts.exceptions import (
     ShiftAlreadyExistsError,
     ShiftAlreadyFinishedError,
-    ShiftNotConfirmedError,
     ShiftNotFoundError,
     StaffHasActiveShiftError,
 )
@@ -94,9 +93,6 @@ def start_shift(
         )
     except Shift.DoesNotExist:
         raise ShiftNotFoundError
-
-    if not shift.is_confirmed:
-        raise ShiftNotConfirmedError
 
     if shift.is_started:
         raise StaffHasActiveShiftError

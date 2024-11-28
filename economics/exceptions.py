@@ -8,4 +8,4 @@ __all__ = ('InvalidPenaltyConsequenceError',)
 class InvalidPenaltyConsequenceError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_code = 'invalid_penalty_consequence'
-    default_detail = _('Invalid penalty consequence')
+    default_detail = _('invalid penalty consequence')
