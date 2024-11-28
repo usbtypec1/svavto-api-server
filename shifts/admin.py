@@ -15,52 +15,52 @@ from shifts.models import (
 class CarToWashResource(resources.ModelResource):
     car_wash = resources.Field(
         attribute='shift__car_wash__name',
-        column_name=_('Car wash'),
+        column_name=_('car wash'),
     )
     shift_date = resources.Field(
         attribute='shift__date',
-        column_name=_('Shift date'),
+        column_name=_('shift date'),
     )
     staff = resources.Field(
         attribute='shift__staff__full_name',
-        column_name=_('Staff'),
+        column_name=_('staff'),
     )
-    number = resources.Field(attribute='number', column_name=_('Car number'))
+    number = resources.Field(attribute='number', column_name=_('car number'))
     car_class = resources.Field(
         attribute='car_class',
-        column_name=_('Car class')
+        column_name=_('car class')
     )
     wash_type = resources.Field(
         attribute='wash_type',
-        column_name=_('Wash type'),
+        column_name=_('wash type'),
     )
     windshield_washer_refilled_bottle_percentage = resources.Field(
         attribute='windshield_washer_refilled_bottle_percentage',
-        column_name=_('Windshield washer refilled bottle percentage'),
+        column_name=_('windshield washer refilled bottle percentage'),
     )
     transfer_price = resources.Field(
         attribute='transfer_price',
-        column_name=_('Transfer price at the moment'),
+        column_name=_('transfer price at the moment'),
     )
     comfort_class_car_washing_price = resources.Field(
         attribute='comfort_class_car_washing_price',
-        column_name=_('Price of comfort class car washing at the moment')
+        column_name=_('price of comfort class car washing at the moment')
     )
     business_class_car_washing_price = resources.Field(
         attribute='business_class_car_washing_price',
-        column_name=_('Price of business class car washing at the moment')
+        column_name=_('price of business class car washing at the moment')
     )
     van_washing_price = resources.Field(
         attribute='van_washing_price',
-        column_name=_('Price of van washing at the moment')
+        column_name=_('price of van washing at the moment')
     )
     windshield_washer_price_per_bottle = resources.Field(
         attribute='windshield_washer_price_per_bottle',
-        column_name=_('Price of windshield washer per bottle at the moment')
+        column_name=_('price of windshield washer per bottle at the moment')
     )
     created_at = resources.Field(
         attribute='created_at',
-        column_name=_('Created at'),
+        column_name=_('created at'),
     )
 
     class Meta:
@@ -104,8 +104,8 @@ class IsStartedFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('true', _('Started')),
-            ('false', _('Not started')),
+            ('true', _('started')),
+            ('false', _('not started')),
         )
 
     def queryset(self, request, queryset):
@@ -122,8 +122,8 @@ class IsFinishedFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('true', _('Finished')),
-            ('false', _('Not finished')),
+            ('true', _('yes')),
+            ('false', _('no')),
         )
 
     def queryset(self, request, queryset: QuerySet):
@@ -155,7 +155,7 @@ class ShiftAdmin(admin.ModelAdmin):
     )
     inlines = (CarToWashInline,)
     search_fields = ('staff__full_name', 'staff__id')
-    search_help_text = _('You can search by staff name or staff id.')
+    search_help_text = _('you can search by staff name or staff id')
     date_hierarchy = 'date'
 
 

@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation.trans_null import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from staff.models import Staff
 
@@ -23,8 +23,8 @@ class Penalty(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'penalty'
-        verbose_name_plural = 'penalties'
+        verbose_name = _('penalty')
+        verbose_name_plural = _('penalties')
 
     def __str__(self):
         return self.reason
@@ -37,8 +37,8 @@ class Surcharge(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'surcharge'
-        verbose_name_plural = 'surcharges'
+        verbose_name = _('surcharge')
+        verbose_name_plural = _('surcharges')
 
     def __str__(self):
         return self.reason
@@ -70,6 +70,10 @@ class StaffServicePrice(models.Model):
     price = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _('staff service price')
+        verbose_name_plural = _('staff service prices')
 
     def __str__(self):
         return self.get_service_display()

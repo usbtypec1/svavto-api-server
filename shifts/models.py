@@ -24,8 +24,8 @@ class AvailableDate(models.Model):
     year = models.PositiveSmallIntegerField()
 
     class Meta:
-        verbose_name = 'available date'
-        verbose_name_plural = 'available dates'
+        verbose_name = _('available date')
+        verbose_name_plural = _('available dates')
         unique_together = ('month', 'year')
         ordering = ('year', 'month')
 
@@ -56,15 +56,15 @@ class Shift(models.Model):
     created_at = models.DateTimeField()
 
     class Meta:
-        verbose_name = 'shift'
-        verbose_name_plural = 'shifts'
+        verbose_name = _('shift')
+        verbose_name_plural = _('shifts')
         unique_together = ('staff', 'date', 'is_extra')
 
     def __str__(self):
         return f'{self.staff.full_name} - {self.date}'
 
     def full_clean(
-        self, exclude=None, validate_unique=True, validate_constraints=True
+            self, exclude=None, validate_unique=True, validate_constraints=True
     ):
         finish_requirements = (
             self.is_finished,
@@ -73,7 +73,7 @@ class Shift(models.Model):
         )
         if any(finish_requirements) and not all(finish_requirements):
             raise ValidationError(
-                message=_('All finish requirements are not satisfied'),
+                message=_('all finish requirements are not satisfied'),
                 code='finish_requirements_not_satisfied',
             )
 
@@ -98,13 +98,13 @@ class Shift(models.Model):
 
 class CarToWash(models.Model):
     class CarType(models.TextChoices):
-        COMFORT = 'comfort'
-        BUSINESS = 'business'
-        VAN = 'van'
+        COMFORT = 'comfort', _('comfort')
+        BUSINESS = 'business', _('business')
+        VAN = 'van', _('van')
 
     class WashType(models.TextChoices):
-        PLANNED = 'planned'
-        URGENT = 'urgent'
+        PLANNED = 'planned', _('planned')
+        URGENT = 'urgent', _('urgent')
 
     number = models.CharField(max_length=20)
     car_wash = models.ForeignKey(
@@ -121,40 +121,40 @@ class CarToWash(models.Model):
         models.PositiveSmallIntegerField()
     )
     transfer_price = models.PositiveIntegerField(
-        help_text=_('Price of car transfer at the moment')
+        help_text=_('price of car transfer at the moment')
     )
     comfort_class_car_washing_price = models.PositiveIntegerField(
-        help_text=_('Price of comfort class car washing at the moment')
+        help_text=_('price of comfort class car washing at the moment')
     )
     business_class_car_washing_price = models.PositiveIntegerField(
-        help_text=_('Price of business class car washing at the moment')
+        help_text=_('price of business class car washing at the moment')
     )
     van_washing_price = models.PositiveIntegerField(
-        help_text=_('Price of van washing at the moment')
+        help_text=_('price of van washing at the moment')
     )
     windshield_washer_price_per_bottle = models.PositiveIntegerField(
-        help_text=_('Price of windshield washer per bottle at the moment')
+        help_text=_('price of windshield washer per bottle at the moment')
     )
     created_at = models.DateTimeField()
 
     class Meta:
-        verbose_name = 'car to wash'
-        verbose_name_plural = 'cars to wash'
+        verbose_name = _('car to wash')
+        verbose_name_plural = _('cars to wash')
         unique_together = ('number', 'shift')
 
     def __str__(self):
-        return f'Гос.номер: {self.number}'
+        return _('car number: %(number)s') % {'number': self.number}
 
 
 class CarToWashAdditionalService(models.Model):
     car = models.ForeignKey(CarToWash, on_delete=models.CASCADE)
     service = models.ForeignKey(CarWashService, on_delete=models.CASCADE)
     price = models.PositiveIntegerField(
-        help_text=_('Price of additional service at the moment')
+        help_text=_('price of additional service at the moment')
     )
     count = models.PositiveSmallIntegerField(default=1)
 
     class Meta:
-        verbose_name = 'additional service'
-        verbose_name_plural = 'additional services'
+        verbose_name = _('additional service')
+        verbose_name_plural = _('additional services')
         unique_together = ('car', 'service')

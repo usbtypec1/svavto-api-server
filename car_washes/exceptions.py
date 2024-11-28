@@ -12,16 +12,16 @@ __all__ = (
 class CarWashAlreadyExistsError(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_code = 'car_wash_already_exists'
-    default_detail = _('Car wash with this name already exists.')
+    default_detail = _('car wash with this name already exists')
 
 
 class CarWashNotFoundError(APIException):
     status_code = status.HTTP_404_NOT_FOUND
     default_code = 'car_wash_not_found'
-    default_detail = _('Car wash with this id does not exist.')
+    default_detail = _('car wash was not found')
 
 
 class CarWashServiceNotFoundError(APIException):
     status_code = status.HTTP_404_NOT_FOUND
     default_code = 'car_wash_service_not_found'
-    default_detail = _('Car wash service with this id does not exist.')
+    default_detail = _('car wash service was not found')

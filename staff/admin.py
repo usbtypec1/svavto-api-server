@@ -11,13 +11,13 @@ class ShiftInline(admin.TabularInline):
 
 
 class IsBannedFilter(admin.SimpleListFilter):
-    title = _('banned status')
-    parameter_name = 'is_banned'
+    title = _('banned')
+    parameter_name = 'banned'
 
     def lookups(self, request, model_admin):
         return (
-            ('true', _('Banned')),
-            ('false', _('Not banned')),
+            ('true', _('yes')),
+            ('false', _('no')),
         )
 
     def queryset(self, request, queryset):
