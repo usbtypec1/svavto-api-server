@@ -16,6 +16,7 @@ __all__ = (
     'CarAlreadyWashedOnShiftError',
     'ShiftAlreadyExistsError',
     'AdditionalServiceCouldNotBeProvidedError',
+    'StaffServicePriceNotFoundError',
 )
 
 
@@ -81,3 +82,9 @@ class AdditionalServiceCouldNotBeProvidedError(APIException):
     def __init__(self, service_ids: Iterable[UUID]):
         super().__init__(self.default_detail)
         self.extra = {'service_ids': service_ids}
+
+
+class StaffServicePriceNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('staff service price not found')
+    default_code = 'staff_service_price_not_found'
