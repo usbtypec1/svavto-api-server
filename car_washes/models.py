@@ -33,19 +33,39 @@ class CarWashService(models.Model):
     Represents a possible service that could be provided by car wash.
     """
 
-    id = models.UUIDField(primary_key=True, default=uuid4)
-    name = models.CharField(max_length=64)
-    is_countable = models.BooleanField(default=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid4,
+        verbose_name=_('car wash service id'),
+    )
+    name = models.CharField(
+        max_length=64,
+        verbose_name=_('car wash service name'),
+    )
+    is_countable = models.BooleanField(
+        default=False,
+        verbose_name=_('is countable'),
+    )
     parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
         related_name='children',
         null=True,
         blank=True,
+        verbose_name=_('parent service'),
     )
-    is_dry_cleaning = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    is_dry_cleaning = models.BooleanField(
+        default=False,
+        verbose_name=_('is dry cleaning'),
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('created at'),
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('updated at'),
+    )
 
     class Meta:
         verbose_name = _('car wash service')

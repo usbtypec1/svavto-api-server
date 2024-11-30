@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
@@ -20,8 +21,10 @@ class CarWashServiceAdmin(ImportExportModelAdmin):
     resource_class = CarWashServiceResource
     list_display = ('name', 'parent')
     list_select_related = ('parent',)
-    search_fields = ('name',)
+    search_fields = ('name', 'id')
+    search_help_text = _('search by name or id')
     readonly_fields = ('id', 'created_at', 'updated_at')
+    list_filter = ('is_dry_cleaning', 'is_countable')
 
 
 @admin.register(CarWash)
