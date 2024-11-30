@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 05:19+0000\n"
+"POT-Creation-Date: 2024-11-30 16:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: car_washes/admin.py:25
+msgid "search by name or id"
+msgstr "Поиск по названию или ID"
 
 #: car_washes/apps.py:8 car_washes/models.py:24 shifts/admin.py:18
 msgid "car wash"
@@ -40,19 +44,47 @@ msgstr "доступная услуга мойки не найдена"
 msgid "car washes"
 msgstr "мойки"
 
-#: car_washes/models.py:50
+#: car_washes/models.py:39
+msgid "car wash service id"
+msgstr "ID услуги"
+
+#: car_washes/models.py:43
+msgid "car wash service name"
+msgstr "название услуги"
+
+#: car_washes/models.py:47
+msgid "is countable"
+msgstr "исчисляемая услуга"
+
+#: car_washes/models.py:55
+msgid "parent service"
+msgstr "родительская категория"
+
+#: car_washes/models.py:59
+msgid "is dry cleaning"
+msgstr "химчистка"
+
+#: car_washes/models.py:63 shifts/admin.py:63
+msgid "created at"
+msgstr "дата создания"
+
+#: car_washes/models.py:67
+msgid "updated at"
+msgstr "дата изменения"
+
+#: car_washes/models.py:71
 msgid "car wash service"
 msgstr "доступная услуга мойки"
 
-#: car_washes/models.py:51
+#: car_washes/models.py:72
 msgid "car wash services"
 msgstr "доступные услуги моек"
 
-#: car_washes/models.py:79
+#: car_washes/models.py:100
 msgid "car wash service price"
 msgstr "услуга мойки"
 
-#: car_washes/models.py:80
+#: car_washes/models.py:101
 msgid "car wash service prices"
 msgstr "услуги моек"
 
@@ -164,10 +196,6 @@ msgstr "стоимость мойки фургона"
 msgid "price of windshield washer per bottle at the moment"
 msgstr "стоимость незамерзайки за бутылку"
 
-#: shifts/admin.py:63
-msgid "created at"
-msgstr "дата создания"
-
 #: shifts/admin.py:102 shifts/admin.py:107
 msgid "started"
 msgstr "начата"
@@ -196,45 +224,49 @@ msgstr "поиск по имени сотрудника или его id"
 msgid "shift"
 msgstr "смена"
 
-#: shifts/exceptions.py:24
+#: shifts/exceptions.py:25
 msgid "staff has no active shift"
 msgstr "сотрудник не начинал смену"
 
-#: shifts/exceptions.py:30
+#: shifts/exceptions.py:31
 msgid "car wash is the same as the current one"
 msgstr "выбранная мойка совпадает с текущей"
 
-#: shifts/exceptions.py:36
+#: shifts/exceptions.py:37
 msgid "shift for the specific date not found"
 msgstr "смена на указанную дату не найдена"
 
-#: shifts/exceptions.py:42
+#: shifts/exceptions.py:43
 msgid "staff has active shift"
 msgstr "сотрудник уже начал смену"
 
-#: shifts/exceptions.py:48
+#: shifts/exceptions.py:49
 msgid "shift is already finished"
 msgstr "смена уже завершена"
 
-#: shifts/exceptions.py:54
+#: shifts/exceptions.py:55
 msgid "staff has no any shift"
 msgstr "у сотрудника нет ни одной смены"
 
-#: shifts/exceptions.py:60
+#: shifts/exceptions.py:61
 msgid "shift not found"
 msgstr "смена не найдена"
 
-#: shifts/exceptions.py:66
+#: shifts/exceptions.py:67
 msgid "car was already washed on the shift"
 msgstr "авто уже добавлено за эту смену"
 
-#: shifts/exceptions.py:72
+#: shifts/exceptions.py:73
 msgid "shift already exists"
 msgstr "смена уже существует"
 
-#: shifts/exceptions.py:78
+#: shifts/exceptions.py:79
 msgid "additional service could not be provided"
 msgstr "доп. услуга не может быть предоставлена"
+
+#: shifts/exceptions.py:89
+msgid "staff service price not found"
+msgstr "стоимость услуги сотрудника"
 
 #: shifts/models.py:27
 msgid "available date"
