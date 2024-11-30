@@ -43,6 +43,7 @@ class CarWashService(models.Model):
         null=True,
         blank=True,
     )
+    is_dry_cleaning = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
