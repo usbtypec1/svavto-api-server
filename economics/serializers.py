@@ -14,7 +14,10 @@ __all__ = (
 class ServiceCostsInputSerializer(serializers.Serializer):
     from_date = serializers.DateField()
     to_date = serializers.DateField()
-    car_wash_id = serializers.IntegerField()
+    car_wash_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        allow_empty=False,
+    )
 
 
 class PenaltyCreateInputSerializer(serializers.Serializer):

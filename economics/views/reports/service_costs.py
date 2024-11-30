@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from economics.serializers import ServiceCostsInputSerializer
-from economics.services.reports import ServiceCostsReportGenerator
+from economics.services.reports.car_washes_revenue import (
+    CarWashesRevenueReportGenerator,
+)
 
 __all__ = ('ServiceCostsApi',)
 
@@ -18,10 +20,10 @@ class ServiceCostsApi(APIView):
 
         from_date: datetime.date = serialized_data['from_date']
         to_date: datetime.date = serialized_data['to_date']
-        car_wash_id: int = serialized_data['car_wash_id']
+        car_wash_ids: int = serialized_data['car_wash_ids']
 
-        report_generator = ServiceCostsReportGenerator(
-            car_wash_id=car_wash_id,
+        report_generator = CarWashesRevenueReportGenerator(
+            car_wash_ids=car_wash_ids,
             from_date=from_date,
             to_date=to_date,
         )
