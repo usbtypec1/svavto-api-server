@@ -45,8 +45,8 @@ error_messages_and_exceptions = (
 
 
 def map_create_result_to_dto(
-    car_to_wash: CarToWash,
-    additional_services: Iterable[CarToWashAdditionalService],
+        car_to_wash: CarToWash,
+        additional_services: Iterable[CarToWashAdditionalService],
 ) -> CarToWashCreateResultDTO:
     additional_services_dto = [
         CarToWashAdditionalServiceCreateResultDTO(
@@ -69,32 +69,38 @@ def map_create_result_to_dto(
     )
 
 
-def validate_car_wash_provides_services(
-    *,
-    car_wash_id: int,
-    service_ids: Iterable[UUID],
-) -> None:
+def get_car_wash_service_prices(
+        *,
+        car_wash_id: int,
+        car_wash_service_ids: Iterable[UUID],
+) -> dict[UUID, int]:
     """
-    Validate that the car wash provides all needed services.
+    Get the prices for the provided car wash services in specific car wash.
+    It's guaranteed that the car wash provides all services.
 
     Keyword Args:
         car_wash_id: The ID of the car wash.
-        service_ids: List of service IDs to provide.
+        car_wash_service_ids: List of car wash service IDs to get prices for.
+
+    Returns:
+        Dict: Dictionary containing service IDs as keys and prices as values.
 
     Raises:
         AdditionalServiceCouldNotBeProvidedError:
             If the car wash does not provide all needed services.
     """
-    service_ids_to_provide = set(service_ids)
+    service_ids_to_retrieve = set(car_wash_service_ids)
+    car_wash_service_prices = CarWashServicePrice.objects.filter(
+        car_wash_id=car_wash_id,
+    ).values('service_id', 'price')
 
-    service_ids_available_in_car_wash: set[UUID] = set(
-        CarWashServicePrice.objects.filter(
-            car_wash_id=car_wash_id, service_id__in=service_ids_to_provide
-        ).values_list('service_id', flat=True)
-    )
+    service_ids_with_prices: set[UUID] = {
+        service_price['service_id']
+        for service_price in car_wash_service_prices
+    }
 
     service_ids_unable_to_provide = (
-        service_ids_to_provide - service_ids_available_in_car_wash
+            service_ids_to_retrieve - service_ids_with_prices
     )
 
     if service_ids_unable_to_provide:
@@ -102,16 +108,21 @@ def validate_car_wash_provides_services(
             service_ids=service_ids_unable_to_provide,
         )
 
+    return {
+        service_price['service_id']: service_price['price']
+        for service_price in car_wash_service_prices
+    }
+
 
 @transaction.atomic
 def create_car_to_wash(
-    *,
-    shift: Shift,
-    number: str,
-    car_class: str,
-    wash_type: str,
-    windshield_washer_refilled_bottle_percentage: int,
-    additional_services: list[dict],
+        *,
+        shift: Shift,
+        number: str,
+        car_class: str,
+        wash_type: str,
+        windshield_washer_refilled_bottle_percentage: int,
+        additional_services: list[dict],
 ):
     transfer_price = compute_car_transfer_price(
         class_type=car_class,
@@ -129,10 +140,13 @@ def create_car_to_wash(
         ),
         transfer_price=transfer_price,
         car_wash=shift.car_wash,
-        comfort_class_car_washing_price=car_wash.comfort_class_car_washing_price,
-        business_class_car_washing_price=car_wash.business_class_car_washing_price,
+        comfort_class_car_washing_price=car_wash
+        .comfort_class_car_washing_price,
+        business_class_car_washing_price=car_wash
+        .business_class_car_washing_price,
         van_washing_price=car_wash.van_washing_price,
-        windshield_washer_price_per_bottle=car_wash.windshield_washer_price_per_bottle,
+        windshield_washer_price_per_bottle=car_wash
+        .windshield_washer_price_per_bottle,
         created_at=timezone.now(),
     )
     try:
@@ -140,8 +154,9 @@ def create_car_to_wash(
         car_to_wash.save()
     except ValidationError as error:
         if (
-            'Car to wash with this Number and Shift already exists.'
-            in error.messages
+                'Добавленное авто с такими значениями полей Number'
+                ' и Shift уже существует.'
+                in error.messages
         ):
             raise CarAlreadyWashedOnShiftError
         raise
@@ -156,9 +171,9 @@ def create_car_to_wash(
 
 @transaction.atomic
 def update_car_to_wash_additional_services(
-    *,
-    car_id: int,
-    additional_services: list[dict],
+        *,
+        car_id: int,
+        additional_services: list[dict],
 ) -> list[CarToWashAdditionalService]:
     """
     Update additional services for a car to wash.
@@ -174,15 +189,19 @@ def update_car_to_wash_additional_services(
     car_wash = CarToWash.objects.filter(id=car_id).values('car_wash_id').first()
     car_wash_id = car_wash['car_wash_id']
 
-    service_ids = [UUID(service['id']) for service in additional_services]
-    validate_car_wash_provides_services(
-        car_wash_id=car_wash_id, service_ids=service_ids
+    service_ids: list[UUID] = [service['id'] for service in additional_services]
+
+    service_id_to_price = get_car_wash_service_prices(
+        car_wash_id=car_wash_id,
+        car_wash_service_ids=service_ids,
     )
+
     services = [
         CarToWashAdditionalService(
             car_id=car_id,
             service_id=service['id'],
             count=service['count'],
+            price=service_id_to_price[service['id']],
         )
         for service in additional_services
     ]
@@ -230,7 +249,7 @@ def get_staff_cars_count_by_date(date: datetime.date) -> list[dict]:
 
 
 def get_cars_without_windshield_washer_by_date(
-    date: datetime.date,
+        date: datetime.date,
 ) -> list[str]:
     return CarToWash.objects.filter(
         shift__date=date,
@@ -239,9 +258,9 @@ def get_cars_without_windshield_washer_by_date(
 
 
 def update_shift_car_wash(
-    *,
-    shift: Shift,
-    car_wash_id: int,
+        *,
+        shift: Shift,
+        car_wash_id: int,
 ) -> None:
     if shift.car_wash_id == car_wash_id:
         raise CarWashSameAsCurrentError

@@ -19,7 +19,7 @@ class CarToWashCreateApi(APIView):
     def post(self, request: Request) -> Response:
         serializer = CarToWashCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serialized_data = serializer.data
+        serialized_data = serializer.validated_data
 
         staff_id: int = serialized_data['staff_id']
         number: str = serialized_data['number']
@@ -28,7 +28,7 @@ class CarToWashCreateApi(APIView):
         windshield_washer_refilled_bottle_percentage: int = serialized_data[
             'windshield_washer_refilled_bottle_percentage'
         ]
-        additional_services = serializer.validated_data['additional_services']
+        additional_services = serialized_data['additional_services']
 
         shift = get_staff_current_shift(staff_id)
         car_wash = create_car_to_wash(

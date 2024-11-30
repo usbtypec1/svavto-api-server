@@ -196,4 +196,4 @@ class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
 
 
 class UpdateCarToWashInputSerializer(serializers.Serializer):
-    additional_services = AdditionalServiceSerializer(many=True)
+    additional_services = AdditionalServiceSerializer(many=True, default=list)

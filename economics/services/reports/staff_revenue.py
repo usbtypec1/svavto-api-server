@@ -23,24 +23,18 @@ def merge_staff_statistics(
     surcharge_amount: int = staff_id_to_surcharge_amount.get(staff_id, 0)
     cars_statistics = staff_id_to_cars.get(staff_id, {})
     keys = (
-        'planned_comfort_cars_washing_cost',
         'planned_comfort_cars_washed_count',
-        'planned_business_cars_washing_cost',
         'planned_business_cars_washed_count',
-        'planned_business_cars_washing_cost',
         'planned_business_cars_washed_count',
-        'planned_vans_washing_cost',
         'planned_vans_washed_count',
-        'urgent_cars_washing_cost',
         'urgent_cars_washed_count',
-        'extra_shift_cars_washing_cost',
-        'extra_shift_cars_washed_count',
     )
     statistics = {key: cars_statistics.get(key, 0) for key in keys}
     return {
         'staff_id': staff_id,
         'penalty_amount': penalty_amount,
         'surcharge_amount': surcharge_amount,
+        'is_extra_shift': cars_statistics.get('is_extra', False),
     } | statistics
 
 
@@ -61,50 +55,23 @@ class StaffRevenueReportGenerator:
                 shift__date__gte=self.__from_date,
                 shift__date__lte=self.__to_date,
             )
-            .values('shift__date', 'shift__staff_id')
+            .values('shift__date', 'shift__staff_id', 'shift__is_extra')
             .annotate(
-                planned_comfort_cars_washing_cost=Sum(
-                    'transfer_price',
-                    filter=Q(
-                        car_class=CarToWash.CarType.COMFORT,
-                        shift__is_extra=False,
-                        wash_type=CarToWash.WashType.PLANNED,
-                    ),
-                    default=0,
-                ),
+                total_cost=Sum('transfer_price', default=0),
                 planned_comfort_cars_washed_count=Count(
                     'transfer_price',
                     filter=Q(
                         car_class=CarToWash.CarType.COMFORT,
-                        shift__is_extra=False,
                         wash_type=CarToWash.WashType.PLANNED,
                     ),
                 ),
-                planned_business_cars_washing_cost=Sum(
-                    'transfer_price',
-                    filter=Q(
-                        car_class=CarToWash.CarType.BUSINESS,
-                        shift__is_extra=False,
-                        wash_type=CarToWash.WashType.PLANNED,
-                    ),
-                    default=0,
-                ),
+
                 planned_business_cars_washed_count=Count(
                     'transfer_price',
                     filter=Q(
                         car_class=CarToWash.CarType.BUSINESS,
-                        shift__is_extra=False,
                         wash_type=CarToWash.WashType.PLANNED,
                     ),
-                ),
-                planned_vans_washing_cost=Sum(
-                    'transfer_price',
-                    filter=Q(
-                        car_class=CarToWash.CarType.VAN,
-                        shift__is_extra=False,
-                        wash_type=CarToWash.WashType.PLANNED,
-                    ),
-                    default=0,
                 ),
                 planned_vans_washed_count=Count(
                     'transfer_price',
@@ -114,29 +81,12 @@ class StaffRevenueReportGenerator:
                         wash_type=CarToWash.WashType.PLANNED,
                     ),
                 ),
-                urgent_cars_washing_cost=Sum(
-                    'transfer_price',
-                    filter=Q(
-                        wash_type=CarToWash.WashType.URGENT,
-                        shift__is_extra=False,
-                    ),
-                    default=0,
-                ),
                 urgent_cars_washed_count=Count(
                     'transfer_price',
                     filter=Q(
                         wash_type=CarToWash.WashType.URGENT,
                         shift__is_extra=False,
                     ),
-                ),
-                extra_shift_cars_washing_cost=Sum(
-                    'transfer_price',
-                    filter=Q(shift__is_extra=True),
-                    default=0,
-                ),
-                extra_shift_cars_washed_count=Count(
-                    'transfer_price',
-                    filter=Q(shift__is_extra=True),
                 ),
             )
         )
@@ -147,6 +97,7 @@ class StaffRevenueReportGenerator:
         for car in cars_to_wash:
             date = car.pop('shift__date')
             staff_id: int = car.pop('shift__staff_id')
+            car['is_extra'] = car.pop('shift__is_extra')
             date_to_cars[date][staff_id] = car
 
         return dict(date_to_cars)
@@ -214,6 +165,7 @@ class StaffRevenueReportGenerator:
             staff_id_to_penalty_amount = penalties_by_dates.get(date, {})
             staff_id_to_surcharge_amount = surcharges_by_dates.get(date, {})
             staff_id_to_cars = cars.get(date, {})
+            print(staff_id_to_cars)
 
             staff_ids = set(staff_id_to_penalty_amount) | set(
                 staff_id_to_surcharge_amount
