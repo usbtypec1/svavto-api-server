@@ -3,6 +3,7 @@ from rest_framework import serializers, views
 from rest_framework.response import Response
 
 from shifts.models import CarToWash, CarToWashAdditionalService
+from shifts.selectors import get_staff_current_shift
 
 
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
@@ -33,8 +34,10 @@ class CarToWashSerializer(serializers.ModelSerializer):
 
 class CarToWashListApi(views.APIView):
     def get(self, request, staff_id: int):
+        shift = get_staff_current_shift(staff_id)
         queryset = CarToWash.objects.filter(
-            shift__staff_id=staff_id
+            shift__staff_id=staff_id,
+            shift_id=shift.id,
         ).prefetch_related(
             Prefetch(
                 'cartowashadditionalservice_set',
