@@ -164,7 +164,7 @@ class CarToWashAdmin(ExportActionModelAdmin):
     resource_class = CarToWashResource
     readonly_fields = ('id',)
     inlines = (CarToWashAdditionalServiceInline,)
-    list_display = ('number', 'car_class', 'wash_type')
+    list_display = ('number', 'car_class', 'wash_type', 'created_at')
     list_filter = ('car_class', 'wash_type')
     list_select_related = ('shift',)
 
