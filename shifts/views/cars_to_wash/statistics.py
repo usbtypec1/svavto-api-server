@@ -26,12 +26,7 @@ class CarsToWashCountByEachStaffApi(APIView):
         date: datetime.date = serialized_data['date']
 
         staff_cars_count_by_date = get_staff_cars_count_by_date(date)
-
-        response_data = {
-            'cars': staff_cars_count_by_date,
-            'date': date,
-        }
-        return Response(response_data)
+        return Response(staff_cars_count_by_date)
 
 
 class CarsWithoutWindshieldWasherApi(APIView):

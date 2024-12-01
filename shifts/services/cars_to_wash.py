@@ -6,7 +6,7 @@ from uuid import UUID
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import BooleanField, Case, Count, Value, When
 
 from car_washes.models import CarWash, CarWashServicePrice
 from economics.selectors import compute_car_transfer_price
@@ -209,43 +209,69 @@ def update_car_to_wash_additional_services(
     return CarToWashAdditionalService.objects.bulk_create(services)
 
 
-def get_staff_cars_count_by_date(date: datetime.date) -> list[dict]:
+def get_staff_cars_count_by_date(date: datetime.date) -> dict:
     """
-    Compute the count of cars assigned to each staff member for a specific date.
+    Compute the count of cars assigned to each staff member for a specific date,
+    categorized by shift status.
 
     Args:
-        date (date): The date to count cars for
+        date (datetime.date): The date to count cars for
 
     Returns:
-        List[Dict]: List of dictionaries containing staff information and
-        their car count
-        Example: [
-            {
-                'staff_id': 1,
-                'staff_full_name': 'John Doe',
-                'cars_count': 5
-            },
-            ...
-        ]
-    """
-    shifts = (
-        Shift.objects.select_related('staff')
-        .filter(
-            date=date,
-            finished_at__isnull=True,
-        )
-        .annotate(cars_count=Count('id'))
-        .values('staff_id', 'staff__full_name', 'cars_count')
-        .order_by('-cars_count')
-    )
-    return [
+        Dict: A dictionary containing two lists of staff car counts:
         {
-            'staff_id': shift['staff_id'],
-            'staff_full_name': shift['staff__full_name'],
-            'cars_count': shift['cars_count'],
+            'active_shifts': [
+                {
+                    'staff_id': int,
+                    'staff_full_name': str,
+                    'cars_count': int
+                }
+            ],
+            'completed_shifts': [
+                {
+                    'staff_id': int,
+                    'staff_full_name': str,
+                    'cars_count': int
+                }
+            ]
         }
-        for shift in shifts
+
+    Raises:
+        ValueError: If the provided date is invalid or in the future
+    """
+    active_shifts_cars_count = (
+        CarToWash.objects
+        .filter(shift__date=date, shift__finished_at__isnull=True)
+        .values('shift__staff_id', 'shift__staff__full_name')
+        .annotate(cars_count=Count('id'))
+    )
+    completed_shifts_cars_count = (
+        CarToWash.objects
+        .filter(shift__date=date, shift__finished_at__isnull=False)
+        .values('shift__staff_id', 'shift__staff__full_name')
+        .annotate(cars_count=Count('id'))
+    )
+    active_shifts = [
+        {
+            'staff_id': staff['shift__staff_id'],
+            'staff_full_name': staff['shift__staff__full_name'],
+            'cars_count': staff['cars_count'],
+        }
+        for staff in active_shifts_cars_count
     ]
+    completed_shifts = [
+        {
+            'staff_id': staff['shift__staff_id'],
+            'staff_full_name': staff['shift__staff__full_name'],
+            'cars_count': staff['cars_count'],
+        }
+        for staff in completed_shifts_cars_count
+    ]
+    return {
+        'date': date,
+        'active_shifts': active_shifts,
+        'completed_shifts': completed_shifts
+    }
 
 
 def get_cars_without_windshield_washer_by_date(
