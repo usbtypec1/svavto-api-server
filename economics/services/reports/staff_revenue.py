@@ -28,6 +28,7 @@ def merge_staff_statistics(
         'planned_business_cars_washed_count',
         'planned_vans_washed_count',
         'urgent_cars_washed_count',
+        'total_cost',
     )
     statistics = {key: cars_statistics.get(key, 0) for key in keys}
     return {
@@ -165,7 +166,6 @@ class StaffRevenueReportGenerator:
             staff_id_to_penalty_amount = penalties_by_dates.get(date, {})
             staff_id_to_surcharge_amount = surcharges_by_dates.get(date, {})
             staff_id_to_cars = cars.get(date, {})
-            print(staff_id_to_cars)
 
             staff_ids = set(staff_id_to_penalty_amount) | set(
                 staff_id_to_surcharge_amount
