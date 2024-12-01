@@ -244,12 +244,14 @@ def get_staff_cars_count_by_date(date: datetime.date) -> dict:
         .filter(shift__date=date, shift__finished_at__isnull=True)
         .values('shift__staff_id', 'shift__staff__full_name')
         .annotate(cars_count=Count('id'))
+        .order_by('-cars_count')
     )
     completed_shifts_cars_count = (
         CarToWash.objects
         .filter(shift__date=date, shift__finished_at__isnull=False)
         .values('shift__staff_id', 'shift__staff__full_name')
         .annotate(cars_count=Count('id'))
+        .order_by('-cars_count')
     )
     active_shifts = [
         {
