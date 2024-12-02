@@ -130,6 +130,8 @@ class StaffRevenueReportGenerator:
                 'full_name',
                 'car_sharing_phone_number',
                 'console_phone_number',
+                'created_at',
+                'banned_at',
             ).order_by('full_name')
         )
 
