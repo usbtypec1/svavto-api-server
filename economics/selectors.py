@@ -1,8 +1,8 @@
-from economics.models import StaffServicePrice
+from economics.models import Penalty, StaffServicePrice
 from shifts.exceptions import StaffServicePriceNotFoundError
 from shifts.models import CarToWash
 
-__all__ = ('compute_car_transfer_price',)
+__all__ = ('compute_car_transfer_price', 'compute_staff_penalties_count')
 
 
 def compute_car_transfer_price(
@@ -36,3 +36,21 @@ def compute_car_transfer_price(
     except StaffServicePrice.DoesNotExist:
         raise StaffServicePriceNotFoundError
     return staff_service_price.price
+
+
+def compute_staff_penalties_count(
+        *,
+        staff_id: int,
+        reason: str,
+) -> int:
+    """
+    Get count of penalties that staff member has with specific reason.
+
+    Args:
+        staff_id: staff member's ID.
+        reason: reason of penalties.
+
+    Returns:
+        Penalties count.
+    """
+    return Penalty.objects.filter(staff_id=staff_id, reason=reason).count()
