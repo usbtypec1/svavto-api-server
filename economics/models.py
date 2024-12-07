@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from shifts.models import Shift
 from staff.models import Staff
 
 __all__ = ('Penalty', 'Surcharge', 'StaffServicePrice')
@@ -11,6 +12,7 @@ class Penalty(models.Model):
         DISMISSAL = 'dismissal', _('dismissal')
         WARN = 'warn', _('warn')
 
+    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
@@ -31,6 +33,7 @@ class Penalty(models.Model):
 
 
 class Surcharge(models.Model):
+    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
