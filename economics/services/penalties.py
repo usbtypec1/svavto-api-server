@@ -18,9 +18,9 @@ class PenaltyAmountAndConsequence:
 
 
 def compute_penalty_amount(
-    *,
-    staff_id: int,
-    reason: str,
+        *,
+        staff_id: int,
+        reason: str,
 ) -> PenaltyAmountAndConsequence:
     if reason == PenaltyReason.EARLY_LEAVE:
         return PenaltyAmountAndConsequence(amount=1000, consequence=None)
@@ -68,11 +68,24 @@ def compute_penalty_amount(
 
 
 def create_penalty(
-    *,
-    staff_id: int,
-    reason: str,
-    amount: int | None,
+        *,
+        shift_id: int,
+        staff_id: int,
+        reason: str,
+        amount: int | None,
 ) -> Penalty:
+    """
+    Give penalty for staff member.
+
+    Keyword Args:
+        shift_id: shift penalty related to.
+        staff_id: staff penalty is related to.
+        reason: reason for penalty.
+        amount: penalty amount.
+
+    Returns:
+        Created penalty.
+    """
     consequence: str | None = None
     if amount is None:
         penalty_amount_and_consequence = compute_penalty_amount(
@@ -83,6 +96,7 @@ def create_penalty(
         consequence = penalty_amount_and_consequence.consequence
 
     return Penalty.objects.create(
+        shift_id=shift_id,
         staff_id=staff_id,
         reason=reason,
         amount=amount,
