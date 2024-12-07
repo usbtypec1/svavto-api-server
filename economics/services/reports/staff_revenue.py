@@ -188,5 +188,11 @@ class StaffRevenueReportGenerator:
 
     def generate_report(self) -> dict:
         staff_list = self.get_staff()
+        surcharges = self.get_surcharges()
+        penalties = self.get_penalties()
+
+        for staff in staff_list:
+            pass
+
         staff_revenue = self.get_merged_statistics()
         return {'staff_revenue': staff_revenue, 'staff_list': staff_list}
