@@ -115,8 +115,16 @@ class CarToWash(models.Model):
         blank=True,
     )
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
-    car_class = models.CharField(max_length=16, choices=CarType.choices)
-    wash_type = models.CharField(max_length=16, choices=WashType.choices)
+    car_class = models.CharField(
+        max_length=16,
+        choices=CarType.choices,
+        verbose_name=_('car class'),
+    )
+    wash_type = models.CharField(
+        max_length=16,
+        choices=WashType.choices,
+        verbose_name=_('wash type'),
+    )
     windshield_washer_refilled_bottle_percentage = (
         models.PositiveSmallIntegerField()
     )

@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 from import_export import resources
 from import_export.admin import ExportActionModelAdmin, ExportMixin
+from rangefilter.filters import DateTimeRangeFilterBuilder
 
 from shifts.models import (
     AvailableDate,
@@ -165,8 +166,15 @@ class CarToWashAdmin(ExportActionModelAdmin):
     readonly_fields = ('id',)
     inlines = (CarToWashAdditionalServiceInline,)
     list_display = ('number', 'car_class', 'wash_type', 'created_at')
-    list_filter = ('car_class', 'wash_type')
+    list_filter = (
+        'car_class',
+        'wash_type',
+        ('created_at', DateTimeRangeFilterBuilder(
+            title=_('added at'),
+        )),
+    )
     list_select_related = ('shift',)
+    list_per_page = 100
 
 
 @admin.register(CarToWashAdditionalService)
