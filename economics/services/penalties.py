@@ -102,7 +102,11 @@ def compute_penalty_amount_and_consequence(
 
     penalty_config = PENALTY_CONFIGS.get(reason, tuple())
 
-    for threshold, amount, consequence in penalty_config:
+    for config in penalty_config:
+        threshold = config['threshold']
+        amount = config['amount']
+        consequence = config['consequence']
+
         if penalties_count <= threshold:
             return PenaltyAmountAndConsequence(
                 amount=amount,
