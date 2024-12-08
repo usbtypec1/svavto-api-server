@@ -7,20 +7,11 @@ __all__ = (
     'PenaltyCreateOutputSerializer',
     'PenaltyListOutputSerializer',
     'PenaltyListInputSerializer',
-    'ServiceCostsInputSerializer',
 )
 
 
-class ServiceCostsInputSerializer(serializers.Serializer):
-    from_date = serializers.DateField()
-    to_date = serializers.DateField()
-    car_wash_ids = serializers.ListField(
-        child=serializers.IntegerField(),
-        allow_empty=False,
-    )
-
-
 class PenaltyCreateInputSerializer(serializers.Serializer):
+    shift_id = serializers.IntegerField()
     staff_id = serializers.IntegerField()
     reason = serializers.CharField(max_length=255)
     amount = serializers.IntegerField(
@@ -31,10 +22,13 @@ class PenaltyCreateInputSerializer(serializers.Serializer):
 
 
 class PenaltyCreateOutputSerializer(serializers.ModelSerializer):
+    shift_id = serializers.IntegerField()
+
     class Meta:
         model = Penalty
         fields = (
             'id',
+            'shift_id',
             'staff',
             'reason',
             'amount',

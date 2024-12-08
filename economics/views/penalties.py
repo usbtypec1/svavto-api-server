@@ -11,6 +11,8 @@ from economics.serializers import (
     PenaltyListOutputSerializer,
 )
 from economics.services.penalties import create_penalty
+from shifts.services.shifts import ensure_shift_exists
+from staff.selectors import ensure_staff_exists
 
 __all__ = ('PenaltyListCreateApi',)
 
@@ -30,7 +32,7 @@ class PenaltyListCreateApi(APIView):
         if staff_ids is not None:
             penalties = penalties.filter(staff_id__in=staff_ids)
 
-        penalties = penalties[offset : offset + limit + 1]
+        penalties = penalties[offset: offset + limit + 1]
         is_end_of_list_reached = len(penalties) <= limit
         penalties = penalties[:limit]
 
@@ -45,13 +47,17 @@ class PenaltyListCreateApi(APIView):
     def post(self, request: Request) -> Response:
         serializer = PenaltyCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serialized_data = serializer.data
+        serialized_data = serializer.validated_data
 
+        shift_id: int = serialized_data['shift_id']
         staff_id: int = serialized_data['staff_id']
         reason: str = serialized_data['reason']
         amount: int | None = serialized_data['amount']
 
+        ensure_shift_exists(shift_id)
+        ensure_staff_exists(staff_id)
         penalty = create_penalty(
+            shift_id=shift_id,
             staff_id=staff_id,
             reason=reason,
             amount=amount,

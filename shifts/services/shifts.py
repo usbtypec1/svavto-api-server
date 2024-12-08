@@ -24,6 +24,7 @@ __all__ = (
     'get_shifts_by_staff_id',
     'delete_shift_by_id',
     'create_and_start_shifts',
+    'ensure_shift_exists',
 )
 
 
@@ -35,10 +36,10 @@ class ShiftDTO:
 
 
 def create_shifts(
-    *,
-    staff: Staff,
-    dates: Iterable[datetime.date],
-    is_extra: bool,
+        *,
+        staff: Staff,
+        dates: Iterable[datetime.date],
+        is_extra: bool,
 ) -> QuerySet[Shift]:
     shifts = [
         Shift(
@@ -56,11 +57,11 @@ def create_shifts(
 
 
 def create_and_start_shifts(
-    *,
-    staff: Staff,
-    dates: Iterable[datetime.date],
-    car_wash_id: int,
-    is_extra: bool,
+        *,
+        staff: Staff,
+        dates: Iterable[datetime.date],
+        car_wash_id: int,
+        is_extra: bool,
 ) -> QuerySet[Shift]:
     now = timezone.now()
     shifts = [
@@ -81,9 +82,9 @@ def create_and_start_shifts(
 
 
 def start_shift(
-    *,
-    shift_id: int,
-    car_wash_id: int,
+        *,
+        shift_id: int,
+        car_wash_id: int,
 ) -> Shift:
     try:
         shift = (
@@ -105,20 +106,20 @@ def start_shift(
 
 
 def ensure_staff_has_no_active_shift(
-    staff_id: int,
+        staff_id: int,
 ) -> None:
     if Shift.objects.filter(
-        staff_id=staff_id,
-        finished_at__isnull=True,
+            staff_id=staff_id,
+            finished_at__isnull=True,
     ).exists():
         raise StaffHasActiveShiftError
 
 
 def finish_shift(
-    *,
-    shift: Shift,
-    statement_photo_file_id: str,
-    service_app_photo_file_id: str,
+        *,
+        shift: Shift,
+        statement_photo_file_id: str,
+        service_app_photo_file_id: str,
 ) -> dict:
     if shift.finished_at is not None:
         raise ShiftAlreadyFinishedError
@@ -146,10 +147,10 @@ def finish_shift(
 
 
 def get_shifts_by_staff_id(
-    *,
-    staff_id: int,
-    month: int | None,
-    year: int | None,
+        *,
+        staff_id: int,
+        month: int | None,
+        year: int | None,
 ) -> QuerySet[Shift]:
     shifts = Shift.objects.select_related('car_wash').filter(staff_id=staff_id)
     if month is not None:
@@ -162,4 +163,9 @@ def get_shifts_by_staff_id(
 def delete_shift_by_id(shift_id: int) -> None:
     deleted_count, _ = Shift.objects.filter(id=shift_id).delete()
     if deleted_count == 0:
+        raise ShiftNotFoundError
+
+
+def ensure_shift_exists(shift_id: int) -> None:
+    if not Shift.objects.filter(id=shift_id).exists():
         raise ShiftNotFoundError
