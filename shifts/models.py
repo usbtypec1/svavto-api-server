@@ -58,7 +58,7 @@ class Shift(models.Model):
     class Meta:
         verbose_name = _('shift')
         verbose_name_plural = _('shifts')
-        unique_together = ('staff', 'date')
+        unique_together = ('staff', 'date', 'is_extra')
 
     def __str__(self):
         return f'{self.staff.full_name} - {self.date}'

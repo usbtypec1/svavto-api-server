@@ -3,7 +3,7 @@ from django.urls import include, path
 from economics.views import (
     PenaltyListCreateApi,
     ServiceCostsApi,
-    StaffRevenueReportApi,
+    StaffShiftsStatisticsReportApi,
     SurchargeCreateApi,
 )
 
@@ -14,9 +14,9 @@ reports_urlpatterns = [
         name='service-costs',
     ),
     path(
-        r'staff-revenue',
-        StaffRevenueReportApi.as_view(),
-        name='staff-revenue-report',
+        r'staff-shifts-statistics/',
+        StaffShiftsStatisticsReportApi.as_view(),
+        name='staff-shifts-statistics',
     ),
 ]
 
