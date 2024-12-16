@@ -1,6 +1,6 @@
 import datetime
-from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Iterable
 
 from django.db.models import QuerySet
 

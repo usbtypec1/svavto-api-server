@@ -1,168 +1,123 @@
-import collections
 import datetime
+from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
-from uuid import UUID
 
-from django.db.models import Count, Q
+from shifts.models import CarToWash
+from shifts.selectors import (
+    CarToWashAdditionalServiceDTO,
+    get_cars_to_wash_for_period, CarToWashDTO,
+    group_additional_services_by_car_to_wash_id,
+)
 
-from car_washes.models import CarWashServicePrice
-from shifts.models import CarToWash, CarToWashAdditionalService
-
-__all__ = ('ServiceProvidedByCarWash', 'CarWashesRevenueReportGenerator')
-
-
-@dataclass(frozen=True, slots=True)
-class ServiceProvidedByCarWash:
-    id: UUID
-    name: str
-    price: int
+__all__ = ('get_car_washes_sales_report',)
 
 
-class CarWashesRevenueReportGenerator:
-    def __init__(
-            self,
-            *,
-            car_wash_ids: int,
-            from_date: datetime.date,
-            to_date: datetime.date,
-    ):
-        self.__car_wash_ids = car_wash_ids
-        self.__from_date = from_date
-        self.__to_date = to_date
+def compute_total_cost(car_to_wash: CarToWashDTO) -> int:
+    additional_services_total_cost = sum(
+        additional_service.total_price
+        for additional_service in car_to_wash.additional_services
+    )
+    return (
+            car_to_wash.washing_price
+            + car_to_wash.windshield_washer_price
+            + additional_services_total_cost
+    )
 
-    def get_services_provided_by_car_wash(
-            self,
-    ) -> list[ServiceProvidedByCarWash]:
-        car_wash_service_prices = (
-            CarWashServicePrice.objects
-            .filter(car_wash_id__in=self.__car_wash_ids)
-            .values('service_id', 'price', 'service__name')
+
+def merge_additional_services(
+        additional_services: Iterable[CarToWashAdditionalServiceDTO],
+) -> list[CarToWashAdditionalServiceDTO]:
+    service_id_to_service = {}
+
+    for service in additional_services:
+        if service.id not in service_id_to_service:
+            service_id_to_service[service.id] = service
+        else:
+            previous_service = service_id_to_service[service.id]
+            merged_service = CarToWashAdditionalServiceDTO(
+                id=service.id,
+                name=service.name,
+                count=previous_service.count + service.count,
+                total_price=previous_service.total_price + service.total_price,
+                car_to_wash_id=service.car_to_wash_id,
+            )
+            service_id_to_service[service.id] = merged_service
+
+    return list(service_id_to_service.values())
+
+
+@dataclass(frozen=True)
+class ShiftCarWashCarsToWash:
+    shift_date: datetime.date
+    car_wash_id: int
+    cars: list[CarToWashDTO]
+
+
+def merge_cars_to_wash_to_statistics(
+        cars: Iterable[CarToWashDTO],
+) -> dict:
+    cars_statistics = {
+        'comfort_cars_washed_count': 0,
+        'business_cars_washed_count': 0,
+        'van_cars_washed_count': 0,
+        'windshield_washer_refilled_bottle_percentage': 0,
+        'total_cost': 0,
+        'additional_services': [],
+    }
+
+    for car in cars:
+        if car.car_class == CarToWash.CarType.COMFORT:
+            cars_statistics['comfort_cars_washed_count'] += 1
+        elif car.car_class == CarToWash.CarType.BUSINESS:
+            cars_statistics['business_cars_washed_count'] += 1
+        elif car.car_class == CarToWash.CarType.VAN:
+            cars_statistics['van_cars_washed_count'] += 1
+        else:
+            raise ValueError(f'Unknown car class: {car.car_class}')
+
+        cars_statistics['windshield_washer_refilled_bottle_percentage'] += (
+            car.windshield_washer_refilled_bottle_percentage
         )
-        return [
-            ServiceProvidedByCarWash(
-                id=service['service_id'],
-                name=service['service__name'],
-                price=service['price'],
-            )
-            for service in car_wash_service_prices
-        ]
-
-    def compute_additional_services(
-            self,
-    ):
-        additional_services = (
-            CarToWashAdditionalService.objects.filter(
-                car__shift__date__gte=self.__from_date,
-                car__shift__date__lte=self.__to_date,
-                car__car_wash_id__in=self.__car_wash_ids,
-            )
-            .select_related('service')
-            .values('service_id', 'service__name', 'car__shift__date', 'count')
+        cars_statistics['additional_services'] = merge_additional_services(
+            cars_statistics['additional_services'] + car.additional_services
         )
 
-        date_to_services = collections.defaultdict(list)
-        for service in additional_services:
-            date_to_services[service['car__shift__date']].append(service)
+        cars_statistics['total_cost'] += compute_total_cost(car)
 
-        result = []
-        for date, services in date_to_services.items():
-            services_grouped_by_date = []
-            service_id_to_count = collections.defaultdict(int)
-            for service in services:
-                service_id_to_count[service['service_id']] += service['count']
+    return cars_statistics
 
-            for service_id, count in service_id_to_count.items():
-                services_grouped_by_date.append(
-                    {
-                        'id': service_id,
-                        'count': count,
-                    }
-                )
 
-            result.append(
-                {
-                    'date': date,
-                    'services': services_grouped_by_date,
-                }
-            )
-        return result
+def group_cars_to_wash_by_shift_date_and_car_wash_id(
+        cars_to_wash: Iterable[CarToWashDTO],
+):
+    shift_date_and_car_wash_id_to_cars = defaultdict(list)
 
-    def compute_cars_count(self):
-        cars_to_wash = (
-            CarToWash.objects.select_related('shift')
-            .filter(
-                shift__date__gte=self.__from_date,
-                shift__date__lte=self.__to_date,
-                car_wash_id__in=self.__car_wash_ids,
-            )
-            .values('shift__date')
-            .annotate(
-                planned_comfort_cars_washed_count=Count(
-                    'id',
-                    filter=Q(
-                        car_class=CarToWash.CarType.COMFORT,
-                        shift__is_extra=False,
-                        wash_type=CarToWash.WashType.PLANNED,
-                    ),
-                ),
-                planned_business_count=Count(
-                    'id',
-                    filter=Q(
-                        car_class=CarToWash.CarType.BUSINESS,
-                        shift__is_extra=False,
-                        wash_type=CarToWash.WashType.PLANNED,
-                    ),
-                ),
-                planned_van_count=Count(
-                    'id',
-                    filter=Q(
-                        car_class=CarToWash.CarType.VAN,
-                        shift__is_extra=False,
-                        wash_type=CarToWash.WashType.PLANNED,
-                    ),
-                ),
-                extra_count=Count(
-                    'id',
-                    filter=Q(shift__is_extra=True),
-                ),
-                urgent_count=Count(
-                    'id',
-                    filter=Q(
-                        wash_type=CarToWash.WashType.URGENT,
-                        shift__is_extra=False,
-                    ),
-                ),
-            )
-        )
-        for car in cars_to_wash:
-            car['date'] = car.pop('shift__date')
-        return list(cars_to_wash)
+    for car in cars_to_wash:
+        key = (car.shift_date, car.car_wash_id)
+        shift_date_and_car_wash_id_to_cars[key].append(car)
 
-    def get_cars_count_with_additional_services(
-            self,
-    ):
-        cars_count = self.compute_cars_count()
-        additional_services = self.compute_additional_services()
-        date_to_additional_services = {
-            additional_service['date']: additional_service['services']
-            for additional_service in additional_services
+
+    return [
+        {
+            'shift_date': shift_date,
+            'car_wash_id': car_wash_id,
+            **merge_cars_to_wash_to_statistics(cars),
         }
+        for (shift_date, car_wash_id), cars
+        in shift_date_and_car_wash_id_to_cars.items()
+    ]
 
-        return [
-            {
-                **cars_count_for_date,
-                'additional_services': date_to_additional_services.get(
-                    cars_count_for_date['date'],
-                    [],
-                ),
-            }
-            for cars_count_for_date in cars_count
-        ]
 
-    def generate_report(self) -> dict:
-        return {
-            'report_by_dates': self.get_cars_count_with_additional_services(),
-            'car_wash_additional_services': (
-                self.get_services_provided_by_car_wash()
-            ),
-        }
+def get_car_washes_sales_report(
+        *,
+        car_wash_ids: Iterable[int],
+        from_date: datetime.date,
+        to_date: datetime.date,
+):
+    cars_to_wash = get_cars_to_wash_for_period(
+        from_date=from_date,
+        to_date=to_date,
+        car_wash_ids=car_wash_ids,
+    )
+    return group_cars_to_wash_by_shift_date_and_car_wash_id(cars_to_wash)

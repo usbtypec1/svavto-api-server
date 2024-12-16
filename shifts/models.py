@@ -153,9 +153,31 @@ class CarToWash(models.Model):
     def __str__(self):
         return _('car number: %(number)s') % {'number': self.number}
 
+    @property
+    def washing_price(self) -> int:
+        if self.car_class == self.CarType.COMFORT:
+            return self.comfort_class_car_washing_price
+        if self.car_class == self.CarType.BUSINESS:
+            return self.business_class_car_washing_price
+        if self.car_class == self.CarType.VAN:
+            return self.van_washing_price
+        raise ValueError(_('unknown car class'))
+
+    @property
+    def windshield_washer_price(self) -> int:
+        return int(
+            self.windshield_washer_refilled_bottle_percentage *
+            self.windshield_washer_price_per_bottle
+            / 100
+        )
+
 
 class CarToWashAdditionalService(models.Model):
-    car = models.ForeignKey(CarToWash, on_delete=models.CASCADE)
+    car = models.ForeignKey(
+        CarToWash,
+        on_delete=models.CASCADE,
+        related_name='additional_services',
+    )
     service = models.ForeignKey(CarWashService, on_delete=models.CASCADE)
     price = models.PositiveIntegerField(
         help_text=_('price of additional service at the moment')
@@ -166,3 +188,7 @@ class CarToWashAdditionalService(models.Model):
         verbose_name = _('additional service')
         verbose_name_plural = _('additional services')
         unique_together = ('car', 'service')
+
+    @property
+    def total_price(self) -> int:
+        return self.price * self.count

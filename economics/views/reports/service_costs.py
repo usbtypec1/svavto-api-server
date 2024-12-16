@@ -4,10 +4,12 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from economics.serializers import ServiceCostsInputSerializer
-from economics.services.reports.car_washes_revenue import (
-    CarWashesRevenueReportGenerator,
+from economics.serializers import (
+    CarWashRevenueForShiftSerializer, CarWashesRevenueReportOutputSerializer,
+    ServiceCostsInputSerializer,
+    CarWashRevenueForShiftAdditionalServiceSerializer,
 )
+from economics.services.reports import get_car_washes_sales_report
 
 __all__ = ('ServiceCostsApi',)
 
@@ -20,12 +22,14 @@ class ServiceCostsApi(APIView):
 
         from_date: datetime.date = serialized_data['from_date']
         to_date: datetime.date = serialized_data['to_date']
-        car_wash_ids: int = serialized_data['car_wash_ids']
+        car_wash_ids: list[int] = serialized_data['car_wash_ids']
 
-        report_generator = CarWashesRevenueReportGenerator(
+        report = get_car_washes_sales_report(
             car_wash_ids=car_wash_ids,
             from_date=from_date,
             to_date=to_date,
         )
-        response_data = report_generator.generate_report()
-        return Response(response_data)
+        response_data = {'car_washes_revenue': report}
+        serializer = CarWashesRevenueReportOutputSerializer(response_data)
+
+        return Response(serializer.data)

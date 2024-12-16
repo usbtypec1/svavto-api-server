@@ -7,6 +7,9 @@ __all__ = (
     'StaffShiftsStatisticsSerializer',
     'StaffShiftsStatisticsReportInputSerializer',
     'StaffShiftsStatisticsReportOutputSerializer',
+    'CarWashesRevenueReportOutputSerializer',
+    'CarWashRevenueForShiftSerializer',
+    'CarWashRevenueForShiftAdditionalServiceSerializer',
 )
 
 
@@ -16,6 +19,32 @@ class ServiceCostsInputSerializer(serializers.Serializer):
     car_wash_ids = serializers.ListField(
         child=serializers.IntegerField(),
         allow_empty=False,
+    )
+
+
+class CarWashRevenueForShiftAdditionalServiceSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    count = serializers.IntegerField()
+    total_price = serializers.IntegerField()
+
+
+class CarWashRevenueForShiftSerializer(serializers.Serializer):
+    car_wash_id = serializers.IntegerField()
+    shift_date = serializers.DateField()
+    comfort_cars_washed_count = serializers.IntegerField()
+    business_cars_washed_count = serializers.IntegerField()
+    van_cars_washed_count = serializers.IntegerField()
+    windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
+    total_cost = serializers.IntegerField()
+    additional_services = serializers.ListField(
+        child=CarWashRevenueForShiftAdditionalServiceSerializer(),
+    )
+
+
+class CarWashesRevenueReportOutputSerializer(serializers.Serializer):
+    car_washes_revenue = serializers.ListField(
+        child=CarWashRevenueForShiftSerializer(),
     )
 
 

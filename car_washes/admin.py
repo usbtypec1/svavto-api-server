@@ -32,6 +32,7 @@ class CarWashAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at')
     search_fields = ('name',)
     inlines = (CarWashServicePriceInline,)
+    readonly_fields = ('id',)
 
 
 @admin.register(CarWashServicePrice)
