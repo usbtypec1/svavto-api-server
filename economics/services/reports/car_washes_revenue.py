@@ -1,8 +1,9 @@
 import datetime
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 
+from car_washes.models import CarWash
 from shifts.models import CarToWash
 from shifts.selectors import (
     CarToWashAdditionalServiceDTO,
@@ -90,6 +91,7 @@ def merge_cars_to_wash_to_statistics(
 
 def group_cars_to_wash_by_shift_date_and_car_wash_id(
         cars_to_wash: Iterable[CarToWashDTO],
+        car_wash_id_to_name: Mapping[int, str],
 ):
     shift_date_and_car_wash_id_to_cars = defaultdict(list)
 
@@ -97,11 +99,11 @@ def group_cars_to_wash_by_shift_date_and_car_wash_id(
         key = (car.shift_date, car.car_wash_id)
         shift_date_and_car_wash_id_to_cars[key].append(car)
 
-
     return [
         {
             'shift_date': shift_date,
             'car_wash_id': car_wash_id,
+            'car_wash_name': car_wash_id_to_name,
             **merge_cars_to_wash_to_statistics(cars),
         }
         for (shift_date, car_wash_id), cars
@@ -120,4 +122,11 @@ def get_car_washes_sales_report(
         to_date=to_date,
         car_wash_ids=car_wash_ids,
     )
-    return group_cars_to_wash_by_shift_date_and_car_wash_id(cars_to_wash)
+    car_washes = CarWash.objects.values('id', 'name')
+    car_wash_id_to_name = {
+        car_wash['id']: car_wash['name'] for car_wash in car_washes
+    }
+    return group_cars_to_wash_by_shift_date_and_car_wash_id(
+        cars_to_wash=cars_to_wash,
+        car_wash_id_to_name=car_wash_id_to_name,
+    )
