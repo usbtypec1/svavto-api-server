@@ -103,7 +103,7 @@ def group_cars_to_wash_by_shift_date_and_car_wash_id(
         {
             'shift_date': shift_date,
             'car_wash_id': car_wash_id,
-            'car_wash_name': car_wash_id_to_name,
+            'car_wash_name': car_wash_id_to_name[car_wash_id],
             **merge_cars_to_wash_to_statistics(cars),
         }
         for (shift_date, car_wash_id), cars
