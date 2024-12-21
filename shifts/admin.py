@@ -165,15 +165,22 @@ class CarToWashAdmin(ExportActionModelAdmin):
     resource_class = CarToWashResource
     readonly_fields = ('id',)
     inlines = (CarToWashAdditionalServiceInline,)
-    list_display = ('number', 'car_class', 'wash_type', 'created_at')
+    list_display = (
+        'number',
+        'car_wash',
+        'car_class',
+        'wash_type',
+        'created_at',
+    )
     list_filter = (
         'car_class',
+        'car_wash',
         'wash_type',
         ('created_at', DateTimeRangeFilterBuilder(
             title=_('added at'),
         )),
     )
-    list_select_related = ('shift',)
+    list_select_related = ('shift', 'car_wash')
     list_per_page = 100
 
 
