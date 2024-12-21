@@ -1,19 +1,19 @@
 from rest_framework import serializers
 
 __all__ = (
-    'ServiceCostsInputSerializer',
     'StaffItemSerializer',
     'ShiftStatisticsSerializer',
     'StaffShiftsStatisticsSerializer',
     'StaffShiftsStatisticsReportInputSerializer',
     'StaffShiftsStatisticsReportOutputSerializer',
+    'CarWashesRevenueReportInputSerializer',
     'CarWashesRevenueReportOutputSerializer',
     'CarWashRevenueForShiftSerializer',
     'CarWashRevenueForShiftAdditionalServiceSerializer',
 )
 
 
-class ServiceCostsInputSerializer(serializers.Serializer):
+class CarWashesRevenueReportInputSerializer(serializers.Serializer):
     from_date = serializers.DateField()
     to_date = serializers.DateField()
     car_wash_ids = serializers.ListField(

@@ -5,9 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from economics.serializers import (
-    CarWashRevenueForShiftSerializer, CarWashesRevenueReportOutputSerializer,
-    ServiceCostsInputSerializer,
-    CarWashRevenueForShiftAdditionalServiceSerializer,
+    CarWashesRevenueReportOutputSerializer,
+    CarWashesRevenueReportInputSerializer,
 )
 from economics.services.reports import get_car_washes_sales_report
 
@@ -16,7 +15,7 @@ __all__ = ('ServiceCostsApi',)
 
 class ServiceCostsApi(APIView):
     def get(self, request: Request) -> Response:
-        serializer = ServiceCostsInputSerializer(data=request.query_params)
+        serializer = CarWashesRevenueReportInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
 
