@@ -7,8 +7,8 @@ from car_washes.models import CarWash
 from shifts.models import CarToWash
 from shifts.selectors import (
     CarToWashAdditionalServiceDTO,
-    get_cars_to_wash_for_period, CarToWashDTO,
-    group_additional_services_by_car_to_wash_id,
+    get_cars_to_wash_for_period,
+    CarToWashDTO,
 )
 
 __all__ = ('get_car_washes_sales_report',)
@@ -62,7 +62,7 @@ def merge_cars_to_wash_to_statistics(
         'comfort_cars_washed_count': 0,
         'business_cars_washed_count': 0,
         'van_cars_washed_count': 0,
-        'windshield_washer_refilled_bottle_percentage': 0,
+        'windshield_washer_refilled_bottle_count': 0,
         'total_cost': 0,
         'additional_services': [],
     }
@@ -77,8 +77,8 @@ def merge_cars_to_wash_to_statistics(
         else:
             raise ValueError(f'Unknown car class: {car.car_class}')
 
-        cars_statistics['windshield_washer_refilled_bottle_percentage'] += (
-            car.windshield_washer_refilled_bottle_percentage
+        cars_statistics['windshield_washer_refilled_bottle_count'] += (
+            car.windshield_washer_refilled_bottle_count
         )
         cars_statistics['additional_services'] = merge_additional_services(
             cars_statistics['additional_services'] + car.additional_services

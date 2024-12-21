@@ -36,7 +36,7 @@ class CarWashRevenueForShiftSerializer(serializers.Serializer):
     comfort_cars_washed_count = serializers.IntegerField()
     business_cars_washed_count = serializers.IntegerField()
     van_cars_washed_count = serializers.IntegerField()
-    windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
+    windshield_washer_refilled_bottle_count = serializers.IntegerField()
     total_cost = serializers.IntegerField()
     additional_services = serializers.ListField(
         child=CarWashRevenueForShiftAdditionalServiceSerializer(),

@@ -1,4 +1,5 @@
 import datetime
+import math
 from collections import defaultdict
 from collections.abc import Generator, Iterable
 from dataclasses import dataclass
@@ -14,7 +15,7 @@ __all__ = (
     'get_staff_current_shift',
     'has_any_finished_shift',
     'CarToWashDTO',
-    'iter_cars_to_wash_for_period',
+    'get_cars_to_wash_for_period',
     'map_car_to_wash',
     'CarToWashAdditionalServiceDTO',
 )
@@ -102,8 +103,34 @@ class CarToWashDTO:
     shift_date: datetime.date
     washing_price: int
     windshield_washer_price: int
-    windshield_washer_refilled_bottle_percentage: int
+    windshield_washer_refilled_bottle_count: int
     additional_services: list[CarToWashAdditionalServiceDTO]
+
+
+def compute_windshield_washer_refilled_bottles_count(
+        windshield_washer_refilled_bottle_percentage: int,
+) -> int:
+    """
+    Calculates the number of bottles needed to refill a windshield washer
+    based on the given percentage of a single bottle's capacity.
+
+    Any amount of liquid up to 100% of a bottle's capacity is considered as
+    one bottle.
+
+    For example, 101% of a bottle's capacity is considered as 2 bottles.
+    50% of a bottle's capacity is considered as 1 bottle.
+    0% of a bottle's capacity is considered as 0 bottles.
+
+    Args:
+        windshield_washer_refilled_bottle_percentage (int):
+            The total percentage of a bottle's capacity needed to refill the
+            washer.
+            Can be greater than 100 for multiple bottles.
+
+    Returns:
+        int: The total number of bottles needed to meet the given percentage.
+    """
+    return math.ceil(windshield_washer_refilled_bottle_percentage / 100)
 
 
 def group_additional_services_by_car_to_wash_id(
@@ -129,7 +156,14 @@ def map_car_to_wash(
     mapped_cars_to_wash: list[CarToWashDTO] = []
 
     for car_to_wash in cars_to_wash:
-        car_to_wash_additional_services = car_id_to_additional_services.get(car_to_wash.id, [])
+        car_to_wash_additional_services = car_id_to_additional_services.get(
+            car_to_wash.id,
+            []
+        )
+
+        bottle_count = compute_windshield_washer_refilled_bottles_count(
+            car_to_wash.windshield_washer_refilled_bottle_percentage,
+        )
         mapped_cars_to_wash.append(
             CarToWashDTO(
                 id=car_to_wash.id,
@@ -138,9 +172,7 @@ def map_car_to_wash(
                 shift_date=car_to_wash.shift.date,
                 washing_price=car_to_wash.washing_price,
                 windshield_washer_price=car_to_wash.windshield_washer_price,
-                windshield_washer_refilled_bottle_percentage=(
-                    car_to_wash.windshield_washer_refilled_bottle_percentage
-                ),
+                windshield_washer_refilled_bottle_count=bottle_count,
                 additional_services=car_to_wash_additional_services,
             ),
         )
