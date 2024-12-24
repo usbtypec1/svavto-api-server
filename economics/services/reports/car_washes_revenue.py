@@ -1,9 +1,7 @@
 import datetime
 from collections import defaultdict
-from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from collections.abc import Iterable
 
-from car_washes.models import CarWash
 from shifts.models import CarToWash
 from shifts.selectors import (
     CarToWashAdditionalServiceDTO, CarToWashDTO, get_cars_to_wash_for_period,
@@ -57,12 +55,6 @@ def merge_additional_services(
     return list(service_id_to_service.values())
 
 
-@dataclass(frozen=True)
-class ShiftCarWashCarsToWash:
-    shift_date: datetime.date
-    car_wash_id: int
-    cars: list[CarToWashDTO]
-
 
 def merge_cars_to_wash_to_statistics(
         cars: Iterable[CarToWashDTO],
@@ -99,25 +91,21 @@ def merge_cars_to_wash_to_statistics(
     return cars_statistics
 
 
-def group_cars_to_wash_by_shift_date_and_car_wash_id(
+def group_cars_to_wash_by_shift_date(
         cars_to_wash: Iterable[CarToWashDTO],
-        car_wash_id_to_name: Mapping[int, str],
-):
-    shift_date_and_car_wash_id_to_cars = defaultdict(list)
+) -> list[dict]:
+    shift_date_to_cars = defaultdict(list)
 
     for car in cars_to_wash:
-        key = (car.shift_date, car.car_wash_id)
-        shift_date_and_car_wash_id_to_cars[key].append(car)
+        shift_date_to_cars[car.shift_date].append(car)
 
     return [
         {
             'shift_date': shift_date,
-            'car_wash_id': car_wash_id,
-            'car_wash_name': car_wash_id_to_name[car_wash_id],
             **merge_cars_to_wash_to_statistics(cars),
         }
-        for (shift_date, car_wash_id), cars
-        in shift_date_and_car_wash_id_to_cars.items()
+        for shift_date, cars
+        in shift_date_to_cars.items()
     ]
 
 
@@ -132,11 +120,6 @@ def get_car_washes_sales_report(
         to_date=to_date,
         car_wash_ids=car_wash_ids,
     )
-    car_washes = CarWash.objects.values('id', 'name')
-    car_wash_id_to_name = {
-        car_wash['id']: car_wash['name'] for car_wash in car_washes
-    }
-    return group_cars_to_wash_by_shift_date_and_car_wash_id(
+    return group_cars_to_wash_by_shift_date(
         cars_to_wash=cars_to_wash,
-        car_wash_id_to_name=car_wash_id_to_name,
     )

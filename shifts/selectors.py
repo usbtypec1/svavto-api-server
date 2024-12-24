@@ -98,7 +98,6 @@ class CarToWashAdditionalServiceDTO:
 @dataclass(frozen=True, slots=True)
 class CarToWashDTO:
     id: int
-    car_wash_id: int
     car_class: str
     shift_date: datetime.date
     washing_price: int
@@ -110,26 +109,6 @@ class CarToWashDTO:
 def compute_windshield_washer_refilled_bottles_count(
         windshield_washer_refilled_bottle_percentage: int,
 ) -> int:
-    """
-    Calculates the number of bottles needed to refill a windshield washer
-    based on the given percentage of a single bottle's capacity.
-
-    Any amount of liquid up to 100% of a bottle's capacity is considered as
-    one bottle.
-
-    For example, 101% of a bottle's capacity is considered as 2 bottles.
-    50% of a bottle's capacity is considered as 1 bottle.
-    0% of a bottle's capacity is considered as 0 bottles.
-
-    Args:
-        windshield_washer_refilled_bottle_percentage (int):
-            The total percentage of a bottle's capacity needed to refill the
-            washer.
-            Can be greater than 100 for multiple bottles.
-
-    Returns:
-        int: The total number of bottles needed to meet the given percentage.
-    """
     return math.ceil(windshield_washer_refilled_bottle_percentage / 100)
 
 
@@ -167,7 +146,6 @@ def map_car_to_wash(
         mapped_cars_to_wash.append(
             CarToWashDTO(
                 id=car_to_wash.id,
-                car_wash_id=car_to_wash.car_wash_id,
                 car_class=car_to_wash.car_class,
                 shift_date=car_to_wash.shift.date,
                 washing_price=car_to_wash.washing_price,

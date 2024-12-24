@@ -1,3 +1,5 @@
+import math
+
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -164,12 +166,29 @@ class CarToWash(models.Model):
         raise ValueError(_('unknown car class'))
 
     @property
-    def windshield_washer_price(self) -> int:
-        return int(
-            self.windshield_washer_refilled_bottle_percentage *
-            self.windshield_washer_price_per_bottle
-            / 100
+    def windshield_washer_refilled_bottle_count(self) -> int:
+        """
+        Calculates the number of bottles needed to refill a windshield washer
+        based on the given percentage of a single bottle's capacity.
+
+        Any amount of liquid up to 100% of a bottle's capacity is considered as
+        one bottle.
+
+        For example, 101% of a bottle's capacity is considered as 2 bottles.
+        50% of a bottle's capacity is considered as 1 bottle.
+        0% of a bottle's capacity is considered as 0 bottles.
+
+        Returns:
+            int: Total number of bottles needed to meet the given percentage.
+        """
+        return math.ceil(
+            self.windshield_washer_refilled_bottle_percentage / 100
         )
+
+    @property
+    def windshield_washer_price(self) -> int:
+        return (self.windshield_washer_price_per_bottle *
+                self.windshield_washer_refilled_bottle_count)
 
 
 class CarToWashAdditionalService(models.Model):

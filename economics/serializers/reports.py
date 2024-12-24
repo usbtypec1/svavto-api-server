@@ -26,12 +26,9 @@ class CarWashRevenueForShiftAdditionalServiceSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField()
     count = serializers.IntegerField()
-    total_price = serializers.IntegerField()
 
 
 class CarWashRevenueForShiftSerializer(serializers.Serializer):
-    car_wash_id = serializers.IntegerField()
-    car_wash_name = serializers.CharField()
     shift_date = serializers.DateField()
     comfort_cars_washed_count = serializers.IntegerField()
     business_cars_washed_count = serializers.IntegerField()
