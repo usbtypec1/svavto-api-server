@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-07 13:13+0000\n"
+"POT-Creation-Date: 2024-12-24 07:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,61 +96,69 @@ msgstr "экономика"
 msgid "invalid penalty consequence"
 msgstr "неверное последствие штрафа"
 
-#: economics/models.py:11
+#: economics/models.py:12
 msgid "dismissal"
 msgstr "увольнение"
 
-#: economics/models.py:12
+#: economics/models.py:13
 msgid "warn"
 msgstr "предупреждение"
 
-#: economics/models.py:26
+#: economics/models.py:28
 msgid "penalty"
 msgstr "штраф"
 
-#: economics/models.py:27
+#: economics/models.py:29
 msgid "penalties"
 msgstr "штрафы"
 
-#: economics/models.py:40
+#: economics/models.py:43
 msgid "surcharge"
 msgstr "доплата"
 
-#: economics/models.py:41
+#: economics/models.py:44
 msgid "surcharges"
 msgstr "доплаты"
 
-#: economics/models.py:51
+#: economics/models.py:54
 msgid "comfort class car transfer"
 msgstr "перегон авто комфорт класса"
 
-#: economics/models.py:55
+#: economics/models.py:58
 msgid "business class car transfer"
 msgstr "перегон авто бизнес класса"
 
-#: economics/models.py:57
+#: economics/models.py:60
 msgid "van transfer"
 msgstr "перегон фургона"
 
-#: economics/models.py:60
+#: economics/models.py:63
 msgid "car transporter extra shift"
 msgstr "доп.смена перегонщика"
 
-#: economics/models.py:62
+#: economics/models.py:65
 msgid "urgent wash"
 msgstr "срочная мойка"
 
-#: economics/models.py:63
+#: economics/models.py:66
 msgid "item dry clean"
 msgstr "химчистка элемента"
 
-#: economics/models.py:75
+#: economics/models.py:78
 msgid "staff service price"
 msgstr "стоимость услуги сотрудника"
 
-#: economics/models.py:76
+#: economics/models.py:79
 msgid "staff service prices"
 msgstr "стоимости услуг сотрудников"
+
+#: economics/serializers/reports.py:33
+msgid "period end can not be before period start"
+msgstr "конец периода не может быть раньше чем начало периода"
+
+#: economics/serializers/reports.py:41
+msgid "period duration can not be greater than 60 days"
+msgstr "период не может быть больше чем 60 дней"
 
 #: shifts/admin.py:23
 msgid "shift date"
@@ -164,11 +172,11 @@ msgstr "сотрудник"
 msgid "car number"
 msgstr "гос.номер"
 
-#: shifts/admin.py:32 shifts/models.py:121
+#: shifts/admin.py:32 shifts/models.py:123
 msgid "car class"
 msgstr "класс авто"
 
-#: shifts/admin.py:36 shifts/models.py:126
+#: shifts/admin.py:36 shifts/models.py:128
 msgid "wash type"
 msgstr "тип мойки"
 
@@ -180,19 +188,19 @@ msgstr "% бутылки долитой незамерзайки"
 msgid "transfer price at the moment"
 msgstr "стоимость перегона"
 
-#: shifts/admin.py:48 shifts/models.py:135
+#: shifts/admin.py:48 shifts/models.py:137
 msgid "price of comfort class car washing at the moment"
 msgstr "стоимость мойки авто комфортного класса"
 
-#: shifts/admin.py:52 shifts/models.py:138
+#: shifts/admin.py:52 shifts/models.py:140
 msgid "price of business class car washing at the moment"
 msgstr "стоимость мойки авто бизнес класса"
 
-#: shifts/admin.py:56 shifts/models.py:141
+#: shifts/admin.py:56 shifts/models.py:143
 msgid "price of van washing at the moment"
 msgstr "стоимость мойки фургона"
 
-#: shifts/admin.py:60 shifts/models.py:144
+#: shifts/admin.py:60 shifts/models.py:146
 msgid "price of windshield washer per bottle at the moment"
 msgstr "стоимость незамерзайки за бутылку"
 
@@ -220,11 +228,11 @@ msgstr "нет"
 msgid "you can search by staff name or staff id"
 msgstr "поиск по имени сотрудника или его id"
 
-#: shifts/admin.py:173
+#: shifts/admin.py:180
 msgid "added at"
 msgstr "дата добавления"
 
-#: shifts/apps.py:8 shifts/models.py:59
+#: shifts/apps.py:8 shifts/models.py:61
 msgid "shift"
 msgstr "смена"
 
@@ -276,68 +284,72 @@ msgstr "стоимость услуги сотрудника"
 msgid "car to wash not found"
 msgstr "авто не найдено"
 
-#: shifts/models.py:27
+#: shifts/models.py:29
 msgid "available date"
 msgstr "доступный месяц для записи на смену"
 
-#: shifts/models.py:28
+#: shifts/models.py:30
 msgid "available dates"
 msgstr "доступные месяцы для записи на смену"
 
-#: shifts/models.py:60
+#: shifts/models.py:62
 msgid "shifts"
 msgstr "смены"
 
-#: shifts/models.py:76
+#: shifts/models.py:78
 msgid "all finish requirements are not satisfied"
 msgstr "для завершения смены выполнены не все условия"
 
-#: shifts/models.py:101
+#: shifts/models.py:103
 msgid "comfort"
 msgstr "комфорт"
 
-#: shifts/models.py:102
+#: shifts/models.py:104
 msgid "business"
 msgstr "бизнес"
 
-#: shifts/models.py:103
+#: shifts/models.py:105
 msgid "van"
 msgstr "фургон"
 
-#: shifts/models.py:106
+#: shifts/models.py:108
 msgid "planned"
 msgstr "запланированная"
 
-#: shifts/models.py:107
+#: shifts/models.py:109
 msgid "urgent"
 msgstr "срочная"
 
-#: shifts/models.py:132
+#: shifts/models.py:134
 msgid "price of car transfer at the moment"
 msgstr "стоимость перегона"
 
-#: shifts/models.py:149
+#: shifts/models.py:151
 msgid "car to wash"
 msgstr "добавленное авто"
 
-#: shifts/models.py:150
+#: shifts/models.py:152
 msgid "cars to wash"
 msgstr "добавленные авто"
 
-#: shifts/models.py:154
+#: shifts/models.py:156
 #, python-format
 msgid "car number: %(number)s"
 msgstr "гос.номер: %(number)s"
 
-#: shifts/models.py:161
+#: shifts/models.py:166
+msgid "unknown car class"
+msgstr "неизвестный класс авто"
+
+#: shifts/models.py:202
 msgid "price of additional service at the moment"
 msgstr "стоимость доп.услуги"
 
-#: shifts/models.py:166
+#: shifts/models.py:207
 msgid "additional service"
 msgstr "доп.услуга"
 
-#: shifts/models.py:167
+#: shifts/models.py:208
 msgid "additional services"
 msgstr "доп.услуги"
 
