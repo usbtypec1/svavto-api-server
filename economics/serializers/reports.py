@@ -1,3 +1,6 @@
+import datetime
+
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 __all__ = (
@@ -20,6 +23,25 @@ class CarWashesRevenueReportInputSerializer(serializers.Serializer):
         child=serializers.IntegerField(),
         allow_empty=False,
     )
+
+    def validate(self, data: dict) -> dict:
+        from_date: datetime.date = data['from_date']
+        to_date: datetime.date = data['to_date']
+
+        if from_date > to_date:
+            raise serializers.ValidationError(
+                _('period end can not be before period start'),
+            )
+
+        period_duration = to_date - from_date
+        period_duration_threshold = datetime.timedelta(days=60)
+
+        if period_duration > period_duration_threshold:
+            raise serializers.ValidationError(
+                _('period duration can not be greater than 60 days'),
+            )
+
+        return data
 
 
 class CarWashRevenueForShiftAdditionalServiceSerializer(serializers.Serializer):
