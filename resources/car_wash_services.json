@@ -1,5 +1,19 @@
 [
   {
+    "id": "8d263cb9-f11c-456e-b055-ee89655682f1",
+    "name": "Пылесос багажника",
+    "is_countable": false,
+    "parent": null,
+    "is_dry_cleaning": false
+  },
+  {
+    "id": "6427a0be-0216-48e0-aaf5-896fc875d8ce",
+    "name": "Мойка стекол изнутри",
+    "is_countable": false,
+    "parent": null,
+    "is_dry_cleaning": false
+  },
+  {
     "id": "47c58bdf-bf49-4af7-9f1a-87ec2bd185b9",
     "name": "Химчистка салона",
     "is_countable": false,
@@ -63,6 +77,13 @@
     "is_dry_cleaning": true
   },
   {
+    "id": "bff1ca39-51bd-48b5-b3b5-a07732862f08",
+    "name": "Дверь",
+    "is_countable": true,
+    "parent": "47c58bdf-bf49-4af7-9f1a-87ec2bd185b9",
+    "is_dry_cleaning": true
+  },
+  {
     "id": "0d4ef51d-2f35-4aee-8b45-a629be9fba23",
     "name": "Настил багажника",
     "is_countable": false,
@@ -102,6 +123,97 @@
     "name": "Химчистка кузова",
     "is_countable": false,
     "parent": null,
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "6585af13-96b1-4c26-bcbc-5b5cbbf3438f",
+    "name": "Бампер передний",
+    "is_countable": false,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "10c7d6a1-9f02-475d-ae79-2bff4707f28a",
+    "name": "Решетка радиатора",
+    "is_countable": false,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "3c995a7a-0ebc-44ad-8c3a-7130fb937109",
+    "name": "Фары",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "de2a34f9-9e5f-4659-b68e-275b2116f299",
+    "name": "Капот",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "766e7d8c-763f-4977-886a-73bca59e40ec",
+    "name": "Порог",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "4324cba0-d239-411c-b2e8-938aed3a2e50",
+    "name": "Стойка",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "27c77213-a8bb-4490-a06b-20e65c93eb30",
+    "name": "Дверь",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "0d5d18aa-2c9a-4461-8296-d6ddd057683b",
+    "name": "Стекло",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "e1e4b418-472c-45bb-9c1c-9e7716530147",
+    "name": "Лобовое стекло",
+    "is_countable": false,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "d403ced7-0911-42f7-a85f-2f1926168dd9",
+    "name": "Заднее стекло",
+    "is_countable": false,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "b5e21bb0-e811-4c26-950e-b4228e71f796",
+    "name": "Крыша",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "0fa5f8c5-2c5e-428f-96ec-30c5ba694b3a",
+    "name": "Задний бампер",
+    "is_countable": false,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
+    "is_dry_cleaning": true
+  },
+  {
+    "id": "34fca142-ac6c-4270-b6c1-68dd594cfddd",
+    "name": "Боковое зеркало",
+    "is_countable": true,
+    "parent": "b1e62578-29e6-479a-9a8b-977bcb5d9f65",
     "is_dry_cleaning": true
   },
   {
