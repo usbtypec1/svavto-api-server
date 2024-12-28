@@ -19,7 +19,7 @@ class RetrieveUpdateCarsToWashApi(APIView):
         try:
             car = (
             CarToWash.objects.select_related('car_wash')
-            .prefetch_related('cartowashadditionalservice_set')
+            .prefetch_related('additional_services')
             .get(id=car_id)
         )
         except CarToWash.DoesNotExist:

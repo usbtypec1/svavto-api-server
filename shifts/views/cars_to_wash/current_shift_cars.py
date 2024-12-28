@@ -16,7 +16,7 @@ class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
 
 class CarToWashSerializer(serializers.ModelSerializer):
     additional_services = CarToWashAdditionalServiceSerializer(
-        source='cartowashadditionalservice_set', many=True, read_only=True
+        source='additional_services', many=True, read_only=True
     )
 
     class Meta:
@@ -40,7 +40,7 @@ class CarToWashListApi(views.APIView):
             shift_id=shift.id,
         ).prefetch_related(
             Prefetch(
-                'cartowashadditionalservice_set',
+                'additional_services',
                 queryset=CarToWashAdditionalService.objects.all(),
                 to_attr='additional_services_prefetched',
             )
