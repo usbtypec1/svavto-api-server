@@ -16,7 +16,7 @@ class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
 
 class CarToWashSerializer(serializers.ModelSerializer):
     additional_services = CarToWashAdditionalServiceSerializer(
-        source='additional_services', many=True, read_only=True
+        many=True, read_only=True
     )
 
     class Meta:

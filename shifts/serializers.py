@@ -178,7 +178,7 @@ class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
     class_type = serializers.CharField(source='car_class')
     car_wash = CarWashSerializer(allow_null=True)
     additional_services = CarToWashAdditionalServiceSerializer(
-        source='additional_services', many=True, read_only=True
+        many=True, read_only=True
     )
 
     class Meta:
