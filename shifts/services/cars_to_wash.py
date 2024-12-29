@@ -3,10 +3,10 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 
-from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import BooleanField, Case, Count, Value, When
+from django.db.models import Count
+from django.utils import timezone
 
 from car_washes.models import CarWash, CarWashServicePrice
 from economics.selectors import compute_car_transfer_price
@@ -279,10 +279,12 @@ def get_staff_cars_count_by_date(date: datetime.date) -> dict:
 def get_cars_without_windshield_washer_by_date(
         date: datetime.date,
 ) -> list[str]:
-    return CarToWash.objects.filter(
+    cars_to_wash = CarToWash.objects.filter(
         shift__date=date,
         windshield_washer_refilled_bottle_percentage=0,
-    ).values_list('number', flat=True)
+    )
+    cars_numbers = cars_to_wash.values_list('number', flat=True)
+    return list(cars_numbers)
 
 
 def update_shift_car_wash(

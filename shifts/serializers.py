@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from car_washes.models import CarWash, CarWashService
+from car_washes.models import CarWash
 from shifts.models import (
     AvailableDate,
     CarToWash,

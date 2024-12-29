@@ -1,7 +1,7 @@
 import datetime
 import math
 from collections import defaultdict
-from collections.abc import Generator, Iterable
+from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 

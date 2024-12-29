@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 from import_export import resources
-from import_export.admin import ExportActionModelAdmin, ExportMixin
+from import_export.admin import ExportActionModelAdmin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
 from shifts.models import (
