@@ -698,21 +698,6 @@ files = [
 Django = ">=3.2,<6.0"
 
 [[package]]
-name = "django-types"
-version = "0.19.1"
-description = "Type stubs for Django"
-category = "dev"
-optional = false
-python-versions = ">=3.7,<4.0"
-files = [
-    {file = "django_types-0.19.1-py3-none-any.whl", hash = "sha256:b3f529de17f6374d41ca67232aa01330c531bbbaa3ac4097896f31ac33c96c30"},
-    {file = "django_types-0.19.1.tar.gz", hash = "sha256:5ae7988612cf6fbc357b018bbc3b3a878b65e04275cc46e0d35d66a708daff12"},
-]
-
-[package.dependencies]
-types-psycopg2 = ">=2.9.21.13"
-
-[[package]]
 name = "djangorestframework"
 version = "3.15.2"
 description = "Web APIs for Django, made easy."
@@ -1802,18 +1787,6 @@ xlsx = ["openpyxl (>=2.6.0)"]
 yaml = ["pyyaml"]
 
 [[package]]
-name = "types-psycopg2"
-version = "2.9.21.20241019"
-description = "Typing stubs for psycopg2"
-category = "dev"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "types-psycopg2-2.9.21.20241019.tar.gz", hash = "sha256:bca89b988d2ebd19bcd08b177d22a877ea8b841decb10ed130afcf39404612fa"},
-    {file = "types_psycopg2-2.9.21.20241019-py3-none-any.whl", hash = "sha256:44d091e67732d16a941baae48cd7b53bf91911bc36888652447cf1ef0c1fb3f6"},
-]
-
-[[package]]
 name = "typing-extensions"
 version = "4.12.2"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -1979,4 +1952,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "109f32672695fa0bcef4e3cbcc755f4f05e37b8a1ea389218f0a923609d4e1a0"
+content-hash = "e21d4e01b8d036a29a7376ec76c40e4d32a4ed14f0e9b1661b7d28900f8c56f8"
