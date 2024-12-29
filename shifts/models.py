@@ -94,6 +94,7 @@ class Shift(models.Model):
 class ShiftFinishPhoto(models.Model):
     shift = models.ForeignKey(
         to=Shift,
+        related_name='finish_photos',
         on_delete=models.CASCADE,
         verbose_name=_('shift'),
     )

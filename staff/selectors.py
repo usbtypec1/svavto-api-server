@@ -5,7 +5,7 @@ from typing import Iterable
 from django.db.models import QuerySet
 
 from staff.exceptions import StaffNotFoundError
-from staff.models import Staff
+from staff.models import Staff, AdminStaff
 
 __all__ = (
     'get_staff_by_id',
@@ -13,6 +13,7 @@ __all__ = (
     'ensure_staff_exists',
     'get_staff',
     'StaffItem',
+    'get_admin_ids',
 )
 
 
@@ -24,6 +25,10 @@ class StaffItem:
     console_phone_number: str
     created_at: datetime.datetime
     banned_at: datetime.datetime | None
+
+
+def get_admin_ids() -> tuple[int, ...]:
+    return tuple(AdminStaff.objects.values_list('id', flat=True))
 
 
 def get_staff_by_id(staff_id: int) -> Staff:
