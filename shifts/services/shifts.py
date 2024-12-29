@@ -40,12 +40,14 @@ def create_shifts(
         staff: Staff,
         dates: Iterable[datetime.date],
         is_extra: bool,
+        is_test: bool,
 ) -> list[Shift]:
     shifts = [
         Shift(
             staff=staff,
             date=date,
             is_extra=is_extra,
+            is_test=is_test,
             created_at=timezone.now(),
         )
         for date in dates
@@ -62,6 +64,7 @@ def create_and_start_shifts(
         dates: Iterable[datetime.date],
         car_wash_id: int,
         is_extra: bool,
+        is_test: bool,
 ) -> list[Shift]:
     now = timezone.now()
     shifts = [
@@ -71,6 +74,7 @@ def create_and_start_shifts(
             car_wash_id=car_wash_id,
             started_at=now,
             is_extra=is_extra,
+            is_test=is_test,
             created_at=now,
         )
         for date in dates

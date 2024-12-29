@@ -23,6 +23,7 @@ class StaffShiftListOutputSerializer(serializers.ModelSerializer):
             'started_at',
             'finished_at',
             'created_at',
+            'is_test',
             'car_wash',
         )
         depth = 1

@@ -150,6 +150,7 @@ class ShiftCreateInputSerializer(serializers.Serializer):
     immediate_start = serializers.BooleanField(default=False)
     car_wash_id = serializers.IntegerField(default=None, allow_null=True)
     is_extra = serializers.BooleanField(default=False)
+    is_test = serializers.BooleanField(default=False)
 
     def validate(self, data: dict) -> dict:
         if data['immediate_start'] and 'car_wash_id' not in data:
