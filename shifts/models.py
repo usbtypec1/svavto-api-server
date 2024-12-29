@@ -38,19 +38,41 @@ class AvailableDate(models.Model):
 
 
 class Shift(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
-    date = models.DateField()
-    started_at = models.DateTimeField(null=True, blank=True)
-    finished_at = models.DateTimeField(null=True, blank=True)
+    staff = models.ForeignKey(
+        Staff,
+        on_delete=models.CASCADE,
+        verbose_name=_('staff'),
+    )
+    date = models.DateField(
+        verbose_name=_('date'),
+    )
+    started_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('started at'),
+    )
+    finished_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('finished at'),
+    )
     car_wash = models.ForeignKey(
         CarWash,
         on_delete=models.SET_NULL,
         default=None,
         null=True,
         blank=True,
+        verbose_name=_('car wash'),
     )
-    is_extra = models.BooleanField(default=False)
-    created_at = models.DateTimeField()
+    is_extra = models.BooleanField(
+        default=False,
+        verbose_name=_('is extra shift'),
+    )
+    is_test = models.BooleanField(
+        default=False,
+        verbose_name=_('is test shift'),
+    )
+    created_at = models.DateTimeField(verbose_name=_('created at'))
 
     class Meta:
         verbose_name = _('shift')
