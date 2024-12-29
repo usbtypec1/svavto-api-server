@@ -116,3 +116,16 @@ class ShiftFinishOutputSerializer(serializers.Serializer):
     is_first_shift = serializers.BooleanField()
     staff_full_name = serializers.CharField()
     car_numbers = serializers.ListField(child=serializers.CharField())
+    car_wash_name = serializers.CharField(allow_null=True)
+    comfort_cars_count = serializers.IntegerField()
+    business_cars_count = serializers.IntegerField()
+    vans_count = serializers.IntegerField()
+    planned_cars_count = serializers.IntegerField()
+    urgent_cars_count = serializers.IntegerField()
+    dry_cleaning_count = serializers.IntegerField()
+    total_cars_count = serializers.IntegerField()
+    refilled_cars_count = serializers.IntegerField()
+    not_refilled_cars_count = serializers.IntegerField()
+    finish_photo_file_ids = serializers.ListField(
+        child=serializers.CharField(),
+    )
