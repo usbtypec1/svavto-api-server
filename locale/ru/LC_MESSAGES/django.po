@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-24 07:22+0000\n"
+"POT-Creation-Date: 2024-12-29 04:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,7 @@ msgstr ""
 msgid "search by name or id"
 msgstr "Поиск по названию или ID"
 
-#: car_washes/apps.py:8 car_washes/models.py:24 shifts/admin.py:19
+#: car_washes/apps.py:8 car_washes/models.py:24 shifts/admin.py:20
 msgid "car wash"
 msgstr "мойка"
 
@@ -64,7 +64,7 @@ msgstr "родительская категория"
 msgid "is dry cleaning"
 msgstr "химчистка"
 
-#: car_washes/models.py:63 shifts/admin.py:64
+#: car_washes/models.py:63 shifts/admin.py:65 shifts/models.py:85
 msgid "created at"
 msgstr "дата создания"
 
@@ -160,79 +160,79 @@ msgstr "конец периода не может быть раньше чем �
 msgid "period duration can not be greater than 60 days"
 msgstr "период не может быть больше чем 60 дней"
 
-#: shifts/admin.py:23
+#: shifts/admin.py:24
 msgid "shift date"
 msgstr "дата смены"
 
-#: shifts/admin.py:27 staff/apps.py:8 staff/models.py:17 staff/models.py:18
+#: shifts/admin.py:28 staff/apps.py:8 staff/models.py:17 staff/models.py:18
 msgid "staff"
 msgstr "сотрудник"
 
-#: shifts/admin.py:29
+#: shifts/admin.py:30
 msgid "car number"
 msgstr "гос.номер"
 
-#: shifts/admin.py:32 shifts/models.py:123
+#: shifts/admin.py:33 shifts/models.py:115
 msgid "car class"
 msgstr "класс авто"
 
-#: shifts/admin.py:36 shifts/models.py:128
+#: shifts/admin.py:37 shifts/models.py:120
 msgid "wash type"
 msgstr "тип мойки"
 
-#: shifts/admin.py:40
+#: shifts/admin.py:41
 msgid "windshield washer refilled bottle percentage"
 msgstr "% бутылки долитой незамерзайки"
 
-#: shifts/admin.py:44
+#: shifts/admin.py:45
 msgid "transfer price at the moment"
 msgstr "стоимость перегона"
 
-#: shifts/admin.py:48 shifts/models.py:137
+#: shifts/admin.py:49 shifts/models.py:129
 msgid "price of comfort class car washing at the moment"
 msgstr "стоимость мойки авто комфортного класса"
 
-#: shifts/admin.py:52 shifts/models.py:140
+#: shifts/admin.py:53 shifts/models.py:132
 msgid "price of business class car washing at the moment"
 msgstr "стоимость мойки авто бизнес класса"
 
-#: shifts/admin.py:56 shifts/models.py:143
+#: shifts/admin.py:57 shifts/models.py:135
 msgid "price of van washing at the moment"
 msgstr "стоимость мойки фургона"
 
-#: shifts/admin.py:60 shifts/models.py:146
+#: shifts/admin.py:61 shifts/models.py:138
 msgid "price of windshield washer per bottle at the moment"
 msgstr "стоимость незамерзайки за бутылку"
 
-#: shifts/admin.py:103 shifts/admin.py:108
+#: shifts/admin.py:104 shifts/admin.py:109
 msgid "started"
 msgstr "начата"
 
-#: shifts/admin.py:109
+#: shifts/admin.py:110
 msgid "not started"
 msgstr "не начата"
 
-#: shifts/admin.py:121
+#: shifts/admin.py:122
 msgid "finished"
 msgstr "завершена"
 
-#: shifts/admin.py:126 staff/admin.py:19
+#: shifts/admin.py:127 staff/admin.py:19
 msgid "yes"
 msgstr "да"
 
-#: shifts/admin.py:127 staff/admin.py:20
+#: shifts/admin.py:128 staff/admin.py:20
 msgid "no"
 msgstr "нет"
 
-#: shifts/admin.py:159
+#: shifts/admin.py:160
 msgid "you can search by staff name or staff id"
 msgstr "поиск по имени сотрудника или его id"
 
-#: shifts/admin.py:180
+#: shifts/admin.py:181
 msgid "added at"
 msgstr "дата добавления"
 
-#: shifts/apps.py:8 shifts/models.py:61
+#: shifts/apps.py:8 shifts/models.py:57 shifts/models.py:77
 msgid "shift"
 msgstr "смена"
 
@@ -284,72 +284,80 @@ msgstr "стоимость услуги сотрудника"
 msgid "car to wash not found"
 msgstr "авто не найдено"
 
-#: shifts/models.py:29
+#: shifts/models.py:35
 msgid "available date"
 msgstr "доступный месяц для записи на смену"
 
-#: shifts/models.py:30
+#: shifts/models.py:36
 msgid "available dates"
 msgstr "доступные месяцы для записи на смену"
 
-#: shifts/models.py:62
+#: shifts/models.py:58
 msgid "shifts"
 msgstr "смены"
 
-#: shifts/models.py:78
-msgid "all finish requirements are not satisfied"
-msgstr "для завершения смены выполнены не все условия"
+#: shifts/models.py:81
+msgid "file id"
+msgstr "ID файла"
 
-#: shifts/models.py:103
+#: shifts/models.py:89
+msgid "shift finish photo"
+msgstr "фото при завершении смены"
+
+#: shifts/models.py:90
+msgid "shift finish photos"
+msgstr "фото при завершении смены"
+
+#: shifts/models.py:95
 msgid "comfort"
 msgstr "комфорт"
 
-#: shifts/models.py:104
+#: shifts/models.py:96
 msgid "business"
 msgstr "бизнес"
 
-#: shifts/models.py:105
+#: shifts/models.py:97
 msgid "van"
 msgstr "фургон"
 
-#: shifts/models.py:108
+#: shifts/models.py:100
 msgid "planned"
 msgstr "запланированная"
 
-#: shifts/models.py:109
+#: shifts/models.py:101
 msgid "urgent"
 msgstr "срочная"
 
-#: shifts/models.py:134
+#: shifts/models.py:126
 msgid "price of car transfer at the moment"
 msgstr "стоимость перегона"
 
-#: shifts/models.py:151
+#: shifts/models.py:143
 msgid "car to wash"
 msgstr "добавленное авто"
 
-#: shifts/models.py:152
+#: shifts/models.py:144
 msgid "cars to wash"
 msgstr "добавленные авто"
 
-#: shifts/models.py:156
+#: shifts/models.py:148
 #, python-format
 msgid "car number: %(number)s"
 msgstr "гос.номер: %(number)s"
 
-#: shifts/models.py:166
+#: shifts/models.py:158
 msgid "unknown car class"
 msgstr "неизвестный класс авто"
 
-#: shifts/models.py:202
+#: shifts/models.py:194
 msgid "price of additional service at the moment"
 msgstr "стоимость доп.услуги"
 
-#: shifts/models.py:207
+#: shifts/models.py:199
 msgid "additional service"
 msgstr "доп.услуга"
 
-#: shifts/models.py:208
+#: shifts/models.py:200
 msgid "additional services"
 msgstr "доп.услуги"
 
@@ -372,3 +380,6 @@ msgstr "администратор"
 #: staff/models.py:31
 msgid "admin staff list"
 msgstr "администраторы"
+
+#~ msgid "all finish requirements are not satisfied"
+#~ msgstr "для завершения смены выполнены не все условия"

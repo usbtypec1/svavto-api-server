@@ -23,6 +23,8 @@ __all__ = (
     'UpdateCarToWashInputSerializer',
     'CarToWashDetailOutputSerializer',
     'CarToWashAdditionalServiceSerializer',
+    'ShiftFinishInputSerializer',
+    'ShiftFinishOutputSerializer',
 )
 
 
@@ -197,3 +199,19 @@ class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
 
 class UpdateCarToWashInputSerializer(serializers.Serializer):
     additional_services = AdditionalServiceSerializer(many=True, default=list)
+
+
+class ShiftFinishInputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    photo_file_ids = serializers.ListField(
+        child=serializers.CharField(
+            max_length=255,
+        ),
+    )
+
+
+class ShiftFinishOutputSerializer(serializers.Serializer):
+    shift_id = serializers.IntegerField()
+    is_first_shift = serializers.BooleanField()
+    staff_full_name = serializers.CharField()
+    car_numbers = serializers.ListField(child=serializers.CharField())

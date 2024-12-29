@@ -10,6 +10,7 @@ from shifts.models import (
     CarToWash,
     CarToWashAdditionalService,
     Shift,
+    ShiftFinishPhoto,
 )
 
 
@@ -188,3 +189,9 @@ class CarToWashAdmin(ExportActionModelAdmin):
 class CarToWashAdditionalServiceAdmin(admin.ModelAdmin):
     list_display = ('car', 'service', 'count')
     list_select_related = ('car',)
+
+
+@admin.register(ShiftFinishPhoto)
+class ShiftFinishPhotoAdmin(admin.ModelAdmin):
+    list_display = ('shift', 'file_id')
+    list_select_related = ('shift',)

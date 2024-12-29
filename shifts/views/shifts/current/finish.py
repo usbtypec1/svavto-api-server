@@ -1,18 +1,17 @@
-from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shifts.selectors import get_staff_current_shift
-from shifts.services.shifts import finish_shift
+from shifts.serializers import (
+    ShiftFinishInputSerializer,
+    ShiftFinishOutputSerializer,
+)
+from shifts.services.shifts import ShiftFinishInteractor
 
 __all__ = ('ShiftFinishApi',)
 
-
-class ShiftFinishInputSerializer(serializers.Serializer):
-    staff_id = serializers.IntegerField()
-    statement_photo_file_id = serializers.CharField()
-    service_app_photo_file_id = serializers.CharField()
+from staff.selectors import ensure_staff_exists
 
 
 class ShiftFinishApi(APIView):
@@ -22,18 +21,16 @@ class ShiftFinishApi(APIView):
         serialized_data: dict = serializer.data
 
         staff_id: int = serialized_data['staff_id']
-        statement_photo_file_id: str = serialized_data[
-            'statement_photo_file_id'
-        ]
-        service_app_photo_file_id: str = serialized_data[
-            'service_app_photo_file_id'
-        ]
+        photo_file_ids: list[str] = serialized_data['photo_file_ids']
 
+        ensure_staff_exists(staff_id)
         shift = get_staff_current_shift(staff_id=staff_id)
-        finish_result = finish_shift(
-            shift=shift,
-            statement_photo_file_id=statement_photo_file_id,
-            service_app_photo_file_id=service_app_photo_file_id,
-        )
 
-        return Response(finish_result)
+        shift_finish_interactor = ShiftFinishInteractor(
+            shift=shift,
+            photo_file_ids=photo_file_ids,
+        )
+        shift_finish_result = shift_finish_interactor.finish_shift()
+
+        serializer = ShiftFinishOutputSerializer(shift_finish_result)
+        return Response(serializer.data)

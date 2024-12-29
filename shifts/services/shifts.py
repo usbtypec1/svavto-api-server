@@ -2,17 +2,16 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import QuerySet
 from django.utils import timezone
 
 from shifts.exceptions import (
     ShiftAlreadyExistsError,
-    ShiftAlreadyFinishedError,
     ShiftNotFoundError,
     StaffHasActiveShiftError,
 )
-from shifts.models import Shift
+from shifts.models import Shift, ShiftFinishPhoto
 from shifts.selectors import has_any_finished_shift
 from staff.models import Staff
 
@@ -20,7 +19,8 @@ __all__ = (
     'create_shifts',
     'start_shift',
     'ensure_staff_has_no_active_shift',
-    'finish_shift',
+    'ShiftFinishResult',
+    'ShiftFinishInteractor',
     'get_shifts_by_staff_id',
     'delete_shift_by_id',
     'create_and_start_shifts',
@@ -115,35 +115,68 @@ def ensure_staff_has_no_active_shift(
         raise StaffHasActiveShiftError
 
 
-def finish_shift(
-        *,
-        shift: Shift,
-        statement_photo_file_id: str,
-        service_app_photo_file_id: str,
-) -> dict:
-    if shift.finished_at is not None:
-        raise ShiftAlreadyFinishedError
+@dataclass(frozen=True, slots=True)
+class ShiftFinishResult:
+    shift_id: int
+    is_first_shift: bool
+    staff_full_name: str
+    car_numbers: tuple[str, ...]
 
-    is_first_shift = not has_any_finished_shift(shift.staff_id)
 
-    shift.finished_at = timezone.now()
-    shift.statement_photo_file_id = statement_photo_file_id
-    shift.service_app_photo_file_id = service_app_photo_file_id
+class ShiftFinishInteractor:
 
-    shift.full_clean()
-    shift.save(
-        update_fields=(
-            'finished_at',
-            'statement_photo_file_id',
-            'service_app_photo_file_id',
-        ),
-    )
+    def __init__(self, shift: Shift, photo_file_ids: Iterable[str]):
+        self.__shift = shift
+        self.__photo_file_ids = tuple(photo_file_ids)
 
-    return {
-        'is_first_shift': is_first_shift,
-        'staff_full_name': shift.staff.full_name,
-        'car_numbers': shift.cartowash_set.values_list('number', flat=True),
-    }
+    def save_shift_finish_date(self) -> None:
+        if self.__shift.finished_at is not None:
+            return
+
+        self.__shift.finished_at = timezone.now()
+        self.__shift.save(update_fields=('finished_at',))
+
+    def delete_shift_finish_photos(self) -> None:
+        ShiftFinishPhoto.objects.filter(shift_id=self.__shift.id).delete()
+
+    def create_shift_finish_photos(self) -> list[ShiftFinishPhoto]:
+        finish_photos = [
+            ShiftFinishPhoto(file_id=file_id, shift_id=self.__shift.id)
+            for file_id in self.__photo_file_ids
+        ]
+        return ShiftFinishPhoto.objects.bulk_create(finish_photos)
+
+    def get_car_numbers(self) -> tuple[str, ...]:
+        return tuple(
+            self.__shift
+            .cartowash_set
+            .values_list('number', flat=True)
+        )
+
+    def create_result(
+            self,
+            is_first_shift: bool,
+            car_numbers: Iterable[str],
+    ) -> ShiftFinishResult:
+        return ShiftFinishResult(
+            shift_id=self.__shift.id,
+            is_first_shift=is_first_shift,
+            staff_full_name=self.__shift.staff.full_name,
+            car_numbers=tuple(car_numbers),
+        )
+
+    @transaction.atomic
+    def finish_shift(self) -> ShiftFinishResult:
+        is_first_shift = not has_any_finished_shift(self.__shift.staff_id)
+        self.save_shift_finish_date()
+        self.delete_shift_finish_photos()
+        self.create_shift_finish_photos()
+        car_numbers = self.get_car_numbers()
+
+        return self.create_result(
+            is_first_shift=is_first_shift,
+            car_numbers=car_numbers,
+        )
 
 
 def get_shifts_by_staff_id(

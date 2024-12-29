@@ -8,7 +8,13 @@ from django.utils.translation import gettext_lazy as _
 from car_washes.models import CarWash, CarWashService
 from staff.models import Staff
 
-__all__ = ('Shift', 'CarToWash', 'CarToWashAdditionalService', 'AvailableDate')
+__all__ = (
+    'Shift',
+    'CarToWash',
+    'CarToWashAdditionalService',
+    'AvailableDate',
+    'ShiftFinishPhoto',
+)
 
 
 class AvailableDate(models.Model):
@@ -44,16 +50,6 @@ class Shift(models.Model):
         null=True,
         blank=True,
     )
-    statement_photo_file_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
-    service_app_photo_file_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
     is_extra = models.BooleanField(default=False)
     created_at = models.DateTimeField()
 
@@ -65,22 +61,6 @@ class Shift(models.Model):
     def __str__(self):
         return f'{self.staff.full_name} - {self.date}'
 
-    def full_clean(
-            self, exclude=None, validate_unique=True, validate_constraints=True
-    ):
-        finish_requirements = (
-            self.is_finished,
-            self.has_statement_photo_file_id,
-            self.has_service_app_photo_file_id,
-        )
-        if any(finish_requirements) and not all(finish_requirements):
-            raise ValidationError(
-                message=_('all finish requirements are not satisfied'),
-                code='finish_requirements_not_satisfied',
-            )
-
-        super().full_clean(exclude, validate_unique, validate_constraints)
-
     @property
     def is_started(self) -> bool:
         return self.started_at is not None
@@ -89,13 +69,25 @@ class Shift(models.Model):
     def is_finished(self) -> bool:
         return self.finished_at is not None
 
-    @property
-    def has_statement_photo_file_id(self) -> bool:
-        return self.statement_photo_file_id is not None
 
-    @property
-    def has_service_app_photo_file_id(self) -> bool:
-        return self.service_app_photo_file_id is not None
+class ShiftFinishPhoto(models.Model):
+    shift = models.ForeignKey(
+        to=Shift,
+        on_delete=models.CASCADE,
+        verbose_name=_('shift'),
+    )
+    file_id = models.CharField(
+        max_length=255,
+        verbose_name=_('file id'),
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('created at'),
+    )
+
+    class Meta:
+        verbose_name = _('shift finish photo')
+        verbose_name_plural = _('shift finish photos')
 
 
 class CarToWash(models.Model):
