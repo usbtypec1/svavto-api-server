@@ -19,10 +19,19 @@ class StaffListCreateApi(APIView):
         serializer = StaffListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
-        order_by: str = serialized_data['order_by']
 
-        staff_list = get_all_staff(order_by=order_by)
-        serializer = StaffListOutputSerializer(staff_list, many=True)
+        order_by: str = serialized_data['order_by']
+        include_banned: bool = serialized_data['include_banned']
+        limit: int = serialized_data['limit']
+        offset: int = serialized_data['offset']
+
+        staff_list_page = get_all_staff(
+            order_by=order_by,
+            include_banned=include_banned,
+            limit=limit,
+            offset=offset,
+        )
+        serializer = StaffListOutputSerializer(staff_list_page)
         response_data = {'staff': serializer.data}
         return Response(response_data, status=status.HTTP_200_OK)
 

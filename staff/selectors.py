@@ -1,11 +1,11 @@
 import datetime
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
 
-from django.db.models import QuerySet
+from django.core.paginator import Paginator
 
 from staff.exceptions import StaffNotFoundError
-from staff.models import Staff, AdminStaff
+from staff.models import AdminStaff, Staff
 
 __all__ = (
     'get_staff_by_id',
@@ -14,6 +14,7 @@ __all__ = (
     'get_staff',
     'StaffItem',
     'get_admin_ids',
+    'StaffListPage',
 )
 
 
@@ -43,8 +44,73 @@ def ensure_staff_exists(staff_id: int) -> None:
         raise StaffNotFoundError
 
 
-def get_all_staff(*, order_by: str) -> QuerySet[Staff]:
-    return Staff.objects.order_by(order_by)
+@dataclass(frozen=True, slots=True)
+class StaffListItem:
+    id: int
+    full_name: str
+    car_sharing_phone_number: str
+    console_phone_number: str
+    created_at: datetime.datetime
+    banned_at: datetime.datetime | None
+    last_activity_at: datetime.datetime
+
+
+@dataclass(frozen=True, slots=True)
+class StaffListPage:
+    staff: list[StaffListItem]
+    is_end_of_list_reached: bool
+    total_count: int
+
+
+def map_staff_list(staff_list: Iterable[dict]) -> list[StaffListItem]:
+    return [
+        StaffListItem(
+            id=staff['id'],
+            full_name=staff['full_name'],
+            car_sharing_phone_number=staff['car_sharing_phone_number'],
+            console_phone_number=staff['console_phone_number'],
+            created_at=staff['created_at'],
+            banned_at=staff['banned_at'],
+            last_activity_at=staff['last_activity_at'],
+        )
+        for staff in staff_list
+    ]
+
+
+def get_all_staff(
+        *,
+        order_by: str,
+        include_banned: bool,
+        limit: int,
+        offset: int,
+) -> StaffListPage:
+    staff_list = (
+        Staff.objects
+        .order_by(order_by)
+        .values(
+            'id',
+            'full_name',
+            'car_sharing_phone_number',
+            'console_phone_number',
+            'banned_at',
+            'created_at',
+            'last_activity_at',
+        )
+    )
+    if not include_banned:
+        staff_list = staff_list.filter(banned_at__isnull=True)
+
+    paginator = Paginator(staff_list, limit)
+    page_number = (offset // limit) + 1
+    current_page = paginator.get_page(page_number)
+
+    is_end_of_list_reached = not current_page.has_next()
+
+    return StaffListPage(
+        staff=map_staff_list(current_page.object_list),
+        is_end_of_list_reached=is_end_of_list_reached,
+        total_count=paginator.count,
+    )
 
 
 def get_staff(
