@@ -49,10 +49,15 @@ class StaffItemSerializer(serializers.Serializer):
     last_activity_at = serializers.DateTimeField()
 
 
+class PaginationSerializer(serializers.Serializer):
+    limit = serializers.IntegerField()
+    offset = serializers.IntegerField()
+    total_count = serializers.IntegerField()
+
+
 class StaffListOutputSerializer(serializers.Serializer):
     staff = serializers.ListSerializer(child=StaffItemSerializer())
-    is_end_of_list_reached = serializers.BooleanField()
-    total_count = serializers.IntegerField()
+    pagination = PaginationSerializer()
 
 
 class StaffRetrieveOutputSerializer(serializers.ModelSerializer):

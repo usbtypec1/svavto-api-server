@@ -56,10 +56,16 @@ class StaffListItem:
 
 
 @dataclass(frozen=True, slots=True)
+class StaffListPagePagination:
+    limit: int
+    offset: int
+    total_count: int
+
+
+@dataclass(frozen=True, slots=True)
 class StaffListPage:
     staff: list[StaffListItem]
-    is_end_of_list_reached: bool
-    total_count: int
+    pagination: StaffListPagePagination
 
 
 def map_staff_list(staff_list: Iterable[dict]) -> list[StaffListItem]:
@@ -100,16 +106,15 @@ def get_all_staff(
     if not include_banned:
         staff_list = staff_list.filter(banned_at__isnull=True)
 
-    paginator = Paginator(staff_list, limit)
-    page_number = (offset // limit) + 1
-    current_page = paginator.get_page(page_number)
-
-    is_end_of_list_reached = not current_page.has_next()
+    staff_count = staff_list.count()
 
     return StaffListPage(
-        staff=map_staff_list(current_page.object_list),
-        is_end_of_list_reached=is_end_of_list_reached,
-        total_count=paginator.count,
+        staff=map_staff_list(staff_list),
+        pagination=StaffListPagePagination(
+            limit=limit,
+            offset=offset,
+            total_count=staff_count,
+        ),
     )
 
 
