@@ -32,8 +32,7 @@ class StaffListCreateApi(APIView):
             offset=offset,
         )
         serializer = StaffListOutputSerializer(staff_list_page)
-        response_data = {'staff': serializer.data}
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: Request) -> Response:
         serializer = StaffCreateInputSerializer(data=request.data)
