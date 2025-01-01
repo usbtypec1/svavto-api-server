@@ -9,6 +9,7 @@ from shifts.serializers import (
     CarToWashCreateOutputSerializer,
 )
 from shifts.services.cars_to_wash import create_car_to_wash
+from staff.services import update_last_activity_time
 
 __all__ = ('CarToWashCreateApi',)
 
@@ -41,6 +42,7 @@ class CarToWashCreateApi(APIView):
             ),
             additional_services=additional_services,
         )
+        update_last_activity_time(staff_id=staff_id)
 
         serializer = CarToWashCreateOutputSerializer(car_wash)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

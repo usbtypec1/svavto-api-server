@@ -35,6 +35,7 @@ def update_staff(
 ) -> None:
     banned_at = timezone.now() if is_banned else None
     is_updated = Staff.objects.filter(id=staff_id).update(banned_at=banned_at)
+    update_last_activity_time(staff_id=staff_id)
     if not is_updated:
         raise StaffNotFoundError
 

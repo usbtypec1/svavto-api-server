@@ -5,11 +5,13 @@ from rest_framework.views import APIView
 
 from shifts.exceptions import CarToWashNotFoundError
 from shifts.models import CarToWash
+from shifts.selectors import get_staff_id_by_car_id
 from shifts.serializers import (
     CarToWashDetailOutputSerializer,
     UpdateCarToWashInputSerializer,
 )
 from shifts.services.cars_to_wash import update_car_to_wash_additional_services
+from staff.services import update_last_activity_time
 
 __all__ = ('RetrieveUpdateCarsToWashApi',)
 
@@ -18,10 +20,10 @@ class RetrieveUpdateCarsToWashApi(APIView):
     def get(self, request: Request, car_id: int) -> Response:
         try:
             car = (
-            CarToWash.objects.select_related('car_wash')
-            .prefetch_related('additional_services')
-            .get(id=car_id)
-        )
+                CarToWash.objects.select_related('car_wash')
+                .prefetch_related('additional_services')
+                .get(id=car_id)
+            )
         except CarToWash.DoesNotExist:
             raise CarToWashNotFoundError(car_to_wash_id=car_id)
 
@@ -35,8 +37,10 @@ class RetrieveUpdateCarsToWashApi(APIView):
 
         additional_services: list[dict] = serialized_data['additional_services']
 
+        staff_id = get_staff_id_by_car_id(car_id)
         update_car_to_wash_additional_services(
             car_id=car_id,
             additional_services=additional_services,
         )
+        update_last_activity_time(staff_id=staff_id)
         return Response(status=status.HTTP_204_NO_CONTENT)

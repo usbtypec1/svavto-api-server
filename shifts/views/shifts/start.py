@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from car_washes.services import ensure_car_wash_exists
 from shifts.models import Shift
 from shifts.services.shifts import start_shift
+from staff.services import update_last_activity_time
 
 __all__ = ('ShiftStartApi',)
 
@@ -38,6 +39,7 @@ class ShiftStartApi(APIView):
             shift_id=shift_id,
             car_wash_id=car_wash_id,
         )
+        update_last_activity_time(staff_id=shift.staff_id)
 
         serializer = ShiftStartOutputSerializer(shift)
         return Response(serializer.data)

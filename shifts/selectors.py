@@ -5,7 +5,10 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 
-from shifts.exceptions import ShiftNotFoundError, StaffHasNoActiveShiftError
+from shifts.exceptions import (
+    CarToWashNotFoundError, ShiftNotFoundError,
+    StaffHasNoActiveShiftError,
+)
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
 
 __all__ = (
@@ -18,6 +21,7 @@ __all__ = (
     'get_cars_to_wash_for_period',
     'map_car_to_wash',
     'CarToWashAdditionalServiceDTO',
+    'get_staff_id_by_car_id',
 )
 
 
@@ -247,3 +251,11 @@ def get_cars_to_wash_for_period(
         cars_to_wash=cars_to_wash,
         additional_services=additional_services,
     )
+
+
+def get_staff_id_by_car_id(car_id: int) -> int:
+    try:
+        car = CarToWash.objects.select_related('shift').get(id=car_id)
+    except CarToWash.DoesNotExist:
+        raise CarToWashNotFoundError
+    return car.shift.staff_id

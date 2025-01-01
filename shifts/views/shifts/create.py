@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from shifts.serializers import ShiftCreateInputSerializer
 from shifts.services.shifts import create_and_start_shifts, create_shifts
 from staff.selectors import get_staff_by_id
+from staff.services import update_last_activity_time
 
 __all__ = ('ShiftCreateApi',)
 
@@ -42,6 +43,8 @@ class ShiftCreateApi(APIView):
                 is_extra=is_extra,
                 is_test=is_test,
             )
+
+        update_last_activity_time(staff_id=staff_id)
 
         response_data = {
             'staff_id': staff.id,

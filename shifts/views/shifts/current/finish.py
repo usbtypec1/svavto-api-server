@@ -8,10 +8,10 @@ from shifts.serializers import (
     ShiftFinishOutputSerializer,
 )
 from shifts.services.shifts import ShiftFinishInteractor
+from staff.selectors import ensure_staff_exists
+from staff.services import update_last_activity_time
 
 __all__ = ('ShiftFinishApi',)
-
-from staff.selectors import ensure_staff_exists
 
 
 class ShiftFinishApi(APIView):
@@ -31,6 +31,8 @@ class ShiftFinishApi(APIView):
             photo_file_ids=photo_file_ids,
         )
         shift_finish_result = shift_finish_interactor.finish_shift()
+
+        update_last_activity_time(staff_id=staff_id)
 
         serializer = ShiftFinishOutputSerializer(shift_finish_result)
         return Response(serializer.data)

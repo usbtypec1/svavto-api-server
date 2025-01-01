@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from staff.selectors import get_staff_by_id
 from staff.serializers import StaffRetrieveOutputSerializer
-from staff.services import update_staff
+from staff.services import update_last_activity_time, update_staff
 
 __all__ = ('StaffRetrieveUpdateApi',)
 
@@ -24,6 +24,7 @@ class StaffRetrieveUpdateApi(APIView):
 
     def get(self, request: Request, staff_id: int) -> Response:
         staff = get_staff_by_id(staff_id)
+        update_last_activity_time(staff_id=staff_id)
         serializer = StaffRetrieveOutputSerializer(staff)
         return Response(serializer.data)
 
