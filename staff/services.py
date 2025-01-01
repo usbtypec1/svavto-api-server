@@ -7,7 +7,7 @@ from staff.exceptions import (
 )
 from staff.models import Staff
 
-__all__ = ('create_staff', 'update_staff')
+__all__ = ('create_staff', 'update_staff', 'update_last_activity_time')
 
 
 def create_staff(
