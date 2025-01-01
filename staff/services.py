@@ -11,11 +11,11 @@ __all__ = ('create_staff', 'update_staff')
 
 
 def create_staff(
-    *,
-    staff_id: int,
-    full_name: str,
-    car_sharing_phone_number: str,
-    console_phone_number: str,
+        *,
+        staff_id: int,
+        full_name: str,
+        car_sharing_phone_number: str,
+        console_phone_number: str,
 ) -> Staff:
     try:
         return Staff.objects.create(
@@ -29,11 +29,16 @@ def create_staff(
 
 
 def update_staff(
-    *,
-    staff_id: int,
-    is_banned: bool,
+        *,
+        staff_id: int,
+        is_banned: bool,
 ) -> None:
     banned_at = timezone.now() if is_banned else None
     is_updated = Staff.objects.filter(id=staff_id).update(banned_at=banned_at)
     if not is_updated:
         raise StaffNotFoundError
+
+
+def update_last_activity_time(*, staff_id: int) -> None:
+    now = timezone.now()
+    Staff.objects.filter(id=staff_id).update(last_activity_at=now)
