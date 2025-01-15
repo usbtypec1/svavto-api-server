@@ -75,12 +75,22 @@ def merge_staff_statistics(
     keys = (
         'planned_comfort_cars_washed_count',
         'planned_business_cars_washed_count',
-        'planned_business_cars_washed_count',
         'planned_vans_washed_count',
         'urgent_cars_washed_count',
         'total_cost',
     )
     statistics = {key: cars_statistics.get(key, 0) for key in keys}
+
+    total_cars_count = sum((
+        statistics['planned_comfort_cars_washed_count'],
+        statistics['planned_business_cars_washed_count'],
+        statistics['planned_vans_washed_count'],
+        statistics['urgent_cars_washed_count'],
+    ))
+
+    if total_cars_count <= 6:
+        statistics['total_cost'] = total_cars_count * 100
+
     return {
         'staff_id': staff_id,
         'penalty_amount': penalty_amount,
