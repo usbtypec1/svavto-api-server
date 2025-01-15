@@ -87,6 +87,7 @@ class ShiftStatisticsSerializer(serializers.Serializer):
     urgent_cars_washed_count = serializers.IntegerField()
     is_extra_shift = serializers.BooleanField()
     washed_cars_total_cost = serializers.IntegerField()
+    dry_cleaning_items_count = serializers.IntegerField()
 
 
 class StaffShiftsStatisticsSerializer(serializers.Serializer):

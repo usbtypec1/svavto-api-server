@@ -11,11 +11,10 @@ from economics.selectors import (
     get_penalties_for_period,
     get_surcharges_for_period,
 )
-from shifts.models import CarToWash, Shift
+from shifts.models import CarToWash, CarToWashAdditionalService, Shift
 from staff.selectors import StaffItem, get_staff
 
 __all__ = (
-    'merge_staff_statistics',
     'get_staff_shifts_statistics',
     'get_shifts_statistics_grouped_by_staff',
     'get_shift_dates',
@@ -41,6 +40,7 @@ class ShiftStatistics:
     planned_business_cars_washed_count: int
     planned_vans_washed_count: int
     urgent_cars_washed_count: int
+    dry_cleaning_items_count: int
     is_extra_shift: bool
     washed_cars_total_cost: int
 
@@ -61,42 +61,6 @@ class StaffShiftsStatistics:
 class ShiftStatisticsGroupedByStaff:
     staff_id: int
     shifts_statistics: tuple[ShiftStatistics, ...]
-
-
-def merge_staff_statistics(
-        staff_id: int,
-        staff_id_to_penalty_amount: dict[int, int],
-        staff_id_to_surcharge_amount: dict[int, int],
-        staff_id_to_cars: dict[int, dict],
-) -> dict:
-    penalty_amount: int = staff_id_to_penalty_amount.get(staff_id, 0)
-    surcharge_amount: int = staff_id_to_surcharge_amount.get(staff_id, 0)
-    cars_statistics = staff_id_to_cars.get(staff_id, {})
-    keys = (
-        'planned_comfort_cars_washed_count',
-        'planned_business_cars_washed_count',
-        'planned_vans_washed_count',
-        'urgent_cars_washed_count',
-        'total_cost',
-    )
-    statistics = {key: cars_statistics.get(key, 0) for key in keys}
-
-    total_cars_count = sum((
-        statistics['planned_comfort_cars_washed_count'],
-        statistics['planned_business_cars_washed_count'],
-        statistics['planned_vans_washed_count'],
-        statistics['urgent_cars_washed_count'],
-    ))
-
-    if total_cars_count <= 6:
-        statistics['total_cost'] = total_cars_count * 100
-
-    return {
-        'staff_id': staff_id,
-        'penalty_amount': penalty_amount,
-        'surcharge_amount': surcharge_amount,
-        'is_extra_shift': cars_statistics.get('is_extra', False),
-    } | statistics
 
 
 def match_shifts_statistics_penalties_and_surcharges(
@@ -136,6 +100,9 @@ def match_shifts_statistics_penalties_and_surcharges(
                 ),
                 is_extra_shift=shift_statistics.is_extra_shift,
                 washed_cars_total_cost=shift_statistics.washed_cars_total_cost,
+                dry_cleaning_items_count=(
+                    shift_statistics.dry_cleaning_items_count
+                ),
             )
         )
 
@@ -224,6 +191,20 @@ def map_shift_statistics(
     )
     vans_count = shift_cars_statistics.get('planned_vans_washed_count', 0)
     urgent_cars_count = shift_cars_statistics.get('urgent_cars_washed_count', 0)
+    dry_cleaning_items_count = shift_cars_statistics.get(
+        'dry_cleaning_items_count', 0
+    )
+
+    cars_count = sum((
+        comfort_cars_count,
+        business_cars_count,
+        vans_count,
+        urgent_cars_count,
+    ))
+    if cars_count < 7:
+        washed_cars_total_cost = 100 * cars_count
+
+    washed_cars_total_cost += 50 * dry_cleaning_items_count
 
     return ShiftStatistics(
         shift_date=shift_date,
@@ -233,6 +214,7 @@ def map_shift_statistics(
         urgent_cars_washed_count=urgent_cars_count,
         is_extra_shift=is_extra_shift,
         washed_cars_total_cost=washed_cars_total_cost,
+        dry_cleaning_items_count=dry_cleaning_items_count,
     )
 
 
@@ -308,7 +290,7 @@ def get_cars_to_wash_statistics(
     return (
         CarToWash.objects.select_related('shift')
         .filter(**filter_params)
-        .values('shift__date', 'shift__staff_id', 'shift__is_extra')
+        .values('shift_id', 'shift__date', 'shift__staff_id', 'shift__is_extra')
         .annotate(
             washed_cars_total_cost=Sum('transfer_price', default=0),
             planned_comfort_cars_washed_count=Count(
@@ -373,6 +355,30 @@ def get_shifts_statistics_grouped_by_staff(
         to_date=to_date,
         staff_ids=staff_ids,
     )
+    shift_ids = [
+        shift_cars_statistics['shift_id']
+        for shift_cars_statistics in shifts_cars_statistics
+    ]
+
+    additional_services = (
+        CarToWashAdditionalService.objects
+        .filter(car__shift_id__in=shift_ids, service__is_dry_cleaning=True)
+        .select_related('service')
+        .annotate(services_count=Count('id'))
+        .values('car__shift_id', 'services_count')
+    )
+    shift_id_to_additional_services_count = {
+        additional_service['car__shift_id']:  additional_service['services_count']
+        for additional_service in additional_services
+    }
+
+    for shift_cars_statistics in shifts_cars_statistics:
+        shift_cars_statistics['dry_cleaning_items_count'] = (
+            shift_id_to_additional_services_count.get(
+                shift_cars_statistics['shift_id'], 0
+            )
+        )
+
     return group_shifts_statistics_by_staff(
         all_shifts=all_shifts,
         shifts_cars_statistics=shifts_cars_statistics,
