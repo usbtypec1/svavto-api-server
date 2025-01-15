@@ -19,6 +19,7 @@ from shifts.views import (
     ShiftStartApi,
     StaffCurrentShiftRetrieveApi,
     StaffShiftListApi,
+    ShiftRetrieveApi,
 )
 
 router = DefaultRouter()
@@ -109,5 +110,6 @@ urlpatterns = [
         CarsWithoutWindshieldWasherApi.as_view(),
         name='car-without-windshield-washer',
     ),
+    path(r'<int:shift_id>/', ShiftRetrieveApi.as_view(), name='retrieve'),
     path(r'', include(router.urls)),
 ]

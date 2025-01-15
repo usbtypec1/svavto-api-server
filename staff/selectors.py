@@ -107,6 +107,7 @@ def get_all_staff(
         staff_list = staff_list.filter(banned_at__isnull=True)
 
     staff_count = staff_list.count()
+    staff_list = staff_list[offset:offset + limit]
 
     return StaffListPage(
         staff=map_staff_list(staff_list),
