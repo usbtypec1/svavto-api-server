@@ -203,6 +203,9 @@ def map_shift_statistics(
     ))
     if cars_count < 7:
         washed_cars_total_cost = 100 * cars_count
+    else:
+        if is_extra_shift:
+            washed_cars_total_cost = 190 * cars_count
 
     washed_cars_total_cost += 50 * dry_cleaning_items_count
 
