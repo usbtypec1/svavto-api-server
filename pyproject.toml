@@ -23,6 +23,7 @@ django-import-export = "^4.2.1"
 sentry-sdk = {extras = ["django"], version = "^2.19.0"}
 openpyxl = "^3.1.5"
 django-admin-rangefilter = "^0.13.2"
+pendulum = "^3.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
