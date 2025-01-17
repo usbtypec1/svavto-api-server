@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
@@ -60,34 +61,82 @@ def get_car_wash_by_id(car_wash_id: int) -> CarWash:
         raise CarWashNotFoundError
 
 
-def get_all_flatten_car_wash_services() -> list[dict]:
-    car_wash_services = CarWashService.objects.values(
-        'id',
-        'name',
-        'is_countable',
-        'parent__id',
-        'parent__name',
-    )
-    parent_ids = {
-        service['parent__id']
-        for service in car_wash_services
-        if service['parent__id']
-    }
-    return [
-        {
-            'id': str(service['id']),
-            'name': service['name'],
-            'is_countable': service['is_countable'],
-            'parent': {
-                'id': str(service['parent__id']),
-                'name': service['parent__name'],
-            }
-            if service['parent__id']
-            else None,
+@dataclass(frozen=True, slots=True)
+class CarWashServiceParentDTO:
+    id: UUID
+    name: str
+
+
+@dataclass(frozen=True, slots=True)
+class CarWashServiceDTO:
+    id: UUID
+    name: str
+    is_countable: bool
+    parent: CarWashServiceParentDTO | None
+
+
+def get_all_flatten_car_wash_services(
+        car_wash_ids: Iterable[int] | None = None,
+) -> list[CarWashServiceDTO]:
+    if car_wash_ids is not None:
+        service_prices = (
+            CarWashServicePrice.objects
+            .filter(car_wash_id__in=car_wash_ids)
+            .select_related('service', 'service__parent')
+            .only(
+                'service__id',
+                'service__name',
+                'service__is_countable',
+                'service__parent__id',
+                'service__parent__name',
+            )
+        )
+        car_wash_services = {
+            service_price.service
+            for service_price in service_prices
         }
+    else:
+        car_wash_services = (
+            CarWashService.objects
+            .select_related('parent')
+            .only(
+                'id',
+                'name',
+                'is_countable',
+                'parent__id',
+                'parent__name',
+            )
+        )
+
+    parent_ids: set[UUID] = {
+        service.parent_id
         for service in car_wash_services
-        if service['id'] not in parent_ids
-    ]
+        if service.parent_id is not None
+    }
+    result: list[CarWashServiceDTO] = []
+
+    for service in car_wash_services:
+        if service.id in parent_ids:
+            continue
+
+        if service.parent is not None:
+            parent = CarWashServiceParentDTO(
+                id=service.parent.id,
+                name=service.parent.name,
+            )
+        else:
+            parent = None
+
+        result.append(
+            CarWashServiceDTO(
+                id=service.id,
+                name=service.name,
+                is_countable=service.is_countable,
+                parent=parent,
+            ),
+        )
+
+    return result
 
 
 def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
