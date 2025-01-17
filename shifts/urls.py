@@ -20,6 +20,7 @@ from shifts.views import (
     StaffCurrentShiftRetrieveApi,
     StaffShiftListApi,
     ShiftRetrieveApi,
+    StaffReportPeriodsListApi,
 )
 
 router = DefaultRouter()
@@ -35,6 +36,11 @@ urlpatterns = [
         r'',
         ShiftListApi.as_view(),
         name='list',
+    ),
+    path(
+        r'report-periods/staff/<int:staff_id>/',
+        StaffReportPeriodsListApi.as_view(),
+        name='staff-report-periods'
     ),
     path(
         'specific-date/',

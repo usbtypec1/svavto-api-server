@@ -1,0 +1,95 @@
+import datetime
+from collections.abc import Iterable
+from dataclasses import dataclass
+
+import pendulum
+
+from shifts.models import Shift
+
+__all__ = (
+    'Period',
+    'get_report_periods_of_dates',
+    'get_shift_dates_of_staff',
+    'StaffReportPeriods',
+    'StaffReportPeriodsReadInteractor',
+)
+
+from staff.selectors import ensure_staff_exists
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class Period:
+    from_date: pendulum.Date
+    to_date: pendulum.Date
+
+    def __contains__(self, date: pendulum.Date) -> bool:
+        return self.from_date <= date <= self.to_date
+
+    def __lt__(self, other: 'Period') -> bool:
+        """
+        Defines sorting behavior for Period objects.
+        Periods are sorted by their start date (from_date).
+        """
+        return self.from_date < other.from_date
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class StaffReportPeriods:
+    staff_id: int
+    periods: list[Period]
+
+
+def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[Period]:
+    """
+    Generates an array of unique periods that at least one date belongs to.
+
+    Args:
+        dates (list[datetime.date]): Array of dates.
+
+    Returns:
+        list[Period]: Array of unique periods covering at least one date.
+    """
+    periods: set[Period] = set()
+
+    dates = [pendulum.instance(date) for date in dates]
+
+    for date in dates:
+        is_first_half_of_month = date.day <= 15
+        if is_first_half_of_month:
+            period = Period(
+                from_date=pendulum.date(date.year, date.month, 1),
+                to_date=pendulum.date(date.year, date.month, 15),
+            )
+        else:
+            next_month = date.add(months=1)
+            last_day = next_month.start_of('month').subtract(days=1)
+            period = Period(
+                from_date=pendulum.date(date.year, date.month, 16),
+                to_date=last_day,
+            )
+
+        periods.add(period)
+
+    return sorted(periods)
+
+
+def get_shift_dates_of_staff(staff_id: int) -> tuple[datetime.date, ...]:
+    return tuple(
+        Shift.objects
+        .filter(staff_id=staff_id)
+        .values_list('date', flat=True)
+    )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class StaffReportPeriodsReadInteractor:
+    staff_id: int
+
+    def execute(self) -> StaffReportPeriods:
+        ensure_staff_exists(self.staff_id)
+        shift_dates = get_shift_dates_of_staff(self.staff_id)
+        report_periods = get_report_periods_of_dates(shift_dates)
+        return StaffReportPeriods(
+            staff_id=self.staff_id,
+            periods=report_periods,
+        )
