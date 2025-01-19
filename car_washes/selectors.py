@@ -89,13 +89,13 @@ def get_all_flatten_car_wash_services(
                 'service__is_countable',
                 'service__parent__id',
                 'service__parent__name',
+                'service__priority',
             )
-            .order_by('-service__priority')
         )
-        car_wash_services = {
+        car_wash_services = sorted({
             service_price.service
             for service_price in service_prices
-        }
+        }, key=lambda service: service.priority, reverse=True)
     else:
         car_wash_services = (
             CarWashService.objects

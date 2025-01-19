@@ -19,7 +19,7 @@ class CarWashServiceResource(ModelResource):
 @admin.register(CarWashService)
 class CarWashServiceAdmin(ImportExportModelAdmin):
     resource_class = CarWashServiceResource
-    list_display = ('name', 'parent')
+    list_display = ('name', 'parent', 'priority')
     list_select_related = ('parent',)
     search_fields = ('name', 'id')
     search_help_text = _('search by name or id')
