@@ -58,6 +58,11 @@ class CarWashService(models.Model):
         default=False,
         verbose_name=_('is dry cleaning'),
     )
+    priority = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_('priority'),
+        help_text=_('the higher the number, the higher the priority')
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('created at'),

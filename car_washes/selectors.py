@@ -90,6 +90,7 @@ def get_all_flatten_car_wash_services(
                 'service__parent__id',
                 'service__parent__name',
             )
+            .order_by('-service__priority')
         )
         car_wash_services = {
             service_price.service
@@ -106,6 +107,7 @@ def get_all_flatten_car_wash_services(
                 'parent__id',
                 'parent__name',
             )
+            .order_by('-priority')
         )
 
     parent_ids: set[UUID] = {
