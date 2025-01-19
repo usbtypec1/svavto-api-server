@@ -159,7 +159,7 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             'parent__id',
             'parent__name',
         )
-        .order_by('parent')
+        .order_by('parent', '-priority')
     )
     parent_ids = set(CarWashService.objects.values_list('parent_id', flat=True))
     return [
