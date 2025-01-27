@@ -8,6 +8,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from car_washes.models import CarWash
 from shifts.exceptions import (
     ShiftAlreadyExistsError,
     ShiftNotFoundError,
@@ -30,6 +31,7 @@ __all__ = (
     'delete_shift_by_id',
     'create_and_start_shifts',
     'ensure_shift_exists',
+    'ShiftSummaryInteractor',
 )
 
 
@@ -114,19 +116,18 @@ def start_shift(
     return shift
 
 
-def ensure_staff_has_no_active_shift(
-        staff_id: int,
-) -> None:
+def ensure_staff_has_no_active_shift(staff_id: int) -> None:
     if Shift.objects.filter(
             staff_id=staff_id,
+            started_at__isnull=False,
             finished_at__isnull=True,
     ).exists():
         raise StaffHasActiveShiftError
 
 
-@dataclass(frozen=True, slots=True)
-class ShiftSummary:
-    staff_full_name: str
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CarWashTransferredCarsSummary:
+    car_wash_id: int
     car_wash_name: str
     comfort_cars_count: int
     business_cars_count: int
@@ -137,14 +138,20 @@ class ShiftSummary:
     total_cars_count: int
     refilled_cars_count: int
     not_refilled_cars_count: int
-    finish_photo_file_ids: list[str]
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftSummary:
+    staff_id: int
+    staff_full_name: str
+    shift_id: int
+    car_washes: list[CarWashTransferredCarsSummary]
 
 
 @dataclass(frozen=True, slots=True)
 class ShiftFinishResult(ShiftSummary):
-    shift_id: int
     is_first_shift: bool
-    car_numbers: tuple[str, ...]
+    finish_photo_file_ids: list[str]
 
 
 class ShiftSummaryInteractor:
@@ -160,93 +167,91 @@ class ShiftSummaryInteractor:
             .get(id=self.__shift_id)
         )
 
-    @lru_cache
     def get_cars_to_wash(self) -> QuerySet[CarToWash]:
-        return CarToWash.objects.filter(shift=self.get_shift())
-
-    @lru_cache
-    def get_additional_services(self) -> QuerySet[CarToWashAdditionalService]:
         return (
-            CarToWashAdditionalService.objects
-            .filter(car__in=self.get_cars_to_wash())
-            .select_related('service')
-            .all()
+            CarToWash.objects
+            .select_related('car_wash')
+            .filter(shift=self.get_shift())
         )
 
-    def get_photo_file_ids(self) -> list[str]:
-        return list(
-            self.get_shift()
-            .finish_photos
-            .values_list('file_id', flat=True)
-        )
+    def execute(self) -> ShiftSummary:
+        shift = self.get_shift()
+        cars_to_wash = self.get_cars_to_wash()
 
-    def get_refilled_cars_count(self) -> int:
-        count: int = 0
-        for car_to_wash in self.get_cars_to_wash():
-            if car_to_wash.windshield_washer_refilled_bottle_percentage != 0:
-                count += (
-                    car_to_wash.windshield_washer_refilled_bottle_percentage
+        car_wash_id_to_name: dict[int, str] = {
+            car_wash['id']: car_wash['name']
+            for car_wash in CarWash.objects.values('id', 'name')
+        }
+
+        car_wash_id_to_cars = collections.defaultdict(list)
+        for car in cars_to_wash:
+            car_wash_id_to_cars[car.car_wash_id].append(car)
+
+        car_washes_summaries: list[CarWashTransferredCarsSummary] = []
+
+        for car_wash_id, cars in car_wash_id_to_cars.items():
+            wash_type_to_count = collections.defaultdict(int)
+            car_class_to_count = collections.defaultdict(int)
+            refilled_cars_count = 0
+
+            for car in cars:
+                wash_type_to_count[car.wash_type] += 1
+                car_class_to_count[car.car_class] += 1
+                refilled_cars_count += int(
+                    car.is_windshield_washer_refilled
                 )
-        return count
 
-    def get_dry_cleaning_items_count(self) -> int:
-        count: int = 0
-        for additional_service in self.get_additional_services():
-            if additional_service.service.is_dry_cleaning:
-                count += 1
-        return count
+            car_wash_name = car_wash_id_to_name.get(car_wash_id, 'не выбрано')
+            total_cars_count = len(cars)
+            not_refilled_cars_count = total_cars_count - refilled_cars_count
 
-    def get_car_class_to_count(self) -> dict[CarToWash.CarType, int]:
-        car_class_to_count = collections.defaultdict(int)
-        for car_to_wash in self.get_cars_to_wash():
-            car_class_to_count[car_to_wash.car_class] += 1
-        return car_class_to_count
+            dry_cleaning_items_count = (
+                CarToWashAdditionalService.objects
+                .filter(
+                    car__car_wash_id=car_wash_id,
+                    service__is_dry_cleaning=True,
+                )
+                .count()
+            )
 
-    def get_wash_type_to_count(self) -> dict[CarToWash.WashType, int]:
-        wash_type_to_count = collections.defaultdict(int)
-        for car_to_wash in self.get_cars_to_wash():
-            wash_type_to_count[car_to_wash.wash_type] += 1
-        return wash_type_to_count
-
-    def get_car_wash_name(self) -> str | None:
-        shift = self.get_shift()
-        if shift.car_wash is None:
-            return None
-        return shift.car_wash.name
-
-    def get_shift_summary(self) -> ShiftSummary:
-        shift = self.get_shift()
-        car_wash_name = self.get_car_wash_name()
-        dry_cleaning_items_count = self.get_dry_cleaning_items_count()
-        wash_type_to_count = self.get_wash_type_to_count()
-        car_class_to_count = self.get_car_class_to_count()
-        refilled_cars_count = self.get_refilled_cars_count()
-        file_ids = self.get_photo_file_ids()
-
-        total_cars_count = sum(car_class_to_count.values())
-        not_refilled_cars_count = total_cars_count - refilled_cars_count
+            car_wash_transferred_cars_summary = CarWashTransferredCarsSummary(
+                car_wash_id=car_wash_id,
+                car_wash_name=car_wash_name,
+                comfort_cars_count=car_class_to_count[
+                    CarToWash.CarType.COMFORT],
+                business_cars_count=car_class_to_count[
+                    CarToWash.CarType.BUSINESS],
+                vans_count=car_class_to_count[CarToWash.CarType.VAN],
+                planned_cars_count=wash_type_to_count[
+                    CarToWash.WashType.PLANNED],
+                urgent_cars_count=wash_type_to_count[CarToWash.WashType.URGENT],
+                dry_cleaning_count=dry_cleaning_items_count,
+                total_cars_count=total_cars_count,
+                refilled_cars_count=refilled_cars_count,
+                not_refilled_cars_count=not_refilled_cars_count,
+            )
+            car_washes_summaries.append(car_wash_transferred_cars_summary)
 
         return ShiftSummary(
+            staff_id=shift.staff.id,
             staff_full_name=shift.staff.full_name,
-            car_wash_name=car_wash_name,
-            comfort_cars_count=car_class_to_count[CarToWash.CarType.COMFORT],
-            business_cars_count=car_class_to_count[CarToWash.CarType.BUSINESS],
-            vans_count=car_class_to_count[CarToWash.CarType.VAN],
-            planned_cars_count=wash_type_to_count[CarToWash.WashType.PLANNED],
-            urgent_cars_count=wash_type_to_count[CarToWash.WashType.URGENT],
-            dry_cleaning_count=dry_cleaning_items_count,
-            total_cars_count=total_cars_count,
-            refilled_cars_count=refilled_cars_count,
-            not_refilled_cars_count=not_refilled_cars_count,
-            finish_photo_file_ids=file_ids,
+            shift_id=shift.id,
+            car_washes=car_washes_summaries,
         )
 
 
 class ShiftFinishInteractor:
 
-    def __init__(self, shift: Shift, photo_file_ids: Iterable[str]):
+    def __init__(
+            self,
+            *,
+            shift: Shift,
+            shift_summary: ShiftSummary,
+            photo_file_ids: Iterable[str],
+    ):
         self.__shift = shift
-        self.__photo_file_ids = tuple(photo_file_ids)
+        self.__shift_summary = shift_summary
+        self.__photo_file_ids = list(photo_file_ids)
 
     def save_shift_finish_date(self) -> None:
         if self.__shift.finished_at is not None:
@@ -265,35 +270,17 @@ class ShiftFinishInteractor:
         ]
         return ShiftFinishPhoto.objects.bulk_create(finish_photos)
 
-    def get_car_numbers(self) -> tuple[str, ...]:
-        return tuple(
-            self.__shift
-            .cartowash_set
-            .values_list('number', flat=True)
-        )
-
     def create_result(
             self,
             is_first_shift: bool,
-            car_numbers: Iterable[str],
-            shift_summary: ShiftSummary,
     ) -> ShiftFinishResult:
         return ShiftFinishResult(
-            shift_id=self.__shift.id,
             is_first_shift=is_first_shift,
+            shift_id=self.__shift_summary.shift_id,
+            staff_id=self.__shift_summary.staff_id,
             staff_full_name=self.__shift.staff.full_name,
-            car_numbers=tuple(car_numbers),
-            car_wash_name=shift_summary.car_wash_name,
-            comfort_cars_count=shift_summary.comfort_cars_count,
-            business_cars_count=shift_summary.business_cars_count,
-            vans_count=shift_summary.vans_count,
-            planned_cars_count=shift_summary.planned_cars_count,
-            urgent_cars_count=shift_summary.urgent_cars_count,
-            dry_cleaning_count=shift_summary.dry_cleaning_count,
-            total_cars_count=shift_summary.total_cars_count,
-            refilled_cars_count=shift_summary.refilled_cars_count,
-            not_refilled_cars_count=shift_summary.not_refilled_cars_count,
-            finish_photo_file_ids=shift_summary.finish_photo_file_ids,
+            car_washes=self.__shift_summary.car_washes,
+            finish_photo_file_ids=self.__photo_file_ids,
         )
 
     @transaction.atomic
@@ -302,16 +289,7 @@ class ShiftFinishInteractor:
         self.save_shift_finish_date()
         self.delete_shift_finish_photos()
         self.create_shift_finish_photos()
-        car_numbers = self.get_car_numbers()
-
-        shift_summary_interactor = ShiftSummaryInteractor(self.__shift.id)
-        shift_summary = shift_summary_interactor.get_shift_summary()
-
-        return self.create_result(
-            is_first_shift=is_first_shift,
-            car_numbers=car_numbers,
-            shift_summary=shift_summary,
-        )
+        return self.create_result(is_first_shift=is_first_shift)
 
 
 def get_shifts_by_staff_id(

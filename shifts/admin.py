@@ -1,10 +1,11 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import QuerySet
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from import_export import resources
 from import_export.admin import ExportActionModelAdmin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
+from shifts.exceptions import StaffHasActiveShiftError
 from shifts.models import (
     AvailableDate,
     CarToWash,
@@ -12,6 +13,7 @@ from shifts.models import (
     Shift,
     ShiftFinishPhoto,
 )
+from shifts.services.shifts import ensure_staff_has_no_active_shift
 
 
 class CarToWashResource(resources.ModelResource):
@@ -82,6 +84,11 @@ class CarToWashResource(resources.ModelResource):
             'windshield_washer_price_per_bottle',
             'created_at',
         )
+
+
+class ShiftFinishPhotoInline(admin.TabularInline):
+    model = ShiftFinishPhoto
+    extra = 0
 
 
 class CarToWashInline(admin.TabularInline):
@@ -155,10 +162,21 @@ class ShiftAdmin(admin.ModelAdmin):
         IsStartedFilter,
         IsFinishedFilter,
     )
-    inlines = (CarToWashInline,)
+    inlines = (ShiftFinishPhotoInline, CarToWashInline)
     search_fields = ('staff__full_name', 'staff__id')
     search_help_text = _('you can search by staff name or staff id')
     date_hierarchy = 'date'
+
+    def save_model(self, request, obj, form, change):
+        is_creating = not change
+        if is_creating:
+            try:
+                ensure_staff_has_no_active_shift(obj.staff_id)
+            except StaffHasActiveShiftError:
+                messages.set_level(request, messages.ERROR)
+                messages.error(request, gettext('staff has active shift'))
+                return
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(CarToWash)

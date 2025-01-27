@@ -204,6 +204,10 @@ class CarToWash(models.Model):
         return (self.windshield_washer_price_per_bottle *
                 self.windshield_washer_refilled_bottle_count)
 
+    @property
+    def is_windshield_washer_refilled(self) -> bool:
+        return self.windshield_washer_refilled_bottle_count > 0
+
 
 class CarToWashAdditionalService(models.Model):
     car = models.ForeignKey(

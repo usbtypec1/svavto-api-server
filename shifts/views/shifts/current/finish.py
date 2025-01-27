@@ -7,7 +7,7 @@ from shifts.serializers import (
     ShiftFinishInputSerializer,
     ShiftFinishOutputSerializer,
 )
-from shifts.services.shifts import ShiftFinishInteractor
+from shifts.services.shifts import ShiftFinishInteractor, ShiftSummaryInteractor
 from staff.selectors import ensure_staff_exists
 from staff.services import update_last_activity_time
 
@@ -26,8 +26,12 @@ class ShiftFinishApi(APIView):
         ensure_staff_exists(staff_id)
         shift = get_staff_current_shift(staff_id=staff_id)
 
+        shift_summary_interactor = ShiftSummaryInteractor(shift_id=shift.id)
+        shift_summary = shift_summary_interactor.execute()
+
         shift_finish_interactor = ShiftFinishInteractor(
             shift=shift,
+            shift_summary=shift_summary,
             photo_file_ids=photo_file_ids,
         )
         shift_finish_result = shift_finish_interactor.finish_shift()
