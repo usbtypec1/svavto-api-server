@@ -201,8 +201,15 @@ def map_shift_statistics(
         vans_count,
         urgent_cars_count,
     ))
+    planned_cars_count = sum((
+        comfort_cars_count,
+        business_cars_count,
+        vans_count,
+    ))
     if cars_count < 7:
-        washed_cars_total_cost = 100 * cars_count
+        washed_cars_total_cost = (
+                planned_cars_count * 100 + urgent_cars_count * 250
+        )
     else:
         if is_extra_shift:
             washed_cars_total_cost = 190 * cars_count
@@ -371,7 +378,8 @@ def get_shifts_statistics_grouped_by_staff(
         .values('car__shift_id', 'services_count')
     )
     shift_id_to_additional_services_count = {
-        additional_service['car__shift_id']:  additional_service['services_count']
+        additional_service['car__shift_id']: additional_service[
+            'services_count']
         for additional_service in additional_services
     }
 

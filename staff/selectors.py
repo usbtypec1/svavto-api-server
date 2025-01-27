@@ -124,11 +124,10 @@ def get_staff(
         staff_ids: Iterable[int] | None = None,
 ) -> list[StaffItem]:
     staff_list = Staff.objects.all()
-
     if staff_ids is not None:
         staff_list = staff_list.filter(id__in=staff_ids)
 
-    staff_list = staff_list.values(
+    staff_list = staff_list.only(
         'id',
         'full_name',
         'car_sharing_phone_number',
@@ -139,12 +138,12 @@ def get_staff(
 
     return [
         StaffItem(
-            id=staff['id'],
-            full_name=staff['full_name'],
-            car_sharing_phone_number=staff['car_sharing_phone_number'],
-            console_phone_number=staff['console_phone_number'],
-            created_at=staff['created_at'],
-            banned_at=staff['banned_at'],
+            id=staff.id,
+            full_name=staff.full_name,
+            car_sharing_phone_number=staff.car_sharing_phone_number,
+            console_phone_number=staff.console_phone_number,
+            created_at=staff.created_at,
+            banned_at=staff.banned_at,
         )
         for staff in staff_list
     ]
