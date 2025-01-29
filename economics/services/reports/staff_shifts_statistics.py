@@ -303,7 +303,7 @@ def get_shifts_dry_cleaning_items(
         )
     shifts_dry_cleaning_items = (
         shifts_dry_cleaning_items
-        .annotate(items_count=Sum('count'))
+        .annotate(items_count=Sum('count', default=0))
         .values('car__shift_id', 'car__shift__staff_id')
     )
     return [
