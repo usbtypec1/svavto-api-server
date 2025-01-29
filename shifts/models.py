@@ -1,5 +1,6 @@
 import math
 
+from click import version_option
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -26,15 +27,19 @@ class AvailableDate(models.Model):
                 limit_value=12,
                 message='Month cannot be greater than 12',
             ),
-        ]
+        ],
+        verbose_name=_('month'),
     )
-    year = models.PositiveSmallIntegerField()
+    year = models.PositiveSmallIntegerField(verbose_name=_('year'))
 
     class Meta:
         verbose_name = _('available date')
         verbose_name_plural = _('available dates')
         unique_together = ('month', 'year')
         ordering = ('year', 'month')
+
+    def __str__(self):
+        return f'{self.year}-{self.month}'
 
 
 class Shift(models.Model):
@@ -219,15 +224,24 @@ class CarToWash(models.Model):
 
 class CarToWashAdditionalService(models.Model):
     car = models.ForeignKey(
-        CarToWash,
+        to=CarToWash,
         on_delete=models.CASCADE,
         related_name='additional_services',
+        verbose_name=_('car to wash'),
     )
-    service = models.ForeignKey(CarWashService, on_delete=models.CASCADE)
+    service = models.ForeignKey(
+        to=CarWashService,
+        on_delete=models.CASCADE,
+        verbose_name=_('additional service'),
+    )
     price = models.PositiveIntegerField(
+        verbose_name=_('price'),
         help_text=_('price of additional service at the moment')
     )
-    count = models.PositiveSmallIntegerField(default=1)
+    count = models.PositiveSmallIntegerField(
+        default=1,
+        verbose_name=_('count'),
+    )
 
     class Meta:
         verbose_name = _('additional service')

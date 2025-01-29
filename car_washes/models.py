@@ -91,16 +91,23 @@ class CarWashServicePrice(models.Model):
         CarWash,
         on_delete=models.CASCADE,
         related_name='prices',
+        verbose_name=_('car wash'),
     )
     service = models.ForeignKey(
         CarWashService,
         on_delete=models.CASCADE,
         related_name='prices',
+        verbose_name=_('additional service'),
     )
-    price = models.PositiveIntegerField()
+    price = models.PositiveIntegerField(
+        verbose_name=_('price'),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = _('car wash service price')
         verbose_name_plural = _('car wash service prices')
+
+    def __str__(self) -> str:
+        return f'{self.car_wash} - {self.service}'

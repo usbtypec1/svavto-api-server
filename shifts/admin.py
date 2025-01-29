@@ -206,6 +206,8 @@ class CarToWashAdmin(ExportActionModelAdmin):
             title=_('shift date'),
         )),
     )
+    search_fields = ('number', 'shift__date',)
+    search_help_text = _('search by number and shift date')
     list_select_related = ('shift', 'car_wash')
     list_per_page = 100
 
@@ -213,7 +215,9 @@ class CarToWashAdmin(ExportActionModelAdmin):
 @admin.register(CarToWashAdditionalService)
 class CarToWashAdditionalServiceAdmin(admin.ModelAdmin):
     list_display = ('car', 'service', 'count')
-    list_select_related = ('car',)
+    list_select_related = ('car', 'service')
+    list_filter = ('service__is_countable', 'service__is_dry_cleaning')
+    autocomplete_fields = ('car', 'service',)
 
 
 @admin.register(ShiftFinishPhoto)
