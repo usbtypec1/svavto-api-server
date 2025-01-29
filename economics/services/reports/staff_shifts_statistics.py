@@ -303,14 +303,14 @@ def get_shifts_dry_cleaning_items(
         )
     shifts_dry_cleaning_items = (
         shifts_dry_cleaning_items
-        .annotate(items_count=Sum('count', default=0))
+        .annotate(items_count=Sum('count'))
         .values('car__shift_id', 'car__shift__staff_id')
     )
     return [
         ShiftDryCleaningItems(
             staff_id=shift_dry_cleaning_items['car__shift__staff_id'],
             shift_id=shift_dry_cleaning_items['car__shift_id'],
-            items_count=shift_dry_cleaning_items['items_count'],
+            items_count=shift_dry_cleaning_items.get('items_count', 0),
         )
         for shift_dry_cleaning_items in shifts_dry_cleaning_items
     ]
