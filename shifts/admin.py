@@ -187,16 +187,23 @@ class CarToWashAdmin(ExportActionModelAdmin):
     list_display = (
         'number',
         'car_wash',
+        'shift',
         'car_class',
         'wash_type',
-        'created_at',
+    )
+    list_display_links = (
+        'number',
+        'car_wash',
+        'shift',
+        'car_class',
+        'wash_type',
     )
     list_filter = (
         'car_class',
         'car_wash',
         'wash_type',
-        ('created_at', DateTimeRangeFilterBuilder(
-            title=_('added at'),
+        ('shift__date', DateTimeRangeFilterBuilder(
+            title=_('shift date'),
         )),
     )
     list_select_related = ('shift', 'car_wash')

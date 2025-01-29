@@ -80,7 +80,7 @@ class Shift(models.Model):
         unique_together = ('staff', 'date', 'is_extra')
 
     def __str__(self):
-        return f'{self.staff.full_name} - {self.date}'
+        return f'{self.date:%d.%m.%Y}'
 
     @property
     def is_started(self) -> bool:
@@ -122,15 +122,23 @@ class CarToWash(models.Model):
         PLANNED = 'planned', _('planned')
         URGENT = 'urgent', _('urgent')
 
-    number = models.CharField(max_length=20)
+    number = models.CharField(
+        max_length=20,
+        verbose_name=_('car number'),
+    )
     car_wash = models.ForeignKey(
         CarWash,
         on_delete=models.SET_NULL,
         default=None,
         null=True,
         blank=True,
+        verbose_name=_('car wash'),
     )
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
+    shift = models.ForeignKey(
+        Shift,
+        on_delete=models.CASCADE,
+        verbose_name=_('shift'),
+    )
     car_class = models.CharField(
         max_length=16,
         choices=CarType.choices,
