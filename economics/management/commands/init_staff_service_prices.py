@@ -11,6 +11,7 @@ SERVICE_TYPE_TO_PRICE: Final[dict[StaffServicePrice.ServiceType, int]] = {
     StaffServicePrice.ServiceType.CAR_TRANSPORTER_EXTRA_SHIFT: 190,
     StaffServicePrice.ServiceType.URGENT_CAR_WASH: 250,
     StaffServicePrice.ServiceType.ITEM_DRY_CLEAN: 50,
+    StaffServicePrice.ServiceType.UNDER_PLAN_PLANNED_CAR_TRANSFER: 100,
 }
 
 

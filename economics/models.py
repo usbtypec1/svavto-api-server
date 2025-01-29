@@ -64,6 +64,10 @@ class StaffServicePrice(models.Model):
         )
         URGENT_CAR_WASH = 'urgent_wash', _('urgent wash')
         ITEM_DRY_CLEAN = 'item_dry_clean', _('item dry clean')
+        UNDER_PLAN_PLANNED_CAR_TRANSFER = (
+            'under_plan_planned_car_transfer',
+            _('under plan planned car transfer')
+        )
 
     service = models.CharField(
         max_length=255,

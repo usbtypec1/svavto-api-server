@@ -1,13 +1,14 @@
 import datetime
 from collections import defaultdict
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Protocol, TypeVar
+from typing import Protocol, TypeVar
 
-from django.db.models import Count, Q, Sum
+from django.db.models import Sum
 
+from economics.models import StaffServicePrice
 from economics.selectors import (
-    PenaltyOrSurchargeAmountAndShiftDate,
+    StaffPenaltiesOrSurchargesForSpecificShift,
     get_penalties_for_period,
     get_surcharges_for_period,
 )
@@ -16,9 +17,15 @@ from staff.selectors import StaffItem, get_staff
 
 __all__ = (
     'get_staff_shifts_statistics',
-    'get_shifts_statistics_grouped_by_staff',
     'get_shift_dates',
-    'match_shifts_statistics_penalties_and_surcharges',
+    'get_shifts_dry_cleaning_items',
+    'group_by_shift_id',
+    'group_by_staff_id',
+    'group_shifts_statistics_by_staff',
+    'get_cars_to_wash_statistics',
+    'map_shift_statistics_with_penalty_and_surcharge',
+    'merge_shifts_statistics_and_penalties_and_surcharges',
+    'compute_washed_cars_total_cost',
 )
 
 
@@ -33,16 +40,25 @@ def get_shift_dates(items: Iterable[HasShiftDateT]) -> set[datetime.date]:
     return {item.shift_date for item in items}
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class ShiftStatistics:
+    staff_id: int
+    shift_id: int
     shift_date: datetime.date
+    washed_cars_total_cost: int
     planned_comfort_cars_washed_count: int
     planned_business_cars_washed_count: int
     planned_vans_washed_count: int
     urgent_cars_washed_count: int
     dry_cleaning_items_count: int
     is_extra_shift: bool
-    washed_cars_total_cost: int
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftDryCleaningItems:
+    staff_id: int
+    shift_id: int
+    items_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,228 +76,243 @@ class StaffShiftsStatistics:
 @dataclass(frozen=True, slots=True)
 class ShiftStatisticsGroupedByStaff:
     staff_id: int
-    shifts_statistics: tuple[ShiftStatistics, ...]
+    shifts_statistics: list[ShiftStatistics]
 
 
-def match_shifts_statistics_penalties_and_surcharges(
-        penalty_shift_date_to_amount: Mapping[datetime.date, int],
-        surcharge_shift_date_to_amount: Mapping[datetime.date, int],
-        dates: Iterable[datetime.date],
-        shift_date_to_shift_statistics: Mapping[datetime.date, ShiftStatistics],
-) -> list[ShiftStatisticsWithPenaltyAndSurcharge]:
-    shifts_statistics: list[ShiftStatisticsWithPenaltyAndSurcharge] = []
-
-    for date in dates:
-        shift_statistics: ShiftStatistics | None = (
-            shift_date_to_shift_statistics.get(date)
-        )
-        if shift_statistics is None:
-            continue
-
-        penalty_amount = penalty_shift_date_to_amount.get(date, 0)
-        surcharge_amount = surcharge_shift_date_to_amount.get(date, 0)
-
-        shifts_statistics.append(
-            ShiftStatisticsWithPenaltyAndSurcharge(
-                shift_date=date,
-                penalty_amount=penalty_amount,
-                surcharge_amount=surcharge_amount,
-                planned_comfort_cars_washed_count=(
-                    shift_statistics.planned_comfort_cars_washed_count
-                ),
-                planned_business_cars_washed_count=(
-                    shift_statistics.planned_business_cars_washed_count
-                ),
-                planned_vans_washed_count=(
-                    shift_statistics.planned_vans_washed_count
-                ),
-                urgent_cars_washed_count=(
-                    shift_statistics.urgent_cars_washed_count
-                ),
-                is_extra_shift=shift_statistics.is_extra_shift,
-                washed_cars_total_cost=shift_statistics.washed_cars_total_cost,
-                dry_cleaning_items_count=(
-                    shift_statistics.dry_cleaning_items_count
-                ),
-            )
-        )
-
-    return shifts_statistics
+def map_shift_statistics_with_penalty_and_surcharge(
+        *,
+        shift_statistics: ShiftStatistics,
+        penalty_amount: int,
+        surcharge_amount: int,
+) -> ShiftStatisticsWithPenaltyAndSurcharge:
+    return ShiftStatisticsWithPenaltyAndSurcharge(
+        staff_id=shift_statistics.staff_id,
+        shift_id=shift_statistics.shift_id,
+        shift_date=shift_statistics.shift_date,
+        washed_cars_total_cost=shift_statistics.washed_cars_total_cost,
+        planned_comfort_cars_washed_count=shift_statistics
+        .planned_comfort_cars_washed_count,
+        planned_business_cars_washed_count=shift_statistics
+        .planned_business_cars_washed_count,
+        planned_vans_washed_count=shift_statistics.planned_vans_washed_count,
+        urgent_cars_washed_count=shift_statistics.urgent_cars_washed_count,
+        dry_cleaning_items_count=shift_statistics.dry_cleaning_items_count,
+        is_extra_shift=shift_statistics.is_extra_shift,
+        penalty_amount=penalty_amount,
+        surcharge_amount=surcharge_amount,
+    )
 
 
-def match_staff_shifts_statistics(
+def merge_shifts_statistics_and_penalties_and_surcharges(
         *,
         staff: StaffItem,
-        staff_id_to_penalties: (
-                Mapping[int, Iterable[PenaltyOrSurchargeAmountAndShiftDate]]
-        ),
-        staff_id_to_surcharges: (
-                Mapping[int, Iterable[PenaltyOrSurchargeAmountAndShiftDate]]
-        ),
-        staff_id_to_shifts_statistics: Mapping[int, Iterable[ShiftStatistics]],
+        staff_shifts_statistics: Iterable[ShiftStatisticsGroupedByStaff],
+        penalties: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
+        surcharges: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
 ) -> StaffShiftsStatistics:
+    staff_id_to_penalties = {
+        penalty.staff_id: penalty.items
+        for penalty in penalties
+    }
+    staff_id_to_surcharges = {
+        surcharge.staff_id: surcharge.items
+        for surcharge in surcharges
+    }
+    staff_id_to_shifts_statistics = {
+        item.staff_id: item.shifts_statistics
+        for item in staff_shifts_statistics
+    }
+
     penalties = staff_id_to_penalties.get(staff.id, [])
     surcharges = staff_id_to_surcharges.get(staff.id, [])
-    shifts = staff_id_to_shifts_statistics.get(staff.id, [])
 
-    penalty_shift_date_to_amount = {
+    shift_date_to_penalty_amount = {
         penalty.shift_date: penalty.total_amount
         for penalty in penalties
     }
-    surcharge_shift_date_to_amount = {
+    shift_date_to_surcharge_amount = {
         surcharge.shift_date: surcharge.total_amount
         for surcharge in surcharges
     }
-    shift_date_to_shift_statistics = {
-        shift.shift_date: shift
-        for shift in shifts
-    }
 
-    all_dates = (
-            get_shift_dates(shifts)
-            | get_shift_dates(penalties)
-            | get_shift_dates(surcharges)
-    )
+    shifts_statistics = staff_id_to_shifts_statistics.get(staff.id, [])
 
-    shifts_statistics = (
-        match_shifts_statistics_penalties_and_surcharges(
-            penalty_shift_date_to_amount=penalty_shift_date_to_amount,
-            surcharge_shift_date_to_amount=(
-                surcharge_shift_date_to_amount
-            ),
-            dates=all_dates,
-            shift_date_to_shift_statistics=(
-                shift_date_to_shift_statistics
-            ),
+    result: list[ShiftStatisticsWithPenaltyAndSurcharge] = []
+    for shift_statistics in shifts_statistics:
+        penalty_amount = shift_date_to_penalty_amount.get(
+            shift_statistics.shift_date, 0,
         )
-    )
-
-    return StaffShiftsStatistics(
-        staff=staff,
-        shifts_statistics=shifts_statistics,
-    )
-
-
-def map_shifts_statistics_grouped_by_staff(
-        staff_id_to_shifts_statistics: Mapping[int, Iterable[ShiftStatistics]],
-) -> list[ShiftStatisticsGroupedByStaff]:
-    return [
-        ShiftStatisticsGroupedByStaff(
-            staff_id=staff_id,
-            shifts_statistics=tuple(shifts_statistics),
+        surcharge_amount = shift_date_to_surcharge_amount.get(
+            shift_statistics.shift_date, 0,
         )
-        for staff_id, shifts_statistics in
-        staff_id_to_shifts_statistics.items()
-    ]
+        result.append(
+            map_shift_statistics_with_penalty_and_surcharge(
+                shift_statistics=shift_statistics,
+                surcharge_amount=surcharge_amount,
+                penalty_amount=penalty_amount,
+            )
+        )
+
+    return StaffShiftsStatistics(staff=staff, shifts_statistics=result)
 
 
-def map_shift_statistics(
-        shift_date: datetime.date,
-        is_extra_shift: bool,
-        shift_cars_statistics: Mapping[str, int],
-) -> ShiftStatistics:
-    washed_cars_total_cost = (
-        shift_cars_statistics.get('washed_cars_total_cost', 0)
-    )
-    comfort_cars_count = (
-        shift_cars_statistics.get('planned_comfort_cars_washed_count', 0)
-    )
-    business_cars_count = (
-        shift_cars_statistics.get('planned_business_cars_washed_count', 0)
-    )
-    vans_count = shift_cars_statistics.get('planned_vans_washed_count', 0)
-    urgent_cars_count = shift_cars_statistics.get('urgent_cars_washed_count', 0)
-    dry_cleaning_items_count = shift_cars_statistics.get(
-        'dry_cleaning_items_count', 0
-    )
+class StaffServicePricesSet:
 
-    cars_count = sum((
-        comfort_cars_count,
-        business_cars_count,
-        vans_count,
-        urgent_cars_count,
-    ))
+    def __init__(self, staff_service_prices: Iterable[StaffServicePrice]):
+        self.__service_type_to_price = {
+            service_price.service: service_price.price
+            for service_price in staff_service_prices
+        }
+
+    @property
+    def extra_shift_planned_car_transfer_price(self) -> int:
+        return self.__service_type_to_price[
+            StaffServicePrice.ServiceType.CAR_TRANSPORTER_EXTRA_SHIFT
+        ]
+
+    @property
+    def urgent_car_transfer_price(self) -> int:
+        return self.__service_type_to_price[
+            StaffServicePrice.ServiceType.URGENT_CAR_WASH
+        ]
+
+    @property
+    def dry_cleaning_item_price(self) -> int:
+        return self.__service_type_to_price[
+            StaffServicePrice.ServiceType.ITEM_DRY_CLEAN
+        ]
+
+    @property
+    def under_plan_planned_car_transfer_price(self) -> int:
+        return self.__service_type_to_price[
+            StaffServicePrice.ServiceType.UNDER_PLAN_PLANNED_CAR_TRANSFER
+        ]
+
+
+def compute_washed_cars_total_cost(
+        *,
+        total_cost: int,
+        comfort_cars_count: int,
+        business_cars_count: int,
+        vans_count: int,
+        urgent_cars_count: int,
+        is_extra_shift: int,
+        dry_cleaning_items_count: int,
+        prices: StaffServicePricesSet
+) -> int:
+    """
+    Compute total price of car transfer on the shift.
+
+    Keyword Args:
+        total_cost: preliminary total cost by standard rates.
+        comfort_cars_count: comfort class cars count (part of planned cars).
+        business_cars_count: business class cars count (part of planned cars)
+        vans_count: vans count (part of planned cars).
+        urgent_cars_count: urgent cars count.
+        is_extra_shift: flag of extra shift.
+        dry_cleaning_items_count: dry cleaning items count.
+
+    Returns:
+        Total price of car transfer on the shift.
+    """
     planned_cars_count = sum((
         comfort_cars_count,
         business_cars_count,
         vans_count,
     ))
-    if cars_count < 7:
-        washed_cars_total_cost = (
-                planned_cars_count * 100 + urgent_cars_count * 250
-        )
-    else:
-        if is_extra_shift:
-            washed_cars_total_cost = 190 * cars_count
 
-    washed_cars_total_cost += 50 * dry_cleaning_items_count
-
-    return ShiftStatistics(
-        shift_date=shift_date,
-        planned_comfort_cars_washed_count=comfort_cars_count,
-        planned_business_cars_washed_count=business_cars_count,
-        planned_vans_washed_count=vans_count,
-        urgent_cars_washed_count=urgent_cars_count,
-        is_extra_shift=is_extra_shift,
-        washed_cars_total_cost=washed_cars_total_cost,
-        dry_cleaning_items_count=dry_cleaning_items_count,
+    dry_cleaning_cost = (
+            prices.dry_cleaning_item_price * dry_cleaning_items_count
     )
+    if is_extra_shift:
+        planned_cars_transfer_cost = (
+                prices.extra_shift_planned_car_transfer_price
+                * planned_cars_count
+        )
+        urgent_cars_transfer_cost = (
+                + prices.urgent_car_transfer_price
+                * urgent_cars_count
+        )
+        car_transfer_cost = (
+                planned_cars_transfer_cost + urgent_cars_transfer_cost
+        )
+        return dry_cleaning_cost + car_transfer_cost
+
+    total_cars_count = planned_cars_count + urgent_cars_count
+
+    if total_cars_count < 7:
+        planned_cars_transfer_cost = (
+                prices.under_plan_planned_car_transfer_price
+                * planned_cars_count
+        )
+        urgent_cars_transfer_cost = (
+                + prices.urgent_car_transfer_price
+                * urgent_cars_count
+        )
+        car_transfer_cost = (
+                planned_cars_transfer_cost + urgent_cars_transfer_cost
+        )
+        return dry_cleaning_cost + car_transfer_cost
+
+    return total_cost + dry_cleaning_cost
 
 
-@dataclass(frozen=True, slots=True)
-class ShiftPartial:
-    date: datetime.date
-    staff_id: int
-    is_extra_shift: bool
+T = TypeVar('T')
 
 
-def group_shifts_statistics_by_staff(
+def group_by_shift_id(items: Iterable[T]) -> dict[int, list[T]]:
+    result: dict[int, list[T]] = defaultdict(list)
+    for item in items:
+        result[item.shift_id].append(item)
+    return dict(result)
+
+
+def group_by_staff_id(items: Iterable[T]) -> dict[int, list[T]]:
+    result: dict[int, list[T]] = defaultdict(list)
+    for item in items:
+        result[item.staff_id].append(item)
+    return dict(result)
+
+
+def get_shifts_dry_cleaning_items(
         *,
-        all_shifts: Iterable[ShiftPartial],
-        shifts_cars_statistics: Iterable[Mapping[str, Any]],
-) -> list[ShiftStatisticsGroupedByStaff]:
-    staff_id_and_shift_date_and_is_extra_to_statistics = {
-        (
-            shift_cars_statistics['shift__staff_id'],
-            shift_cars_statistics['shift__date'],
-            shift_cars_statistics['shift__is_extra'],
-        ):
-            shift_cars_statistics
-        for shift_cars_statistics in shifts_cars_statistics
-    }
+        from_date: datetime.date,
+        to_date: datetime.date,
+        staff_ids: Iterable[int] | None = None,
+) -> list[ShiftDryCleaningItems]:
+    """Get dry cleaning items count by shifts of staff.
 
-    staff_id_to_shifts_statistics: dict[int, list[ShiftStatistics]] = (
-        defaultdict(list)
+    Keyword Args:
+        from_date: period start date.
+        to_date: period end date.
+        staff_ids: staff ids to filter by. If None, all staff will be included.
+
+    Returns:
+        list of ShiftDryCleaningItems.
+    """
+    shifts_dry_cleaning_items = (
+        CarToWashAdditionalService.objects
+        .filter(
+            car__shift__date__range=(from_date, to_date),
+            service__is_dry_cleaning=True,
+        )
     )
-    for shift in all_shifts:
-        key = (
-            shift.staff_id,
-            shift.date,
-            shift.is_extra_shift,
+    if staff_ids is not None:
+        shifts_dry_cleaning_items = shifts_dry_cleaning_items.filter(
+            car__shift__staff_id__in=staff_ids
         )
-        shift_cars_statistics = (
-            staff_id_and_shift_date_and_is_extra_to_statistics.get(key, {})
-        )
-        shift_statistics = map_shift_statistics(
-            shift_date=shift.date,
-            is_extra_shift=shift.is_extra_shift,
-            shift_cars_statistics=shift_cars_statistics,
-        )
-        staff_id_to_shifts_statistics[shift.staff_id].append(shift_statistics)
-
-    return map_shifts_statistics_grouped_by_staff(staff_id_to_shifts_statistics)
-
-
-def map_partial_shifts(
-        shifts: Iterable[Mapping[str, Any]],
-) -> list[ShiftPartial]:
+    shifts_dry_cleaning_items = (
+        shifts_dry_cleaning_items
+        .annotate(items_count=Sum('count'))
+        .values('car__shift_id', 'car__shift__staff_id')
+    )
     return [
-        ShiftPartial(
-            date=shift['date'],
-            staff_id=shift['staff_id'],
-            is_extra_shift=shift['is_extra'],
+        ShiftDryCleaningItems(
+            staff_id=shift_dry_cleaning_items['car__shift__staff_id'],
+            shift_id=shift_dry_cleaning_items['car__shift_id'],
+            items_count=shift_dry_cleaning_items['items_count'],
         )
-        for shift in shifts
+        for shift_dry_cleaning_items in shifts_dry_cleaning_items
     ]
 
 
@@ -290,110 +321,96 @@ def get_cars_to_wash_statistics(
         from_date: datetime.date,
         to_date: datetime.date,
         staff_ids: Iterable[int] | None = None,
-) -> list[dict]:
-    filter_params = {
-        'shift__date__gte': from_date,
-        'shift__date__lte': to_date,
-    }
+) -> list[ShiftStatistics]:
+    prices = StaffServicePricesSet(StaffServicePrice.objects.all())
+
+    cars_to_wash = (
+        CarToWash.objects
+        .filter(shift__date__range=(from_date, to_date))
+    )
     if staff_ids is not None:
-        filter_params['shift__staff_id__in'] = staff_ids
-    return (
-        CarToWash.objects.select_related('shift')
-        .filter(**filter_params)
-        .values('shift_id', 'shift__date', 'shift__staff_id', 'shift__is_extra')
-        .annotate(
-            washed_cars_total_cost=Sum('transfer_price', default=0),
-            planned_comfort_cars_washed_count=Count(
-                'id',
-                filter=Q(
-                    car_class=CarToWash.CarType.COMFORT,
-                    wash_type=CarToWash.WashType.PLANNED,
-                ),
-            ),
-            planned_business_cars_washed_count=Count(
-                'id',
-                filter=Q(
-                    car_class=CarToWash.CarType.BUSINESS,
-                    wash_type=CarToWash.WashType.PLANNED,
-                ),
-            ),
-            planned_vans_washed_count=Count(
-                'id',
-                filter=Q(
-                    car_class=CarToWash.CarType.VAN,
-                    shift__is_extra=False,
-                    wash_type=CarToWash.WashType.PLANNED,
-                ),
-            ),
-            urgent_cars_washed_count=Count(
-                'id',
-                filter=Q(
-                    wash_type=CarToWash.WashType.URGENT,
-                    shift__is_extra=False,
-                ),
-            ),
-        )
+        cars_to_wash = cars_to_wash.filter(shift__staff_id__in=staff_ids)
+    shift_id_to_cars: dict[int, list[CarToWash]] = group_by_shift_id(
+        cars_to_wash
     )
 
-
-def get_partial_shifts_within_period(
-        *,
-        from_date: datetime.date,
-        to_date: datetime.date,
-        staff_ids: Iterable[int] | None = None,
-) -> list[ShiftPartial]:
-    shifts = Shift.objects.filter(date__gte=from_date, date__lte=to_date)
+    shifts = Shift.objects.filter(date__range=(from_date, to_date))
     if staff_ids is not None:
         shifts = shifts.filter(staff_id__in=staff_ids)
-    shifts = shifts.values('staff_id', 'date', 'is_extra')
-    return map_partial_shifts(shifts)
 
-
-def get_shifts_statistics_grouped_by_staff(
-        *,
-        from_date: datetime.date,
-        to_date: datetime.date,
-        staff_ids: Iterable[int] | None = None,
-) -> list[ShiftStatisticsGroupedByStaff]:
-    all_shifts = get_partial_shifts_within_period(
+    shifts_dry_cleaning_items = get_shifts_dry_cleaning_items(
         from_date=from_date,
         to_date=to_date,
         staff_ids=staff_ids,
     )
-    shifts_cars_statistics = get_cars_to_wash_statistics(
-        from_date=from_date,
-        to_date=to_date,
-        staff_ids=staff_ids,
-    )
-    shift_ids = [
-        shift_cars_statistics['shift_id']
-        for shift_cars_statistics in shifts_cars_statistics
-    ]
-
-    additional_services = (
-        CarToWashAdditionalService.objects
-        .filter(car__shift_id__in=shift_ids, service__is_dry_cleaning=True)
-        .select_related('service')
-        .annotate(services_count=Count('id'))
-        .values('car__shift_id', 'services_count')
-    )
-    shift_id_to_additional_services_count = {
-        additional_service['car__shift_id']: additional_service[
-            'services_count']
-        for additional_service in additional_services
+    shift_id_and_staff_id_to_dry_cleaning_items_count = {
+        (
+            shift_dry_cleaning_items.shift_id, shift_dry_cleaning_items.staff_id
+        ): shift_dry_cleaning_items.items_count
+        for shift_dry_cleaning_items in shifts_dry_cleaning_items
     }
 
-    for shift_cars_statistics in shifts_cars_statistics:
-        shift_cars_statistics['dry_cleaning_items_count'] = (
-            shift_id_to_additional_services_count.get(
-                shift_cars_statistics['shift_id'], 0
-            )
+    shifts_statistics: list[ShiftStatistics] = []
+
+    for shift in shifts:
+        shift_cars = shift_id_to_cars.get(shift.id, [])
+        key: tuple[int, int] = (shift.id, shift.staff_id)
+        dry_cleaning_items_count = (
+            shift_id_and_staff_id_to_dry_cleaning_items_count.get(key, 0)
         )
 
-    return group_shifts_statistics_by_staff(
-        all_shifts=all_shifts,
-        shifts_cars_statistics=shifts_cars_statistics,
-    )
+        car_counts = defaultdict(int)
+        for car in shift_cars:
+            if car.wash_type == CarToWash.WashType.PLANNED:
+                car_counts[car.car_class] += 1
+            elif car.wash_type == CarToWash.WashType.URGENT:
+                car_counts["urgent"] += 1
+
+        comfort_cars_washed_count = car_counts[CarToWash.CarType.COMFORT]
+        business_cars_washed_count = car_counts[CarToWash.CarType.BUSINESS]
+        vans_washed_count = car_counts[CarToWash.CarType.VAN]
+        urgent_cars_washed_count = car_counts["urgent"]
+
+        preliminary_total_cost = sum(car.transfer_price for car in shift_cars)
+        washed_cars_total_cost = compute_washed_cars_total_cost(
+            total_cost=preliminary_total_cost,
+            comfort_cars_count=comfort_cars_washed_count,
+            business_cars_count=business_cars_washed_count,
+            vans_count=vans_washed_count,
+            urgent_cars_count=urgent_cars_washed_count,
+            is_extra_shift=shift.is_extra,
+            dry_cleaning_items_count=dry_cleaning_items_count,
+            prices=prices,
+        )
+
+        shift_statistics = ShiftStatistics(
+            staff_id=shift.staff_id,
+            shift_id=shift.id,
+            shift_date=shift.date,
+            washed_cars_total_cost=washed_cars_total_cost,
+            planned_comfort_cars_washed_count=comfort_cars_washed_count,
+            planned_business_cars_washed_count=business_cars_washed_count,
+            planned_vans_washed_count=vans_washed_count,
+            urgent_cars_washed_count=urgent_cars_washed_count,
+            dry_cleaning_items_count=dry_cleaning_items_count,
+            is_extra_shift=shift.is_extra,
+        )
+        shifts_statistics.append(shift_statistics)
+
+    return shifts_statistics
+
+
+def group_shifts_statistics_by_staff(
+        shifts_statistics: Iterable[ShiftStatistics],
+) -> list[ShiftStatisticsGroupedByStaff]:
+    return [
+        ShiftStatisticsGroupedByStaff(
+            staff_id=staff_id,
+            shifts_statistics=shifts_statistics
+        )
+        for staff_id, shifts_statistics
+        in group_by_staff_id(shifts_statistics).items()
+    ]
 
 
 def get_staff_shifts_statistics(
@@ -413,31 +430,20 @@ def get_staff_shifts_statistics(
         from_date=from_date,
         to_date=to_date,
     )
-    shifts_statistics = get_shifts_statistics_grouped_by_staff(
+    shifts_statistics = get_cars_to_wash_statistics(
         from_date=from_date,
         to_date=to_date,
         staff_ids=staff_ids,
     )
-
-    staff_id_to_penalties = {
-        penalty.staff_id: penalty.items
-        for penalty in penalties
-    }
-    staff_id_to_surcharges = {
-        surcharge.staff_id: surcharge.items
-        for surcharge in surcharges
-    }
-    staff_id_to_shifts = {
-        item.staff_id: item.shifts_statistics
-        for item in shifts_statistics
-    }
-
+    staff_shifts_statistics = group_shifts_statistics_by_staff(
+        shifts_statistics=shifts_statistics,
+    )
     return [
-        match_staff_shifts_statistics(
+        merge_shifts_statistics_and_penalties_and_surcharges(
             staff=staff,
-            staff_id_to_penalties=staff_id_to_penalties,
-            staff_id_to_surcharges=staff_id_to_surcharges,
-            staff_id_to_shifts_statistics=staff_id_to_shifts,
+            penalties=penalties,
+            surcharges=surcharges,
+            staff_shifts_statistics=staff_shifts_statistics,
         )
         for staff in staff_list
     ]
