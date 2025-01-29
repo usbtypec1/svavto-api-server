@@ -4,8 +4,6 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Protocol, TypeVar
 
-from django.db.models import Sum
-
 from economics.models import StaffServicePrice
 from economics.selectors import (
     StaffPenaltiesOrSurchargesForSpecificShift,
@@ -301,18 +299,23 @@ def get_shifts_dry_cleaning_items(
         shifts_dry_cleaning_items = shifts_dry_cleaning_items.filter(
             car__shift__staff_id__in=staff_ids
         )
-    shifts_dry_cleaning_items = (
-        shifts_dry_cleaning_items
-        .annotate(items_count=Sum('count'))
-        .values('car__shift_id', 'car__shift__staff_id', 'items_count')
-    )
+
+    shift_id_and_staff_id_to_items_count = defaultdict(int)
+
+    for additional_service in shifts_dry_cleaning_items:
+        key = (
+            additional_service.car.shift_id,
+            additional_service.car.shift.staff_id,
+        )
+        shift_id_and_staff_id_to_items_count[key] += additional_service.count
     return [
         ShiftDryCleaningItems(
-            staff_id=shift_dry_cleaning_items['car__shift__staff_id'],
-            shift_id=shift_dry_cleaning_items['car__shift_id'],
-            items_count=shift_dry_cleaning_items.get('items_count', 0),
+            staff_id=staff_id,
+            shift_id=shift_id,
+            items_count=items_count,
         )
-        for shift_dry_cleaning_items in shifts_dry_cleaning_items
+        for (shift_id, staff_id), items_count
+        in shift_id_and_staff_id_to_items_count.items()
     ]
 
 
