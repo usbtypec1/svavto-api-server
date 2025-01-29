@@ -8,7 +8,6 @@ from shifts.views import (
     CarToWashCreateApi,
     CarToWashListApi,
     CurrentShiftCarWashUpdateApi,
-    ReportApi,
     RetrieveUpdateCarsToWashApi,
     ShiftCreateApi,
     ShiftFinishApi,
@@ -46,11 +45,6 @@ urlpatterns = [
         'specific-date/',
         ShiftListForSpecificDateApi.as_view(),
         name='specific-date',
-    ),
-    path(
-        r'reports/staff/<int:staff_id>/',
-        ReportApi.as_view(),
-        name='report',
     ),
     path(
         r'staff/<int:staff_id>/last-created/',
