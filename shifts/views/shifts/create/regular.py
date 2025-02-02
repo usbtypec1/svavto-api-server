@@ -18,10 +18,10 @@ class ShiftRegularCreateApi(APIView):
     def post(self, request: Request) -> Response:
         serializer = ShiftCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serialized_data: dict = serializer.data
+        validated_data: dict = serializer.validated_data
 
-        staff_id: int = serialized_data['staff_id']
-        dates: list[datetime.date] = serialized_data['dates']
+        staff_id: int = validated_data['staff_id']
+        dates: list[datetime.date] = validated_data['dates']
 
         staff = get_staff_by_id(staff_id)
         update_last_activity_time(staff_id=staff_id)

@@ -83,6 +83,7 @@ def validate_conflict_shift_dates(
         ShiftAlreadyExistsError: If shift already exists on any expected date.
     """
     existing_shift_dates = get_existing_shift_dates(expected_dates)
+    print(existing_shift_dates, set(expected_dates))
     conflict_dates = set(expected_dates).intersection(existing_shift_dates)
     if conflict_dates:
         raise ShiftAlreadyExistsError(conflict_dates=conflict_dates)

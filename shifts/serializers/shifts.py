@@ -95,12 +95,12 @@ class ShiftListOutputSerializer(serializers.ModelSerializer):
 
 class ShiftTestCreateInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
-    date = serializers.ListField(child=serializers.DateField())
+    date = serializers.DateField()
 
 
 class ShiftExtraCreateInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
-    date = serializers.ListField(child=serializers.DateField())
+    date = serializers.DateField()
 
 
 class ShiftCreateInputSerializer(serializers.Serializer):
@@ -154,8 +154,8 @@ class ShiftFinishOutputSerializer(serializers.Serializer):
 
 
 class ShiftTestCreateOutputSerializer(serializers.Serializer):
-    staff_id = serializers.IntegerField(source='staff.id')
-    staff_full_name = serializers.CharField(source='staff.full_name')
+    staff_id = serializers.IntegerField()
+    staff_full_name = serializers.CharField()
     shift_id = serializers.IntegerField()
     shift_date = serializers.DateField()
 
