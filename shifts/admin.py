@@ -145,6 +145,7 @@ class IsFinishedFilter(admin.SimpleListFilter):
 
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)
     list_display = (
         'staff',
         'date',
