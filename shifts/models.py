@@ -89,7 +89,7 @@ class Shift(models.Model):
         unique_together = ('staff', 'date', 'is_test')
 
     def __str__(self):
-        return f'{self.date:%d.%m.%Y}'
+        return f'{self.date:%d.%m.%Y} - {self.staff}'
 
     @property
     def is_started(self) -> bool:
