@@ -1,8 +1,20 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from import_export.admin import ImportExportModelAdmin
+from import_export.resources import ModelResource
 
 from shifts.models import Shift
 from staff.models import AdminStaff, Staff
+
+
+class StaffResource(ModelResource):
+    class Meta:
+        model = Staff
+
+
+class AdminStaffResource(ModelResource):
+    class Meta:
+        model = AdminStaff
 
 
 class ShiftInline(admin.TabularInline):
@@ -29,7 +41,8 @@ class IsBannedFilter(admin.SimpleListFilter):
 
 
 @admin.register(Staff)
-class StaffAdmin(admin.ModelAdmin):
+class StaffAdmin(ImportExportModelAdmin):
+    resource_class = StaffResource
     inlines = (ShiftInline,)
     list_filter = (IsBannedFilter,)
     list_display = (
@@ -43,5 +56,6 @@ class StaffAdmin(admin.ModelAdmin):
 
 
 @admin.register(AdminStaff)
-class AdminStaffAdmin(admin.ModelAdmin):
+class AdminStaffAdmin(ImportExportModelAdmin):
+    resource_class = AdminStaffResource
     list_display = ('id', 'name', 'created_at')

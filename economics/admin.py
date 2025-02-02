@@ -1,10 +1,23 @@
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+from import_export.resources import ModelResource
 
 from economics.models import Penalty, StaffServicePrice, Surcharge
 
 
+class PenaltyResource(ModelResource):
+    class Meta:
+        model = Penalty
+
+
+class SurchargeResource(ModelResource):
+    class Meta:
+        model = Surcharge
+
+
 @admin.register(Penalty)
-class PenaltyAdmin(admin.ModelAdmin):
+class PenaltyAdmin(ImportExportModelAdmin):
+    resource_class = PenaltyResource
     list_display = (
         'staff',
         'reason',
@@ -23,7 +36,8 @@ class PenaltyAdmin(admin.ModelAdmin):
 
 
 @admin.register(Surcharge)
-class SurchargeAdmin(admin.ModelAdmin):
+class SurchargeAdmin(ImportExportModelAdmin):
+    resource_class = SurchargeResource
     list_display = (
         'staff',
         'reason',

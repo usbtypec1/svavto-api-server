@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.utils.translation import gettext, gettext_lazy as _
 from import_export import resources
-from import_export.admin import ExportActionModelAdmin
+from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
 from shifts.exceptions import StaffHasActiveShiftError
@@ -14,6 +14,26 @@ from shifts.models import (
     ShiftFinishPhoto,
 )
 from shifts.services.shifts import ensure_staff_has_no_active_shift
+
+
+class CarToWashAdditionalServiceResource(resources.ModelResource):
+    class Meta:
+        model = CarToWashAdditionalService
+
+
+class AvailableDateResource(resources.ModelResource):
+    class Meta:
+        model = AvailableDate
+
+
+class ShiftResource(resources.ModelResource):
+    class Meta:
+        model = Shift
+
+
+class ShiftFinishPhotoResource(resources.ModelResource):
+    class Meta:
+        model = ShiftFinishPhoto
 
 
 class CarToWashResource(resources.ModelResource):
@@ -102,7 +122,8 @@ class CarToWashAdditionalServiceInline(admin.TabularInline):
 
 
 @admin.register(AvailableDate)
-class AvailableDateAdmin(admin.ModelAdmin):
+class AvailableDateAdmin(ImportExportModelAdmin):
+    resource_class = AvailableDateResource
     list_display = ('year', 'month')
     list_filter = ('year', 'month')
 
@@ -144,7 +165,8 @@ class IsFinishedFilter(admin.SimpleListFilter):
 
 
 @admin.register(Shift)
-class ShiftAdmin(admin.ModelAdmin):
+class ShiftAdmin(ImportExportModelAdmin):
+    resource_class = ShiftResource
     readonly_fields = ('id',)
     list_display = (
         'staff',
@@ -182,7 +204,7 @@ class ShiftAdmin(admin.ModelAdmin):
 
 
 @admin.register(CarToWash)
-class CarToWashAdmin(ExportActionModelAdmin):
+class CarToWashAdmin(ExportActionModelAdmin, ImportExportModelAdmin):
     resource_class = CarToWashResource
     readonly_fields = ('id',)
     inlines = (CarToWashAdditionalServiceInline,)
@@ -215,7 +237,8 @@ class CarToWashAdmin(ExportActionModelAdmin):
 
 
 @admin.register(CarToWashAdditionalService)
-class CarToWashAdditionalServiceAdmin(admin.ModelAdmin):
+class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
+    resource_class = CarToWashAdditionalServiceResource
     list_display = ('car', 'service', 'count')
     list_select_related = ('car', 'service')
     list_filter = ('service__is_countable', 'service__is_dry_cleaning')
@@ -223,6 +246,7 @@ class CarToWashAdditionalServiceAdmin(admin.ModelAdmin):
 
 
 @admin.register(ShiftFinishPhoto)
-class ShiftFinishPhotoAdmin(admin.ModelAdmin):
+class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
+    resource_class = ShiftFinishPhotoResource
     list_display = ('shift', 'file_id')
     list_select_related = ('shift',)

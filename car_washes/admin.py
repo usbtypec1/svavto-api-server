@@ -16,6 +16,16 @@ class CarWashServiceResource(ModelResource):
         model = CarWashService
 
 
+class CarWashResource(ModelResource):
+    class Meta:
+        model = CarWash
+
+
+class CarWashServicePriceResource(ModelResource):
+    class Meta:
+        model = CarWashServicePrice
+
+
 @admin.register(CarWashService)
 class CarWashServiceAdmin(ImportExportModelAdmin):
     resource_class = CarWashServiceResource
@@ -28,7 +38,8 @@ class CarWashServiceAdmin(ImportExportModelAdmin):
 
 
 @admin.register(CarWash)
-class CarWashAdmin(admin.ModelAdmin):
+class CarWashAdmin(ImportExportModelAdmin):
+    resource_class = CarWashResource
     list_display = ('name', 'created_at')
     search_fields = ('name',)
     inlines = (CarWashServicePriceInline,)
@@ -36,7 +47,8 @@ class CarWashAdmin(admin.ModelAdmin):
 
 
 @admin.register(CarWashServicePrice)
-class CarWashServicePriceAdmin(admin.ModelAdmin):
+class CarWashServicePriceAdmin(ImportExportModelAdmin):
+    resource_class = CarWashServicePriceResource
     list_display = ('car_wash', 'service', 'price')
     list_select_related = ('car_wash', 'service')
     list_filter = ('car_wash', 'service')
