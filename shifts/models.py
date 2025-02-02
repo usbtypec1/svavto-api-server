@@ -1,8 +1,8 @@
 import math
 
-from click import version_option
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash, CarWashService
@@ -83,6 +83,12 @@ class Shift(models.Model):
         verbose_name = _('shift')
         verbose_name_plural = _('shifts')
         unique_together = ('staff', 'date', 'is_extra')
+        constraints = (
+            CheckConstraint(
+                check=~(Q(is_extra=True) & Q(is_test=True)),
+                name="check_is_extra_is_test_exclusive",
+            ),
+        )
 
     def __str__(self):
         return f'{self.date:%d.%m.%Y}'
