@@ -2,7 +2,8 @@ import math
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, Q, UniqueConstraint
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash, CarWashService
@@ -77,18 +78,15 @@ class Shift(models.Model):
         default=False,
         verbose_name=_('is test shift'),
     )
-    created_at = models.DateTimeField(verbose_name=_('created at'))
+    created_at = models.DateTimeField(
+        verbose_name=_('created at'),
+        default=timezone.now,
+    )
 
     class Meta:
         verbose_name = _('shift')
         verbose_name_plural = _('shifts')
-        unique_together = ('staff', 'date', 'is_extra')
-        constraints = (
-            CheckConstraint(
-                check=~(Q(is_extra=True) & Q(is_test=True)),
-                name="check_is_extra_is_test_exclusive",
-            ),
-        )
+        unique_together = ('staff', 'date', 'is_test')
 
     def __str__(self):
         return f'{self.date:%d.%m.%Y}'

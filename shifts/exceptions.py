@@ -1,3 +1,4 @@
+import datetime
 from collections.abc import Iterable
 from uuid import UUID
 
@@ -73,6 +74,14 @@ class ShiftAlreadyExistsError(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_detail = _('shift already exists')
     default_code = 'shift_already_exists'
+
+    def __init__(self, conflict_dates: Iterable[datetime.date]):
+        """
+        Args:
+            conflict_dates: Dates of the existing shifts.
+        """
+        super().__init__(self.default_detail)
+        self.extra = {'conflict_dates': conflict_dates}
 
 
 class AdditionalServiceCouldNotBeProvidedError(APIException):

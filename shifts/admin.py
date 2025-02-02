@@ -166,6 +166,7 @@ class ShiftAdmin(admin.ModelAdmin):
     search_fields = ('staff__full_name', 'staff__id')
     search_help_text = _('you can search by staff name or staff id')
     date_hierarchy = 'date'
+    autocomplete_fields = ('staff', 'car_wash')
 
     def save_model(self, request, obj, form, change):
         is_creating = not change

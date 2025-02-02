@@ -11,6 +11,13 @@ __all__ = (
     'ShiftListOutputSerializer',
     'ShiftFinishOutputSerializer',
     'ShiftFinishInputSerializer',
+    'ShiftCreateOutputSerializer',
+    'ShiftCreateItemSerializer',
+    'CarWashSummarySerializer',
+    'ShiftTestCreateInputSerializer',
+    'ShiftTestCreateOutputSerializer',
+    'ShiftExtraCreateOutputSerializer',
+    'ShiftExtraCreateInputSerializer',
 )
 
 
@@ -86,20 +93,43 @@ class ShiftListOutputSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class ShiftTestCreateInputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    date = serializers.ListField(child=serializers.DateField())
+
+
+class ShiftExtraCreateInputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    date = serializers.ListField(child=serializers.DateField())
+
+
 class ShiftCreateInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
     dates = serializers.ListField(child=serializers.DateField())
-    immediate_start = serializers.BooleanField(default=False)
-    car_wash_id = serializers.IntegerField(default=None, allow_null=True)
     is_extra = serializers.BooleanField(default=False)
     is_test = serializers.BooleanField(default=False)
 
     def validate(self, data: dict) -> dict:
-        if data['immediate_start'] and 'car_wash_id' not in data:
+        is_extra: bool = data['is_extra']
+        is_test: bool = data['is_test']
+
+        if all((is_extra, is_test)):
             raise serializers.ValidationError(
-                'car_wash_id is required for immediate_start',
+                'Shift cannot be both extra and test',
             )
+
         return data
+
+
+class ShiftCreateItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    date = serializers.DateField()
+
+
+class ShiftCreateOutputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    staff_full_name = serializers.CharField()
+    shifts = serializers.ListField(child=ShiftCreateItemSerializer())
 
 
 class ShiftFinishInputSerializer(serializers.Serializer):
@@ -134,3 +164,17 @@ class ShiftFinishOutputSerializer(serializers.Serializer):
     finish_photo_file_ids = serializers.ListField(
         child=serializers.CharField(),
     )
+
+
+class ShiftTestCreateOutputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField(source='staff.id')
+    staff_full_name = serializers.CharField(source='staff.full_name')
+    shift_id = serializers.IntegerField()
+    shift_date = serializers.DateField()
+
+
+class ShiftExtraCreateOutputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    staff_full_name = serializers.CharField()
+    shift_id = serializers.IntegerField()
+    shift_date = serializers.DateField()

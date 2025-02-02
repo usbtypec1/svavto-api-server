@@ -3,23 +3,25 @@ from rest_framework.routers import DefaultRouter
 
 from shifts.views import (
     AvailableDateApi,
-    CarsToWashCountByEachStaffApi,
-    CarsWithoutWindshieldWasherApi,
     CarToWashCreateApi,
     CarToWashListApi,
+    CarsToWashCountByEachStaffApi,
+    CarsWithoutWindshieldWasherApi,
     CurrentShiftCarWashUpdateApi,
     RetrieveUpdateCarsToWashApi,
-    ShiftCreateApi,
+    ShiftExtraCreateApi,
     ShiftFinishApi,
     ShiftLastCreatedDateListApi,
     ShiftListApi,
     ShiftListForSpecificDateApi,
+    ShiftRegularCreateApi,
+    ShiftRetrieveApi,
     ShiftRetrieveDeleteApi,
     ShiftStartApi,
+    ShiftTestCreateApi,
     StaffCurrentShiftRetrieveApi,
-    StaffShiftListApi,
-    ShiftRetrieveApi,
     StaffReportPeriodsListApi,
+    StaffShiftListApi,
 )
 
 router = DefaultRouter()
@@ -53,8 +55,18 @@ urlpatterns = [
     ),
     path(
         r'create/',
-        ShiftCreateApi.as_view(),
-        name='create',
+        ShiftRegularCreateApi.as_view(),
+        name='create-regular',
+    ),
+    path(
+        r'create/test/',
+        ShiftTestCreateApi.as_view(),
+        name='create-test',
+    ),
+    path(
+        r'create/extra/',
+        ShiftExtraCreateApi.as_view(),
+        name='create-extra',
     ),
     path(
         r'<int:shift_id>/',

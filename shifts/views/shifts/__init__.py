@@ -1,4 +1,8 @@
 from .create import *
+from .create import (
+    ShiftExtraCreateApi, ShiftRegularCreateApi,
+    ShiftTestCreateApi,
+)
 from .current import *
 from .last_created import *
 from .list import *

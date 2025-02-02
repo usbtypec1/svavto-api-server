@@ -39,6 +39,7 @@ class StaffAdmin(admin.ModelAdmin):
         'console_phone_number',
         'created_at',
     )
+    search_fields = ('full_name', 'id')
 
 
 @admin.register(AdminStaff)

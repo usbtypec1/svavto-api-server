@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from django.db.models import QuerySet
 from django.utils import timezone
 
@@ -21,75 +21,174 @@ from shifts.models import (
 from shifts.selectors import has_any_finished_shift
 from staff.models import Staff
 
-__all__ = (
-    'create_shifts',
-    'start_shift',
-    'ensure_staff_has_no_active_shift',
-    'ShiftFinishResult',
-    'ShiftFinishInteractor',
-    'get_shifts_by_staff_id',
-    'delete_shift_by_id',
-    'create_and_start_shifts',
-    'ensure_shift_exists',
-    'ShiftSummaryInteractor',
-)
 
-
-@dataclass(frozen=True, slots=True)
-class ShiftDTO:
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftItem:
     id: int
-    performer_telegram_id: int
     date: datetime.date
 
 
-def create_shifts(
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftsCreateResult:
+    staff_id: int
+    staff_full_name: str
+    shifts: list[ShiftItem]
+
+
+@dataclass(frozen=True, slots=True)
+class ShiftTestCreateResult:
+    staff_id: int
+    staff_full_name: str
+    shift_id: int
+    shift_date: datetime.date
+
+
+@dataclass(frozen=True, slots=True)
+class ShiftExtraCreateResult:
+    staff_id: int
+    staff_full_name: str
+    shift_id: int
+    shift_date: datetime.date
+
+
+def get_existing_shift_dates(
+        expected_dates: Iterable[datetime.date],
+) -> set[datetime.date]:
+    """
+    Get existing shift dates from the database.
+
+    Args:
+        expected_dates: existing shifts within these dates.
+
+    Returns:
+        set[datetime.date]: dates of existing shifts.
+    """
+    return set(
+        Shift.objects
+        .filter(date__in=expected_dates)
+        .values_list('date', flat=True)
+    )
+
+
+def validate_conflict_shift_dates(
+        expected_dates: Iterable[datetime.date],
+) -> None:
+    """
+    Check if there are any conflicts with existing shifts.
+
+    Args:
+        expected_dates: dates of shifts to be created.
+
+    Raises:
+        ShiftAlreadyExistsError: If shift already exists on any expected date.
+    """
+    existing_shift_dates = get_existing_shift_dates(expected_dates)
+    conflict_dates = set(expected_dates).intersection(existing_shift_dates)
+    if conflict_dates:
+        raise ShiftAlreadyExistsError(conflict_dates=conflict_dates)
+
+
+@transaction.atomic
+def create_test_shift(
+        *,
+        staff: Staff,
+        date: datetime.date,
+) -> ShiftTestCreateResult:
+    """
+    Create test shift for staff for specific date or refresh test shift.
+
+    Keyword Args:
+        staff: staff ORM object.
+        date: date of test shift.
+
+    Returns:
+        ShiftTestCreateResult object.
+    """
+    Shift.objects.filter(staff_id=staff.id, date=date).delete()
+    shift = Shift(
+        staff_id=staff.id,
+        date=date,
+        is_test=True,
+    )
+    shift.full_clean()
+    shift.save()
+    return ShiftTestCreateResult(
+        staff_id=staff.id,
+        staff_full_name=staff.full_name,
+        shift_id=shift.id,
+        shift_date=shift.date,
+    )
+
+
+@transaction.atomic
+def create_extra_shift(
+        *,
+        staff: Staff,
+        date: datetime.date,
+) -> ShiftExtraCreateResult:
+    """
+    Create extra shift for staff for specific date.
+
+    Keyword Args:
+        staff: staff ORM object.
+        date: date of extra shift.
+
+    Raises:
+        ShiftAlreadyExistsError: If shift already exists on the date.
+
+    Returns:
+        ShiftExtraCreateResult object.
+    """
+    validate_conflict_shift_dates([date])
+
+    shift = Shift(
+        staff_id=staff.id,
+        date=date,
+        is_extra=True,
+    )
+    shift.full_clean()
+    shift.save()
+    return ShiftExtraCreateResult(
+        staff_id=staff.id,
+        staff_full_name=staff.full_name,
+        shift_id=shift.id,
+        shift_date=shift.date,
+    )
+
+
+def create_regular_shifts(
         *,
         staff: Staff,
         dates: Iterable[datetime.date],
-        is_extra: bool,
-        is_test: bool,
-) -> list[Shift]:
-    shifts = [
-        Shift(
-            staff=staff,
-            date=date,
-            is_extra=is_extra,
-            is_test=is_test,
-            created_at=timezone.now(),
-        )
-        for date in dates
-    ]
-    try:
-        return Shift.objects.bulk_create(shifts)
-    except IntegrityError:
-        raise ShiftAlreadyExistsError
+) -> ShiftsCreateResult:
+    """
+    Create regular shifts for staff for specific dates.
 
+    Keyword Args:
+        staff: staff to create shifts for.
+        dates: shift dates to create.
 
-def create_and_start_shifts(
-        *,
-        staff: Staff,
-        dates: Iterable[datetime.date],
-        car_wash_id: int,
-        is_extra: bool,
-        is_test: bool,
-) -> list[Shift]:
-    now = timezone.now()
+    Raises:
+        ShiftAlreadyExistsError: If shift already exists on any date.
+
+    Returns:
+        ShiftsCreateResult object.
+    """
+
+    validate_conflict_shift_dates(dates)
+
+    shifts_to_create = [Shift(staff=staff, date=date) for date in dates]
+    shifts = Shift.objects.bulk_create(shifts_to_create)
+
     shifts = [
-        Shift(
-            staff=staff,
-            date=date,
-            car_wash_id=car_wash_id,
-            started_at=now,
-            is_extra=is_extra,
-            is_test=is_test,
-            created_at=now,
-        )
-        for date in dates
+        ShiftItem(id=shift.id, date=shift.date)
+        for shift in shifts
     ]
-    try:
-        return Shift.objects.bulk_create(shifts)
-    except IntegrityError:
-        raise ShiftAlreadyExistsError
+    return ShiftsCreateResult(
+        staff_id=staff.id,
+        staff_full_name=staff.full_name,
+        shifts=shifts,
+    )
 
 
 def start_shift(
