@@ -106,19 +106,6 @@ class ShiftExtraCreateInputSerializer(serializers.Serializer):
 class ShiftCreateInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
     dates = serializers.ListField(child=serializers.DateField())
-    is_extra = serializers.BooleanField(default=False)
-    is_test = serializers.BooleanField(default=False)
-
-    def validate(self, data: dict) -> dict:
-        is_extra: bool = data['is_extra']
-        is_test: bool = data['is_test']
-
-        if all((is_extra, is_test)):
-            raise serializers.ValidationError(
-                'Shift cannot be both extra and test',
-            )
-
-        return data
 
 
 class ShiftCreateItemSerializer(serializers.Serializer):
