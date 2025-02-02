@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 from django.db import transaction
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Sum
 from django.utils import timezone
 
 from car_washes.models import CarWash
@@ -254,6 +254,18 @@ class ShiftFinishResult(ShiftSummary):
     finish_photo_file_ids: list[str]
 
 
+def compute_dry_cleaning_items_count(car_wash_id: int) -> int:
+    result = (
+        CarToWashAdditionalService.objects
+        .filter(
+            car__car_wash_id=car_wash_id,
+            service__is_dry_cleaning=True,
+        )
+        .aggregate(count=Sum('count'))
+    )
+    return result['count'] or 0
+
+
 class ShiftSummaryInteractor:
 
     def __init__(self, shift_id: int):
@@ -305,13 +317,8 @@ class ShiftSummaryInteractor:
             total_cars_count = len(cars)
             not_refilled_cars_count = total_cars_count - refilled_cars_count
 
-            dry_cleaning_items_count = (
-                CarToWashAdditionalService.objects
-                .filter(
-                    car__car_wash_id=car_wash_id,
-                    service__is_dry_cleaning=True,
-                )
-                .count()
+            dry_cleaning_items_count = compute_dry_cleaning_items_count(
+                car_wash_id=car_wash_id,
             )
 
             car_wash_transferred_cars_summary = CarWashTransferredCarsSummary(
