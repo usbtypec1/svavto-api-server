@@ -114,11 +114,13 @@ class ShiftFinishPhotoInline(admin.TabularInline):
 class CarToWashInline(admin.TabularInline):
     model = CarToWash
     extra = 0
+    show_change_link = True
 
 
 class CarToWashAdditionalServiceInline(admin.TabularInline):
     model = CarToWashAdditionalService
     extra = 0
+    show_change_link = True
 
 
 @admin.register(AvailableDate)
@@ -243,6 +245,8 @@ class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
     list_select_related = ('car', 'service')
     list_filter = ('service__is_countable', 'service__is_dry_cleaning')
     autocomplete_fields = ('car', 'service',)
+    search_fields = ('car__number', 'service__name', 'car__shift__date')
+    search_help_text = _('search by car number, service name, and shift date')
 
 
 @admin.register(ShiftFinishPhoto)
