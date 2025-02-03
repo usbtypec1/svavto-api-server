@@ -254,11 +254,16 @@ class ShiftFinishResult(ShiftSummary):
     finish_photo_file_ids: list[str]
 
 
-def compute_dry_cleaning_items_count(car_wash_id: int) -> int:
+def compute_dry_cleaning_items_count(
+        *,
+        car_wash_id: int,
+        shift_id: int,
+) -> int:
     result = (
         CarToWashAdditionalService.objects
         .filter(
             car__car_wash_id=car_wash_id,
+            car__shift_id=shift_id,
             service__is_dry_cleaning=True,
         )
         .aggregate(count=Sum('count'))
@@ -319,6 +324,7 @@ class ShiftSummaryInteractor:
 
             dry_cleaning_items_count = compute_dry_cleaning_items_count(
                 car_wash_id=car_wash_id,
+                shift_id=shift.id,
             )
 
             car_wash_transferred_cars_summary = CarWashTransferredCarsSummary(
