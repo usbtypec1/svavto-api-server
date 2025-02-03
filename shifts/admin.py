@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.utils.translation import gettext, gettext_lazy as _
-from import_export import resources
+from import_export import resources, fields
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
@@ -17,6 +17,9 @@ from shifts.services.shifts import ensure_staff_has_no_active_shift
 
 
 class CarToWashAdditionalServiceResource(resources.ModelResource):
+    staff = fields.Field('car__shift__staff__full_name', column_name=_('staff'))
+    shift_date = fields.Field('car__shift__date', column_name=_('shift date'))
+
     class Meta:
         model = CarToWashAdditionalService
 
@@ -241,13 +244,20 @@ class CarToWashAdmin(ExportActionModelAdmin, ImportExportModelAdmin):
 @admin.register(CarToWashAdditionalService)
 class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
     resource_class = CarToWashAdditionalServiceResource
-    list_display = ('car', 'service', 'count')
-    list_select_related = ('car', 'service')
+    list_display = ('staff', 'shift_date', 'car', 'service', 'count')
+    list_select_related = ('car', 'service', 'car__shift', 'car__shift__staff')
     list_filter = ('service__is_countable', 'service__is_dry_cleaning')
     autocomplete_fields = ('car', 'service',)
     search_fields = ('car__number', 'service__name', 'car__shift__date')
     search_help_text = _('search by car number, service name, and shift date')
 
+    @admin.display(description=_('staff'))
+    def staff(self, obj: CarToWashAdditionalService):
+        return obj.car.shift.staff.full_name
+
+    @admin.display(description=_('shift date'))
+    def shift_date(self, obj: CarToWashAdditionalService):
+        return obj.car.shift.date
 
 @admin.register(ShiftFinishPhoto)
 class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
