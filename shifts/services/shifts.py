@@ -65,7 +65,7 @@ def get_existing_shift_dates(
     """
     return set(
         Shift.objects
-        .filter(date__in=expected_dates)
+        .filter(date__in=expected_dates, is_test=False)
         .values_list('date', flat=True)
     )
 
