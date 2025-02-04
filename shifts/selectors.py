@@ -22,6 +22,7 @@ __all__ = (
     'map_car_to_wash',
     'CarToWashAdditionalServiceDTO',
     'get_staff_id_by_car_id',
+    'get_staff_ids_with_active_shift',
 )
 
 
@@ -261,3 +262,19 @@ def get_staff_id_by_car_id(car_id: int) -> int:
     except CarToWash.DoesNotExist:
         raise CarToWashNotFoundError
     return car.shift.staff_id
+
+
+def get_staff_ids_with_active_shift() -> set[int]:
+    """
+    Get all staff IDs who have not finished their shifts yet.
+
+    Returns:
+        Set of staff IDs
+    """
+    return set(
+        Shift.objects.filter(
+            started_at__isnull=False,
+            finished_at__isnull=True,
+        )
+        .values_list('staff_id', flat=True)
+    )
