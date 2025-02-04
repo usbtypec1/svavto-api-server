@@ -246,10 +246,16 @@ class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
     resource_class = CarToWashAdditionalServiceResource
     list_display = ('staff', 'shift_date', 'car', 'service', 'count')
     list_select_related = ('car', 'service', 'car__shift', 'car__shift__staff')
-    list_filter = ('service__is_countable', 'service__is_dry_cleaning')
+    list_filter = (
+        'service__is_countable',
+        'service__is_dry_cleaning',
+        ('car__shift__date', DateTimeRangeFilterBuilder(
+            title=_('shift date'),
+        )),
+    )
     autocomplete_fields = ('car', 'service',)
-    search_fields = ('car__number', 'service__name', 'car__shift__date')
-    search_help_text = _('search by car number, service name, and shift date')
+    search_fields = ('car__number', 'service__name', 'id')
+    search_help_text = _('search by car number, service name or shift ID')
 
     @admin.display(description=_('staff'))
     def staff(self, obj: CarToWashAdditionalService):

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-03 11:53+0300\n"
+"POT-Creation-Date: 2025-02-04 08:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid "search by name or id"
 msgstr "Поиск по названию или ID"
 
 #: car_washes/apps.py:8 car_washes/models.py:24 car_washes/models.py:94
-#: shifts/admin.py:42 shifts/models.py:71 shifts/models.py:144
+#: shifts/admin.py:45 shifts/models.py:71 shifts/models.py:144
 msgid "car wash"
 msgstr "мойка"
 
@@ -73,7 +73,7 @@ msgstr "приоритет"
 msgid "the higher the number, the higher the priority"
 msgstr "чем выше число тем выше приоритет"
 
-#: car_washes/models.py:68 shifts/admin.py:87 shifts/models.py:82
+#: car_washes/models.py:68 shifts/admin.py:90 shifts/models.py:82
 #: shifts/models.py:116
 msgid "created at"
 msgstr "дата создания"
@@ -184,90 +184,91 @@ msgstr "конец периода не может быть раньше чем �
 msgid "period duration can not be greater than 60 days"
 msgstr "период не может быть больше чем 60 дней"
 
-#: shifts/admin.py:46 shifts/admin.py:232
-msgid "shift date"
-msgstr "дата смены"
-
-#: shifts/admin.py:50 shifts/models.py:50 staff/apps.py:8 staff/models.py:17
-#: staff/models.py:18
+#: shifts/admin.py:20 shifts/admin.py:53 shifts/admin.py:254
+#: shifts/models.py:50 staff/apps.py:8 staff/models.py:17 staff/models.py:18
 msgid "staff"
 msgstr "сотрудник"
 
-#: shifts/admin.py:52 shifts/models.py:136
+#: shifts/admin.py:21 shifts/admin.py:49 shifts/admin.py:235
+#: shifts/admin.py:258
+msgid "shift date"
+msgstr "дата смены"
+
+#: shifts/admin.py:55 shifts/models.py:136
 msgid "car number"
 msgstr "гос.номер"
 
-#: shifts/admin.py:55 shifts/models.py:154
+#: shifts/admin.py:58 shifts/models.py:154
 msgid "car class"
 msgstr "класс авто"
 
-#: shifts/admin.py:59 shifts/models.py:159
+#: shifts/admin.py:62 shifts/models.py:159
 msgid "wash type"
 msgstr "тип мойки"
 
-#: shifts/admin.py:63
+#: shifts/admin.py:66
 msgid "windshield washer refilled bottle percentage"
 msgstr "% бутылки долитой незамерзайки"
 
-#: shifts/admin.py:67
+#: shifts/admin.py:70
 msgid "transfer price at the moment"
 msgstr "стоимость перегона"
 
-#: shifts/admin.py:71 shifts/models.py:168
+#: shifts/admin.py:74 shifts/models.py:168
 msgid "price of comfort class car washing at the moment"
 msgstr "стоимость мойки авто комфортного класса"
 
-#: shifts/admin.py:75 shifts/models.py:171
+#: shifts/admin.py:78 shifts/models.py:171
 msgid "price of business class car washing at the moment"
 msgstr "стоимость мойки авто бизнес класса"
 
-#: shifts/admin.py:79 shifts/models.py:174
+#: shifts/admin.py:82 shifts/models.py:174
 msgid "price of van washing at the moment"
 msgstr "стоимость мойки фургона"
 
-#: shifts/admin.py:83 shifts/models.py:177
+#: shifts/admin.py:86 shifts/models.py:177
 msgid "price of windshield washer per bottle at the moment"
 msgstr "стоимость незамерзайки за бутылку"
 
-#: shifts/admin.py:134 shifts/admin.py:139
+#: shifts/admin.py:137 shifts/admin.py:142
 msgid "started"
 msgstr "начата"
 
-#: shifts/admin.py:140
+#: shifts/admin.py:143
 msgid "not started"
 msgstr "не начата"
 
-#: shifts/admin.py:152
+#: shifts/admin.py:155
 msgid "finished"
 msgstr "завершена"
 
-#: shifts/admin.py:157 staff/admin.py:31
+#: shifts/admin.py:160 staff/admin.py:31
 msgid "yes"
 msgstr "да"
 
-#: shifts/admin.py:158 staff/admin.py:32
+#: shifts/admin.py:161 staff/admin.py:32
 msgid "no"
 msgstr "нет"
 
-#: shifts/admin.py:192
+#: shifts/admin.py:195
 msgid "you can search by staff name or staff id"
 msgstr "поиск по имени сотрудника или его id"
 
-#: shifts/admin.py:203 shifts/exceptions.py:45
+#: shifts/admin.py:206 shifts/exceptions.py:45
 msgid "staff has active shift"
 msgstr "сотрудник уже начал смену"
 
-#: shifts/admin.py:236
+#: shifts/admin.py:239
 #, fuzzy
 #| msgid "search by name or id"
 msgid "search by number and shift date"
 msgstr "поиск по гос.номеру и дате смены"
 
-#: shifts/admin.py:249
+#: shifts/admin.py:252
 #, fuzzy
 #| msgid "search by name or id"
-msgid "search by car number, service name, and shift date"
-msgstr "поиск по гос.номеру, названию услуги и дате смены"
+msgid "search by car number, service name or shift ID"
+msgstr "поиск по гос.номеру, названию услуг или ID смены"
 
 #: shifts/apps.py:8 shifts/models.py:87 shifts/models.py:108
 #: shifts/models.py:149
