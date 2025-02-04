@@ -21,7 +21,7 @@ def get_current_shift_date() -> datetime.date:
         The date of the shift.
     """
     now = datetime.datetime.now(MOSCOW_TIMEZONE)
-    if now.hour <= 12:
+    if now.hour <= 20:
         previous_day = now - datetime.timedelta(days=1)
         return previous_day.date()
     return now.date()
