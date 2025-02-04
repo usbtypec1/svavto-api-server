@@ -140,6 +140,7 @@ class CarWashSummarySerializer(serializers.Serializer):
     total_cars_count = serializers.IntegerField()
     refilled_cars_count = serializers.IntegerField()
     not_refilled_cars_count = serializers.IntegerField()
+    trunk_vacuum_count = serializers.IntegerField()
 
 
 class ShiftFinishOutputSerializer(serializers.Serializer):
