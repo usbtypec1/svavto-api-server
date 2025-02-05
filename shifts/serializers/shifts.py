@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from shifts.models import Shift
@@ -18,6 +19,9 @@ __all__ = (
     'ShiftTestCreateOutputSerializer',
     'ShiftExtraCreateOutputSerializer',
     'ShiftExtraCreateInputSerializer',
+    'ShiftListV2InputSerializer',
+    'ShiftListV2ItemSerializer',
+    'ShiftListV2OutputSerializer',
 )
 
 
@@ -166,3 +170,43 @@ class ShiftExtraCreateOutputSerializer(serializers.Serializer):
     staff_full_name = serializers.CharField()
     shift_id = serializers.IntegerField()
     shift_date = serializers.DateField()
+
+
+class ShiftListV2InputSerializer(serializers.Serializer):
+    staff_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        default=None,
+        max_length=100,
+        min_length=1
+    )
+    date_from = serializers.DateField(default=None, allow_null=True)
+    date_to = serializers.DateField(default=None, allow_null=True)
+    limit = serializers.IntegerField(default=50, min_value=1, max_value=1000)
+    offset = serializers.IntegerField(default=0, min_value=0)
+    types = serializers.MultipleChoiceField(choices=Shift.Type.choices)
+
+    def validate(self, attrs):
+        if attrs['date_from'] is not None and attrs['date_to'] is not None:
+            if attrs['date_from'] > attrs['date_to']:
+                raise serializers.ValidationError(
+                    _('date_from should be less than or equal to date_to')
+                )
+        return attrs
+
+
+class ShiftListV2ItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    date = serializers.DateField()
+    car_wash_id = serializers.IntegerField(allow_null=True)
+    car_wash_name = serializers.CharField(allow_null=True)
+    staff_id = serializers.IntegerField(allow_null=True)
+    staff_full_name = serializers.CharField(allow_null=True)
+    started_at = serializers.DateTimeField(allow_null=True)
+    finished_at = serializers.DateTimeField(allow_null=True)
+    created_at = serializers.DateTimeField()
+    type = serializers.ChoiceField(choices=Shift.Type.choices)
+
+
+class ShiftListV2OutputSerializer(serializers.Serializer):
+    shifts = serializers.ListSerializer(child=ShiftListV2ItemSerializer())
+    is_end_of_list_reached = serializers.BooleanField()

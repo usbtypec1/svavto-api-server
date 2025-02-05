@@ -22,6 +22,7 @@ from shifts.views import (
     StaffCurrentShiftRetrieveApi,
     StaffReportPeriodsListApi,
     StaffShiftListApi,
+    ShiftListApiV2,
 )
 
 router = DefaultRouter()
@@ -33,6 +34,11 @@ router.register(
 
 app_name = 'shifts'
 urlpatterns = [
+    path(
+        'v2/',
+        ShiftListApiV2.as_view(),
+        name='v2-list',
+    ),
     path(
         r'',
         ShiftListApi.as_view(),

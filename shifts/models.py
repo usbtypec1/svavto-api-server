@@ -44,6 +44,12 @@ class AvailableDate(models.Model):
 
 
 class Shift(models.Model):
+
+    class Type(models.TextChoices):
+        REGULAR = 'regular', _('regular shift')
+        TEST = 'test', _('test shift')
+        EXTRA = 'extra', _('extra shift')
+
     staff = models.ForeignKey(
         Staff,
         on_delete=models.CASCADE,
@@ -98,6 +104,14 @@ class Shift(models.Model):
     @property
     def is_finished(self) -> bool:
         return self.finished_at is not None
+
+    @property
+    def type(self) -> Type:
+        if self.is_test:
+            return self.Type.TEST
+        if self.is_extra:
+            return self.Type.EXTRA
+        return self.Type.REGULAR
 
 
 class ShiftFinishPhoto(models.Model):

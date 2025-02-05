@@ -5,19 +5,46 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shifts.models import Shift
+from shifts.selectors import get_shifts_page
 from shifts.serializers import (
-    ShiftListInputSerializer,
-    ShiftListOutputSerializer,
+    ShiftListInputSerializer, ShiftListOutputSerializer,
+    ShiftListV2InputSerializer, ShiftListV2OutputSerializer,
 )
 
-__all__ = ('ShiftListApi',)
+__all__ = ('ShiftListApi', 'ShiftListApiV2')
+
+
+class ShiftListApiV2(APIView):
+
+    def get(self, request: Request) -> Response:
+        serializer = ShiftListV2InputSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        staff_ids: list[int] | None = serializer.validated_data['staff_ids']
+        date_from: datetime.date | None = serializer.validated_data['date_from']
+        date_to: datetime.date | None = serializer.validated_data['date_to']
+        limit: int = serializer.validated_data['limit']
+        offset: int = serializer.validated_data['offset']
+        shift_types: set[str] = serializer.validated_data['types']
+
+        shifts_page = get_shifts_page(
+            date_from=date_from,
+            date_to=date_to,
+            staff_ids=staff_ids,
+            limit=limit,
+            offset=offset,
+            shift_types=shift_types,
+        )
+
+        serializer = ShiftListV2OutputSerializer(shifts_page)
+        return Response(serializer.data)
 
 
 class ShiftListApi(APIView):
     def get(self, request: Request) -> Response:
         serializer = ShiftListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        serialized_data: dict = serializer.data
+        serialized_data: dict = serializer.validated_data
 
         date_from: datetime.date | None = serialized_data['date_from']
         date_to: datetime.date | None = serialized_data['date_to']
@@ -36,7 +63,7 @@ class ShiftListApi(APIView):
         if staff_ids is not None:
             shifts = shifts.filter(staff_id__in=staff_ids)
 
-        shifts = shifts[offset : offset + limit + 1]
+        shifts = shifts[offset: offset + limit + 1]
         is_end_of_list_reached = len(shifts) <= limit
         shifts = shifts[:limit]
 

@@ -1,9 +1,13 @@
 import datetime
 import math
+import operator
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
+from functools import reduce
 from uuid import UUID
+
+from django.db.models import Q
 
 from shifts.exceptions import (
     CarToWashNotFoundError, ShiftNotFoundError,
@@ -23,6 +27,11 @@ __all__ = (
     'CarToWashAdditionalServiceDTO',
     'get_staff_id_by_car_id',
     'get_staff_ids_with_active_shift',
+    'get_shifts_page',
+    'group_additional_services_by_car_to_wash_id',
+    'map_shifts_page_items',
+    'ShiftsPage',
+    'ShiftsPageItem',
 )
 
 
@@ -277,4 +286,97 @@ def get_staff_ids_with_active_shift() -> set[int]:
             finished_at__isnull=True,
         )
         .values_list('staff_id', flat=True)
+    )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftsPageItem:
+    id: int
+    date: datetime.date
+    car_wash_id: int | None
+    car_wash_name: str | None
+    staff_id: int | None
+    staff_full_name: str | None
+    started_at: datetime.datetime | None
+    finished_at: datetime.datetime | None
+    created_at: datetime.datetime
+    type: Shift.Type
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftsPage:
+    shifts: list[ShiftsPageItem]
+    is_end_of_list_reached: bool
+
+
+def map_shifts_page_items(shifts: Iterable[Shift]) -> list[ShiftsPageItem]:
+    result: list[ShiftsPageItem] = []
+    for shift in shifts:
+        car_wash_id = car_wash_name = None
+        if shift.car_wash is not None:
+            car_wash_id = shift.car_wash.id
+            car_wash_name = shift.car_wash.name
+
+        staff_id = staff_full_name = None
+        if shift.staff is not None:
+            staff_id = shift.staff.id
+            staff_full_name = shift.staff.full_name
+
+        shifts_page_item = ShiftsPageItem(
+            id=shift.id,
+            date=shift.date,
+            car_wash_id=car_wash_id,
+            car_wash_name=car_wash_name,
+            staff_id=staff_id,
+            staff_full_name=staff_full_name,
+            started_at=shift.started_at,
+            finished_at=shift.finished_at,
+            created_at=shift.created_at,
+            type=shift.type,
+        )
+        result.append(shifts_page_item)
+
+    return result
+
+
+def get_shifts_page(
+        *,
+        date_from: datetime.date | None,
+        date_to: datetime.date | None,
+        staff_ids: list[int] | None,
+        limit: int,
+        offset: int,
+        shift_types: Iterable[str],
+) -> ShiftsPage:
+    if not shift_types:
+        filters = Q(is_test=False, is_extra=False)
+    else:
+        shift_type_to_filter = {
+            Shift.Type.REGULAR.value: Q(is_test=False, is_extra=False),
+            Shift.Type.TEST.value: Q(is_test=True),
+            Shift.Type.EXTRA.value: Q(is_extra=True),
+        }
+        filters = [
+            shift_type_to_filter[shift_type]
+            for shift_type in shift_types
+        ]
+        filters = reduce(operator.or_, filters, Q())
+
+    shifts = Shift.objects.filter(filters).select_related('staff', 'car_wash')
+    if date_from is not None:
+        shifts = shifts.filter(date__gte=date_from)
+    if date_to is not None:
+        shifts = shifts.filter(date__lte=date_to)
+    if staff_ids is not None:
+        shifts = shifts.filter(staff_id__in=staff_ids)
+
+    shifts = shifts[offset: offset + limit + 1]
+
+    is_end_of_list_reached = len(shifts) <= limit
+
+    shifts = shifts[:limit]
+
+    return ShiftsPage(
+        shifts=map_shifts_page_items(shifts),
+        is_end_of_list_reached=is_end_of_list_reached,
     )
