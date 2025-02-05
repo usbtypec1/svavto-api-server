@@ -341,8 +341,8 @@ def map_shifts_page_items(shifts: Iterable[Shift]) -> list[ShiftsPageItem]:
 
 def get_shifts_page(
         *,
-        date_from: datetime.date | None,
-        date_to: datetime.date | None,
+        from_date: datetime.date | None,
+        to_date: datetime.date | None,
         staff_ids: list[int] | None,
         limit: int,
         offset: int,
@@ -363,10 +363,10 @@ def get_shifts_page(
         filters = reduce(operator.or_, filters, Q())
 
     shifts = Shift.objects.filter(filters).select_related('staff', 'car_wash')
-    if date_from is not None:
-        shifts = shifts.filter(date__gte=date_from)
-    if date_to is not None:
-        shifts = shifts.filter(date__lte=date_to)
+    if from_date is not None:
+        shifts = shifts.filter(date__gte=from_date)
+    if to_date is not None:
+        shifts = shifts.filter(date__lte=to_date)
     if staff_ids is not None:
         shifts = shifts.filter(staff_id__in=staff_ids)
 

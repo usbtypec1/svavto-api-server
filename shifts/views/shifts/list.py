@@ -21,15 +21,15 @@ class ShiftListApiV2(APIView):
         serializer.is_valid(raise_exception=True)
 
         staff_ids: list[int] | None = serializer.validated_data['staff_ids']
-        date_from: datetime.date | None = serializer.validated_data['date_from']
-        date_to: datetime.date | None = serializer.validated_data['date_to']
+        from_date: datetime.date | None = serializer.validated_data['from_date']
+        to_date: datetime.date | None = serializer.validated_data['to_date']
         limit: int = serializer.validated_data['limit']
         offset: int = serializer.validated_data['offset']
         shift_types: set[str] = serializer.validated_data['types']
 
         shifts_page = get_shifts_page(
-            date_from=date_from,
-            date_to=date_to,
+            from_date=from_date,
+            to_date=to_date,
             staff_ids=staff_ids,
             limit=limit,
             offset=offset,

@@ -179,17 +179,17 @@ class ShiftListV2InputSerializer(serializers.Serializer):
         max_length=100,
         min_length=1
     )
-    date_from = serializers.DateField(default=None, allow_null=True)
-    date_to = serializers.DateField(default=None, allow_null=True)
+    from_date = serializers.DateField(default=None, allow_null=True)
+    to_date = serializers.DateField(default=None, allow_null=True)
     limit = serializers.IntegerField(default=50, min_value=1, max_value=1000)
     offset = serializers.IntegerField(default=0, min_value=0)
     types = serializers.MultipleChoiceField(choices=Shift.Type.choices)
 
     def validate(self, attrs):
-        if attrs['date_from'] is not None and attrs['date_to'] is not None:
-            if attrs['date_from'] > attrs['date_to']:
+        if attrs['from_date'] is not None and attrs['to_date'] is not None:
+            if attrs['from_date'] > attrs['to_date']:
                 raise serializers.ValidationError(
-                    _('date_from should be less than or equal to date_to')
+                    _('from_date should be less than or equal to to_date')
                 )
         return attrs
 
