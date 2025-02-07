@@ -120,7 +120,7 @@ def create_test_shift(
     Returns:
         ShiftTestCreateResult object.
     """
-    Shift.objects.filter(staff_id=staff.id, date=date).delete()
+    Shift.objects.filter(staff_id=staff.id, is_test=True).delete()
     shift = Shift(
         staff_id=staff.id,
         date=date,
