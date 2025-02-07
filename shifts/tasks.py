@@ -22,3 +22,9 @@ def remind_finish_shift() -> None:
             text=text,
         )
         time.sleep(0.1)
+
+
+@shared_task
+def test_task():
+    bot = get_telegram_bot()
+    bot.send_message(chat_id=7525893335, text='test')
