@@ -11,15 +11,17 @@ __all__ = (
 )
 
 
-class StaffCreateInputSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Staff
-        fields = (
-            'id',
-            'full_name',
-            'car_sharing_phone_number',
-            'console_phone_number',
-        )
+class StaffCreateInputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    full_name = serializers.CharField(min_length=5, max_length=100)
+    car_sharing_phone_number = serializers.CharField(
+        min_length=10,
+        max_length=20,
+    )
+    console_phone_number = serializers.CharField(
+        min_length=10,
+        max_length=20,
+    )
 
 
 class StaffListInputSerializer(serializers.Serializer):
