@@ -252,10 +252,12 @@ class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
         ('car__shift__date', DateTimeRangeFilterBuilder(
             title=_('shift date'),
         )),
+        'service__name',
     )
+    readonly_fields = ('shift_id',)
     autocomplete_fields = ('car', 'service',)
-    search_fields = ('id', 'car__number', 'service__name')
-    search_help_text = _('search by car number, service name or shift ID')
+    search_fields = ('car__shift__id__iexact', 'car__number', 'service__name')
+    search_help_text = _('search by shift ID, car number, service name')
 
     @admin.display(description=_('staff'))
     def staff(self, obj: CarToWashAdditionalService):
@@ -264,6 +266,7 @@ class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
     @admin.display(description=_('shift date'))
     def shift_date(self, obj: CarToWashAdditionalService):
         return obj.car.shift.date
+
 
 @admin.register(ShiftFinishPhoto)
 class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
