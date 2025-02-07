@@ -254,7 +254,6 @@ class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
         )),
         'service__name',
     )
-    readonly_fields = ('shift_id',)
     autocomplete_fields = ('car', 'service',)
     search_fields = ('car__shift__id__iexact', 'car__number', 'service__name')
     search_help_text = _('search by shift ID, car number, service name')
