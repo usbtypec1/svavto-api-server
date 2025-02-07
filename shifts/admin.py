@@ -254,7 +254,7 @@ class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
         )),
     )
     autocomplete_fields = ('car', 'service',)
-    search_fields = ('car__number', 'service__name', 'id')
+    search_fields = ('id', 'car__number', 'service__name')
     search_help_text = _('search by car number, service name or shift ID')
 
     @admin.display(description=_('staff'))
