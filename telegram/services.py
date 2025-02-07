@@ -22,7 +22,7 @@ def try_send_message(
 ) -> bool:
     for _ in range(5):
         try:
-            bot.send_message(chat_id, text)
+            return bool(bot.send_message(chat_id, text))
         except Exception:
             pass
         return True
