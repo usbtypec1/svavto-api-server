@@ -84,7 +84,11 @@ def compute_staff_penalties_count(
     Returns:
         Penalties count.
     """
-    return Penalty.objects.filter(staff_id=staff_id, reason=reason).count()
+    return (
+        Penalty.objects
+        .filter(shift__staff_id=staff_id, reason=reason)
+        .count()
+    )
 
 
 def group_by_staff_id(

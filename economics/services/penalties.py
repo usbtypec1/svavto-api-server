@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Final, TypeAlias, TypedDict
@@ -121,12 +122,25 @@ def compute_penalty_amount_and_consequence(
     )
 
 
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PenaltyCreateResult:
+    id: int
+    staff_id: int
+    staff_full_name: str
+    shift_id: int
+    shift_date: datetime.date
+    reason: str
+    consequence: str | None
+    amount: int
+    created_at: datetime.datetime
+
+
 def create_penalty(
         *,
         shift_id: int,
         reason: str,
         amount: int | None,
-) -> Penalty:
+) -> PenaltyCreateResult:
     """
     Give penalty for staff member.
     If penalty amount is not provided,
@@ -151,9 +165,22 @@ def create_penalty(
         amount = penalty_amount_and_consequence.amount
         consequence = penalty_amount_and_consequence.consequence
 
-    return Penalty.objects.create(
+    penalty = Penalty(
         shift_id=shift_id,
         reason=reason,
         amount=amount,
         consequence=consequence,
+    )
+    penalty.save()
+
+    return PenaltyCreateResult(
+        id=penalty.id,
+        staff_id=shift.staff_id,
+        staff_full_name=shift.staff.full_name,
+        shift_id=shift_id,
+        shift_date=shift.date,
+        reason=reason,
+        consequence=consequence,
+        amount=amount,
+        created_at=penalty.created_at,
     )

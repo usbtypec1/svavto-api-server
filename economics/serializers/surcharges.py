@@ -18,7 +18,9 @@ class SurchargeCreateInputSerializer(serializers.Serializer):
 class SurchargeCreateOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     staff_id = serializers.IntegerField()
+    staff_full_name = serializers.CharField()
     shift_id = serializers.IntegerField()
+    shift_date = serializers.DateField()
     reason = serializers.CharField()
     amount = serializers.IntegerField()
     created_at = serializers.DateTimeField()

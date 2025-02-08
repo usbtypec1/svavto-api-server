@@ -7,6 +7,7 @@ __all__ = (
     'PenaltyCreateOutputSerializer',
     'PenaltyListOutputSerializer',
     'PenaltyListInputSerializer',
+    'PenaltyListItemSerializer',
 )
 
 
@@ -20,21 +21,19 @@ class PenaltyCreateInputSerializer(serializers.Serializer):
     )
 
 
-class PenaltyCreateOutputSerializer(serializers.ModelSerializer):
+class PenaltyCreateOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    staff_id = serializers.IntegerField()
+    staff_full_name = serializers.CharField()
     shift_id = serializers.IntegerField()
-
-    class Meta:
-        model = Penalty
-        fields = (
-            'id',
-            'shift_id',
-            'staff',
-            'reason',
-            'amount',
-            'consequence',
-            'created_at',
-        )
-        depth = 1
+    shift_date = serializers.DateField()
+    reason = serializers.CharField()
+    amount = serializers.IntegerField()
+    consequence = serializers.ChoiceField(
+        choices=Penalty.Consequence.choices,
+        allow_null=True,
+    )
+    created_at = serializers.DateTimeField()
 
 
 class PenaltyListInputSerializer(serializers.Serializer):
