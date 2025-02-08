@@ -3,7 +3,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from economics.models import Penalty
 from economics.selectors import get_penalties_page
 from economics.serializers import (
     PenaltyCreateInputSerializer,
@@ -13,7 +12,6 @@ from economics.serializers import (
 )
 from economics.services.penalties import create_penalty
 from shifts.services.shifts import ensure_shift_exists
-from staff.selectors import ensure_staff_exists
 
 __all__ = ('PenaltyListCreateApi',)
 

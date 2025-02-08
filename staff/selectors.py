@@ -2,8 +2,6 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from django.core.paginator import Paginator
-
 from staff.exceptions import StaffNotFoundError
 from staff.models import AdminStaff, Staff
 

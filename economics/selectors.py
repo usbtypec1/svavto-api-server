@@ -20,6 +20,10 @@ __all__ = (
     'SurchargesPage',
     'SurchargesPageItem',
     'map_surcharges_to_page_items',
+    'get_penalties_page',
+    'map_penalties_to_page_items',
+    'PenaltiesPage',
+    'PenaltiesPageItem',
 )
 
 
