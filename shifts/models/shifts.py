@@ -33,6 +33,11 @@ class Shift(models.Model):
         blank=True,
         verbose_name=_('finished at'),
     )
+    rejected_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('rejected at'),
+    )
     car_wash = models.ForeignKey(
         to=CarWash,
         on_delete=models.SET_NULL,
