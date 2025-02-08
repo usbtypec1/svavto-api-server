@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from economics.models import Penalty
+from economics.selectors import get_penalties_page
 from economics.serializers import (
     PenaltyCreateInputSerializer,
     PenaltyCreateOutputSerializer,
@@ -21,28 +22,20 @@ class PenaltyListCreateApi(APIView):
     def get(self, request: Request) -> Response:
         serializer = PenaltyListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        serialized_data: dict = serializer.data
+        serialized_data: dict = serializer.validated_data
 
         staff_ids: list[int] | None = serialized_data['staff_ids']
         limit: int = serialized_data['limit']
         offset: int = serialized_data['offset']
 
-        penalties = Penalty.objects.order_by('-created_at')
-
-        if staff_ids is not None:
-            penalties = penalties.filter(staff_id__in=staff_ids)
-
-        penalties = penalties[offset: offset + limit + 1]
-        is_end_of_list_reached = len(penalties) <= limit
-        penalties = penalties[:limit]
-
-        serializer = PenaltyListOutputSerializer(penalties, many=True)
-        return Response(
-            {
-                'penalties': serializer.data,
-                'is_end_of_list_reached': is_end_of_list_reached,
-            }
+        penalties_page = get_penalties_page(
+            staff_ids=staff_ids,
+            limit=limit,
+            offset=offset,
         )
+
+        serializer = PenaltyListOutputSerializer(penalties_page)
+        return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
         serializer = PenaltyCreateInputSerializer(data=request.data)
@@ -50,15 +43,12 @@ class PenaltyListCreateApi(APIView):
         serialized_data = serializer.validated_data
 
         shift_id: int = serialized_data['shift_id']
-        staff_id: int = serialized_data['staff_id']
         reason: str = serialized_data['reason']
         amount: int | None = serialized_data['amount']
 
         ensure_shift_exists(shift_id)
-        ensure_staff_exists(staff_id)
         penalty = create_penalty(
             shift_id=shift_id,
-            staff_id=staff_id,
             reason=reason,
             amount=amount,
         )

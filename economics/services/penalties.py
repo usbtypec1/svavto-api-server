@@ -5,6 +5,7 @@ from typing import Final, TypeAlias, TypedDict
 from economics.exceptions import InvalidPenaltyConsequenceError
 from economics.models import Penalty
 from economics.selectors import compute_staff_penalties_count
+from shifts.selectors import get_shift_by_id
 
 
 class PenaltyReason(StrEnum):
@@ -123,7 +124,6 @@ def compute_penalty_amount_and_consequence(
 def create_penalty(
         *,
         shift_id: int,
-        staff_id: int,
         reason: str,
         amount: int | None,
 ) -> Penalty:
@@ -134,17 +134,18 @@ def create_penalty(
 
     Keyword Args:
         shift_id: shift penalty related to.
-        staff_id: staff penalty is related to.
         reason: reason for penalty.
         amount: penalty amount.
 
     Returns:
         Created penalty.
     """
+    shift = get_shift_by_id(shift_id)
+
     consequence: str | None = None
     if amount is None:
         penalty_amount_and_consequence = compute_penalty_amount_and_consequence(
-            staff_id=staff_id,
+            staff_id=shift.staff_id,
             reason=reason,
         )
         amount = penalty_amount_and_consequence.amount
@@ -152,7 +153,6 @@ def create_penalty(
 
     return Penalty.objects.create(
         shift_id=shift_id,
-        staff_id=staff_id,
         reason=reason,
         amount=amount,
         consequence=consequence,

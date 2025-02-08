@@ -19,19 +19,19 @@ class SurchargeResource(ModelResource):
 class PenaltyAdmin(ImportExportModelAdmin):
     resource_class = PenaltyResource
     list_display = (
-        'staff',
+        'shift__staff',
         'reason',
         'amount',
         'consequence',
         'created_at',
     )
-    list_select_related = ('staff',)
+    list_select_related = ('shift',)
     list_filter = (
-        'staff',
+        'shift__staff',
         'reason',
         'consequence',
     )
-    search_fields = ('staff__full_name', 'staff__id', 'reason')
+    search_fields = ('shift__staff__full_name', 'shift__staff__id', 'reason')
     search_help_text = 'Search by staff full name, staff id, reason'
 
 
@@ -39,17 +39,17 @@ class PenaltyAdmin(ImportExportModelAdmin):
 class SurchargeAdmin(ImportExportModelAdmin):
     resource_class = SurchargeResource
     list_display = (
-        'staff',
+        'shift__staff',
         'reason',
         'amount',
         'created_at',
     )
-    list_select_related = ('staff',)
+    list_select_related = ('shift',)
     list_filter = (
-        'staff',
+        'shift__staff',
         'reason',
     )
-    search_fields = ('staff__full_name', 'staff__id', 'reason')
+    search_fields = ('shift__staff__full_name', 'shift__staff__id', 'reason')
     search_help_text = 'Search by staff full name, staff id, reason'
 
 

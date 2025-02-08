@@ -6,7 +6,6 @@ __all__ = ('create_surcharge',)
 def create_surcharge(
         *,
         shift_id: int,
-        staff_id: int,
         reason: str,
         amount: int,
 ) -> Surcharge:
@@ -15,7 +14,6 @@ def create_surcharge(
 
     Keyword Args:
         shift_id: shift surcharge is related to.
-        staff_id: staff surcharge is related to.
         reason: reason for surcharge.
         amount: amount of surcharge.
 
@@ -24,7 +22,6 @@ def create_surcharge(
     """
     surcharge = Surcharge(
         shift_id=shift_id,
-        staff_id=staff_id,
         reason=reason,
         amount=amount,
     )

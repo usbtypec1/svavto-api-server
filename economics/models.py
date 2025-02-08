@@ -13,7 +13,6 @@ class Penalty(models.Model):
         WARN = 'warn', _('warn')
 
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
     consequence = models.CharField(
@@ -34,7 +33,6 @@ class Penalty(models.Model):
 
 class Surcharge(models.Model):
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
