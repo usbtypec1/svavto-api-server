@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-09 12:32+0300\n"
+"POT-Creation-Date: 2025-02-09 23:41+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,11 +185,10 @@ msgid "period duration can not be greater than 60 days"
 msgstr "период не может быть больше чем 60 дней"
 
 #: shifts/admin.py:21
-#| msgid "urgent wash"
 msgid "current shift"
 msgstr "сегодняшняя смена"
 
-#: shifts/admin.py:26 shifts/admin.py:176 staff/admin.py:31
+#: shifts/admin.py:26 shifts/admin.py:158 shifts/admin.py:176 staff/admin.py:31
 msgid "yes"
 msgstr "да"
 
@@ -240,21 +239,17 @@ msgstr "стоимость мойки фургона"
 msgid "price of windshield washer per bottle at the moment"
 msgstr "стоимость незамерзайки за бутылку"
 
-#: shifts/admin.py:153 shifts/admin.py:158
+#: shifts/admin.py:153
 msgid "started"
 msgstr "начата"
 
-#: shifts/admin.py:159
-msgid "not started"
-msgstr "не начата"
+#: shifts/admin.py:159 shifts/admin.py:177 staff/admin.py:32
+msgid "no"
+msgstr "нет"
 
 #: shifts/admin.py:171
 msgid "finished"
 msgstr "завершена"
-
-#: shifts/admin.py:177 staff/admin.py:32
-msgid "no"
-msgstr "нет"
 
 #: shifts/admin.py:212
 msgid "you can search by staff name or staff id"
@@ -407,12 +402,10 @@ msgid "regular shift"
 msgstr "обычная смена"
 
 #: shifts/models/shifts.py:15
-#| msgid "is test shift"
 msgid "test shift"
 msgstr "тестовый доступ"
 
 #: shifts/models/shifts.py:16
-#| msgid "is extra shift"
 msgid "extra shift"
 msgstr "доп.смена"
 
@@ -452,13 +445,21 @@ msgstr "from_date должен быть меньше или равен to_date"
 msgid "banned"
 msgstr "заблокирован"
 
-#: staff/exceptions.py:11
+#: staff/exceptions.py:16
 msgid "staff was not found"
 msgstr "сотрудник не найден"
 
-#: staff/exceptions.py:17
+#: staff/exceptions.py:22
 msgid "staff already exists"
 msgstr "сотрудник уже зарегистрирован"
+
+#: staff/exceptions.py:28
+msgid "staff register request already exists"
+msgstr "запрос на регистрацию уже существует"
+
+#: staff/exceptions.py:34
+msgid "staff register request was not found"
+msgstr "запрос на регистрацию не найден"
 
 #: staff/models.py:30
 msgid "admin staff"
@@ -467,6 +468,17 @@ msgstr "администратор"
 #: staff/models.py:31
 msgid "admin staff list"
 msgstr "администраторы"
+
+#: staff/models.py:45
+msgid "staff register request"
+msgstr "запрос на регистрацию"
+
+#: staff/models.py:46
+msgid "staff register requests"
+msgstr "запросы на регистрацию"
+
+#~ msgid "not started"
+#~ msgstr "не начата"
 
 #~ msgid "added at"
 #~ msgstr "дата добавления"
