@@ -5,6 +5,7 @@ from import_export import resources, fields
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
+from core.services import get_current_shift_date
 from shifts.exceptions import StaffHasActiveShiftError
 from shifts.models import (
     AvailableDate,
@@ -14,6 +15,21 @@ from shifts.models import (
     ShiftFinishPhoto,
 )
 from shifts.services.shifts import ensure_staff_has_no_active_shift
+
+
+class CurrentShiftFilter(admin.SimpleListFilter):
+    title = _('current shift')
+    parameter_name = 'current_shift'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('true', _('yes')),
+        )
+
+    def queryset(self, request, queryset):
+        current_shift_date = get_current_shift_date()
+        if self.value() == 'true':
+            return queryset.filter(date=current_shift_date)
 
 
 class CarToWashAdditionalServiceResource(resources.ModelResource):
@@ -139,8 +155,8 @@ class IsStartedFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('true', _('started')),
-            ('false', _('not started')),
+            ('true', _('yes')),
+            ('false', _('no')),
         )
 
     def queryset(self, request, queryset):
@@ -185,8 +201,9 @@ class ShiftAdmin(ImportExportModelAdmin):
     ordering = ('-date',)
     list_filter = (
         'car_wash',
-        'staff',
         'is_extra',
+        'is_test',
+        CurrentShiftFilter,
         IsStartedFilter,
         IsFinishedFilter,
     )
