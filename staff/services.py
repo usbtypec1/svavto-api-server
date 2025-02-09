@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from staff.exceptions import (
     StaffRegisterRequestAlreadyExistsError, StaffNotFoundError,
+    StaffRegisterRequestNotFoundError,
 )
 from staff.models import Staff, StaffRegisterRequest
 from staff.selectors import ensure_staff_not_exists
@@ -85,27 +86,27 @@ class StaffRegisterRequestAcceptInteractor:
     @transaction.atomic
     def execute(self) -> StaffCreateResult:
         try:
-            staff_registration_request = StaffRegisterRequest.objects.get(
+            staff_register_request = StaffRegisterRequest.objects.get(
                 id=self.request_id
             )
         except StaffRegisterRequest.DoesNotExist:
-            raise StaffNotFoundError
+            raise StaffRegisterRequestNotFoundError
 
-        ensure_staff_not_exists(staff_registration_request.staff_id)
+        ensure_staff_not_exists(staff_register_request.staff_id)
 
         staff = Staff(
-            id=staff_registration_request.staff_id,
-            full_name=staff_registration_request.full_name,
+            id=staff_register_request.staff_id,
+            full_name=staff_register_request.full_name,
             car_sharing_phone_number=(
-                staff_registration_request.car_sharing_phone_number
+                staff_register_request.car_sharing_phone_number
             ),
             console_phone_number=(
-                staff_registration_request.console_phone_number
+                staff_register_request.console_phone_number
             ),
         )
         staff.full_clean()
         staff.save()
-        staff_registration_request.delete()
+        staff_register_request.delete()
 
         bot = get_telegram_bot()
         try_send_message(
@@ -133,20 +134,20 @@ class StaffRegisterRequestRejectInteractor:
     request_id: int
 
     def execute(self) -> None:
-        deleted_count, _ = (
-            StaffRegisterRequest.objects
-            .filter(id=self.request_id)
-            .delete()
-        )
-        if not deleted_count:
-            raise StaffNotFoundError
+        try:
+            staff_register_request = StaffRegisterRequest.objects.get(
+                id=self.request_id
+            )
+        except StaffRegisterRequest.DoesNotExist:
+            raise StaffRegisterRequestNotFoundError
 
         bot = get_telegram_bot()
         try_send_message(
             bot=bot,
-            chat_id=self.request_id,
+            chat_id=staff_register_request.staff_id,
             text='❌ Ваша заявка на регистрацию отклонена.',
         )
+        staff_register_request.delete()
 
 
 def update_staff(
