@@ -71,3 +71,6 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 exclude = ["*.pyi", "pyproject.toml", "poetry.lock", "ruff.toml", "ruff_cache"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "carsharing.settings"
