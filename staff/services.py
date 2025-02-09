@@ -1,6 +1,7 @@
 import datetime
 from dataclasses import dataclass
 
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
@@ -56,11 +57,11 @@ class StaffRegisterRequestCreateInteractor:
             car_sharing_phone_number=self.car_sharing_phone_number,
             console_phone_number=self.console_phone_number,
         )
-        staff_register_request.full_clean()
 
         try:
+            staff_register_request.full_clean()
             staff_register_request.save()
-        except IntegrityError:
+        except (IntegrityError, ValidationError):
             raise StaffRegisterRequestAlreadyExistsError
 
         return StaffRegisterRequestCreateResult(
