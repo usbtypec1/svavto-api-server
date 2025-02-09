@@ -19,6 +19,8 @@ __all__ = (
     'StaffRegisterRequestRejectInteractor',
 )
 
+from telegram.services import get_telegram_bot, try_send_message
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class StaffCreateResult:
@@ -105,6 +107,16 @@ class StaffRegisterRequestAcceptInteractor:
         staff.save()
         staff_registration_request.delete()
 
+        bot = get_telegram_bot()
+        try_send_message(
+            bot=bot,
+            chat_id=staff.id,
+            text=(
+                '✅ Ваша запрос на регистрацию принят!'
+                ' Введите /start для начала работы.'
+            ),
+        )
+
         return StaffCreateResult(
             id=staff.id,
             full_name=staff.full_name,
@@ -128,6 +140,13 @@ class StaffRegisterRequestRejectInteractor:
         )
         if not deleted_count:
             raise StaffNotFoundError
+
+        bot = get_telegram_bot()
+        try_send_message(
+            bot=bot,
+            chat_id=self.request_id,
+            text='❌ Ваша заявка на регистрацию отклонена.',
+        )
 
 
 def update_staff(
