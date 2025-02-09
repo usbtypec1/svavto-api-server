@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_standardized_errors',
     'rest_framework',
-    'django_celery_beat',
     'import_export',
     'rangefilter',
     'corsheaders',
@@ -121,19 +120,6 @@ DRF_STANDARDIZED_ERRORS = {
     'EXCEPTION_FORMATTER_CLASS': 'core.exceptions.ExceptionFormatter',
 }
 
-CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_SEND_SENT_EVENT = True
-CELERY_TASK_REJECT_ON_WORKER_LOST = False
-CELERY_TASK_ACKS_LATE = True  # Acknowledge task after completion
-CELERY_TASK_RETRY_POLICY = {
-    'max_retries': 3,
-    'interval_start': 0,
-    'interval_step': 0.2,
-    'interval_max': 0.6,
-}
-
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')
 
 LOCALE_PATHS = (BASE_DIR / 'locale',)
@@ -145,11 +131,10 @@ SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.5)
 
 if SENTRY_DSN:
     import sentry_sdk
-    from sentry_sdk.integrations.celery import CeleryIntegration
     from sentry_sdk.integrations.django import DjangoIntegration
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration(), CeleryIntegration()],
+        integrations=[DjangoIntegration()],
         traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
     )
