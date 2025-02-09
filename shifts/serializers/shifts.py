@@ -205,6 +205,7 @@ class ShiftListV2ItemSerializer(serializers.Serializer):
     staff_full_name = serializers.CharField(allow_null=True)
     started_at = serializers.DateTimeField(allow_null=True)
     finished_at = serializers.DateTimeField(allow_null=True)
+    rejected_at = serializers.DateTimeField(allow_null=True)
     created_at = serializers.DateTimeField()
     type = serializers.ChoiceField(choices=Shift.Type.choices)
 
