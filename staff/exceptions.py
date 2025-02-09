@@ -5,7 +5,7 @@ from rest_framework.exceptions import APIException
 __all__ = (
     'StaffNotFoundError',
     'StaffAlreadyExistsError',
-    'RegistrationAwaitingStaffAlreadyExistsError',
+    'StaffRegisterRequestAlreadyExistsError',
     'RegistrationAwaitingStaffNotFoundError',
 )
 
@@ -22,13 +22,13 @@ class StaffAlreadyExistsError(APIException):
     default_detail = _('staff already exists')
 
 
-class RegistrationAwaitingStaffAlreadyExistsError(APIException):
+class StaffRegisterRequestAlreadyExistsError(APIException):
     status_code = status.HTTP_409_CONFLICT
-    default_code = 'staff_already_awaiting_registration'
-    default_detail = _('staff already awaiting registration')
+    default_code = 'staff_register_request_already_exists'
+    default_detail = _('staff register request already exists')
 
 
-class RegistrationAwaitingStaffNotFoundError(APIException):
+class StaffRegisterRequestNotFoundError(APIException):
     status_code = status.HTTP_404_NOT_FOUND
-    default_code = 'registration_awaiting_staff_not_found'
-    default_detail = _('registration awaiting staff was not found')
+    default_code = 'staff_register_request_not_found'
+    default_detail = _('staff register request was not found')

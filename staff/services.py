@@ -5,7 +5,7 @@ from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from staff.exceptions import (
-    RegistrationAwaitingStaffAlreadyExistsError, StaffNotFoundError,
+    StaffRegisterRequestAlreadyExistsError, StaffNotFoundError,
 )
 from staff.models import Staff, StaffRegisterRequest
 from staff.selectors import ensure_staff_not_exists
@@ -61,7 +61,7 @@ class StaffRegisterRequestCreateInteractor:
         try:
             staff_register_request.save()
         except IntegrityError:
-            raise RegistrationAwaitingStaffAlreadyExistsError
+            raise StaffRegisterRequestAlreadyExistsError
 
         return StaffRegisterRequestCreateResult(
             id=staff_register_request.id,
