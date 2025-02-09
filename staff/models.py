@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-__all__ = ('Staff', 'AdminStaff', 'RegistrationAwaitingStaff')
+__all__ = ('Staff', 'AdminStaff', 'StaffRegisterRequest')
 
 
 class Staff(models.Model):
@@ -34,17 +34,16 @@ class AdminStaff(models.Model):
         return self.name or str(self.id)
 
 
-class RegistrationAwaitingStaff(models.Model):
-    id = models.BigIntegerField(primary_key=True, db_index=True, editable=True)
+class StaffRegisterRequest(models.Model):
+    staff_id = models.BigIntegerField(db_index=True, unique=True)
     full_name = models.CharField(max_length=100)
     car_sharing_phone_number = models.CharField(max_length=32)
     console_phone_number = models.CharField(max_length=32)
-    is_hidden = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _('registration awaiting staff')
-        verbose_name_plural = _('registration awaiting staff list')
+        verbose_name = _('staff register request')
+        verbose_name_plural = _('staff register requests')
 
     def __str__(self):
         return self.full_name

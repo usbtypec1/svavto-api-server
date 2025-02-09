@@ -4,7 +4,7 @@ from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
 from shifts.models import Shift
-from staff.models import AdminStaff, Staff
+from staff.models import AdminStaff, Staff, StaffRegisterRequest
 
 
 class StaffResource(ModelResource):
@@ -59,3 +59,14 @@ class StaffAdmin(ImportExportModelAdmin):
 class AdminStaffAdmin(ImportExportModelAdmin):
     resource_class = AdminStaffResource
     list_display = ('id', 'name', 'created_at')
+
+
+@admin.register(StaffRegisterRequest)
+class StaffRegisterRequestAdmin(ImportExportModelAdmin):
+    list_display = (
+        'full_name',
+        'car_sharing_phone_number',
+        'console_phone_number',
+        'created_at',
+    )
+    search_fields = ('full_name', 'staff_id')

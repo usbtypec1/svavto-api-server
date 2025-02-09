@@ -2,8 +2,8 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from staff.exceptions import StaffNotFoundError
-from staff.models import AdminStaff, Staff
+from staff.exceptions import StaffAlreadyExistsError, StaffNotFoundError
+from staff.models import AdminStaff, StaffRegisterRequest, Staff
 
 __all__ = (
     'get_staff_by_id',
@@ -13,6 +13,9 @@ __all__ = (
     'StaffItem',
     'get_admin_ids',
     'StaffListPage',
+    'get_staff_register_requests',
+    'StaffRegisterRequestDTO',
+    'ensure_staff_not_exists',
 )
 
 
@@ -40,6 +43,11 @@ def get_staff_by_id(staff_id: int) -> Staff:
 def ensure_staff_exists(staff_id: int) -> None:
     if not Staff.objects.filter(id=staff_id).exists():
         raise StaffNotFoundError
+
+
+def ensure_staff_not_exists(staff_id: int) -> None:
+    if Staff.objects.filter(id=staff_id).exists():
+        raise StaffAlreadyExistsError
 
 
 @dataclass(frozen=True, slots=True)
@@ -144,4 +152,41 @@ def get_staff(
             banned_at=staff.banned_at,
         )
         for staff in staff_list
+    ]
+
+
+@dataclass(frozen=True, slots=True)
+class StaffRegisterRequestDTO:
+    id: int
+    staff_id: int
+    full_name: str
+    car_sharing_phone_number: str
+    console_phone_number: str
+    created_at: datetime.datetime
+
+
+def get_staff_register_requests() -> list[StaffRegisterRequestDTO]:
+    requests = (
+        StaffRegisterRequest.objects
+        .only(
+            'id',
+            'staff_id',
+            'full_name',
+            'car_sharing_phone_number',
+            'console_phone_number',
+            'created_at',
+        )
+        .order_by('created_at')
+    )
+
+    return [
+        StaffRegisterRequestDTO(
+            id=request.id,
+            staff_id=request.staff_id,
+            full_name=request.full_name,
+            car_sharing_phone_number=request.car_sharing_phone_number,
+            console_phone_number=request.console_phone_number,
+            created_at=request.created_at,
+        )
+        for request in requests
     ]

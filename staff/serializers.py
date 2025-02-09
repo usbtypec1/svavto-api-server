@@ -5,23 +5,38 @@ from staff.models import AdminStaff, Staff
 __all__ = (
     'StaffListOutputSerializer',
     'StaffListInputSerializer',
-    'StaffCreateInputSerializer',
     'StaffRetrieveOutputSerializer',
     'AdminStaffListSerializer',
+    'StaffRegisterRequestListCreateOutputSerializer',
+    'StaffRegisterRequestCreateInputSerializer',
+    'StaffRegisterRequestAcceptInputSerializer',
+    'StaffItemSerializer',
+    'StaffRegisterRequestRejectInputSerializer',
 )
 
 
-class StaffCreateInputSerializer(serializers.Serializer):
+class StaffRegisterRequestRejectInputSerializer(serializers.Serializer):
+    staff_register_request_id = serializers.IntegerField()
+
+
+class StaffRegisterRequestAcceptInputSerializer(serializers.Serializer):
+    staff_register_request_id = serializers.IntegerField()
+
+
+class StaffRegisterRequestCreateInputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    full_name = serializers.CharField(max_length=255)
+    car_sharing_phone_number = serializers.CharField(max_length=32)
+    console_phone_number = serializers.CharField(max_length=32)
+
+
+class StaffRegisterRequestListCreateOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    full_name = serializers.CharField(min_length=5, max_length=100)
-    car_sharing_phone_number = serializers.CharField(
-        min_length=10,
-        max_length=20,
-    )
-    console_phone_number = serializers.CharField(
-        min_length=10,
-        max_length=20,
-    )
+    staff_id = serializers.IntegerField()
+    full_name = serializers.CharField(max_length=255)
+    car_sharing_phone_number = serializers.CharField(max_length=32)
+    console_phone_number = serializers.CharField(max_length=32)
+    created_at = serializers.DateTimeField()
 
 
 class StaffListInputSerializer(serializers.Serializer):
