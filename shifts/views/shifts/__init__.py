@@ -5,7 +5,8 @@ from .create import (
 )
 from .current import *
 from .last_created import *
-from .list import ShiftListApiV2, ShiftListApi
+from .list import ShiftListApi, ShiftListApiV2
+from .reject import ShiftRejectApi
 from .report_periods import *
 from .retrieve import *
 from .retrieve_delete import *

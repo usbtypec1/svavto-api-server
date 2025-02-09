@@ -22,6 +22,8 @@ __all__ = (
     'ShiftListV2InputSerializer',
     'ShiftListV2ItemSerializer',
     'ShiftListV2OutputSerializer',
+    'ShiftRejectInputSerializer',
+    'ShiftRejectOutputSerializer',
 )
 
 
@@ -210,3 +212,11 @@ class ShiftListV2ItemSerializer(serializers.Serializer):
 class ShiftListV2OutputSerializer(serializers.Serializer):
     shifts = serializers.ListSerializer(child=ShiftListV2ItemSerializer())
     is_end_of_list_reached = serializers.BooleanField()
+
+
+class ShiftRejectInputSerializer(serializers.Serializer):
+    shift_id = serializers.IntegerField()
+
+
+class ShiftRejectOutputSerializer(serializers.Serializer):
+    pass

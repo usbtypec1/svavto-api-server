@@ -15,7 +15,7 @@ from shifts.views import (
     ShiftListApi,
     ShiftListForSpecificDateApi,
     ShiftRegularCreateApi,
-    ShiftRetrieveApi,
+    ShiftRejectApi, ShiftRetrieveApi,
     ShiftRetrieveDeleteApi,
     ShiftStartApi,
     ShiftTestCreateApi,
@@ -43,6 +43,11 @@ urlpatterns = [
         r'',
         ShiftListApi.as_view(),
         name='list',
+    ),
+    path(
+        r'reject/',
+        ShiftRejectApi.as_view(),
+        name='reject',
     ),
     path(
         r'report-periods/staff/<int:staff_id>/',

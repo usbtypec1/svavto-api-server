@@ -471,3 +471,14 @@ def delete_shift_by_id(shift_id: int) -> None:
 def ensure_shift_exists(shift_id: int) -> None:
     if not Shift.objects.filter(id=shift_id).exists():
         raise ShiftNotFoundError
+
+
+def mark_shift_as_rejected_now(
+        shift_id: int,
+) -> bool:
+    updated_count = (
+        Shift.objects
+        .filter(id=shift_id)
+        .update(rejected_at=timezone.now())
+    )
+    return bool(updated_count)
