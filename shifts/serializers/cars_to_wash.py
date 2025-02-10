@@ -71,4 +71,5 @@ class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
 
 
 class UpdateCarToWashInputSerializer(serializers.Serializer):
+    windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
     additional_services = AdditionalServiceSerializer(many=True, default=list)

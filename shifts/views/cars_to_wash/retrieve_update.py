@@ -10,7 +10,7 @@ from shifts.serializers import (
     CarToWashDetailOutputSerializer,
     UpdateCarToWashInputSerializer,
 )
-from shifts.services.cars_to_wash import update_car_to_wash_additional_services
+from shifts.services.cars_to_wash import CarTransferUpdateInteractor
 from staff.services import update_last_activity_time
 
 __all__ = ('RetrieveUpdateCarsToWashApi',)
@@ -35,12 +35,20 @@ class RetrieveUpdateCarsToWashApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.validated_data
 
+        windshield_washer_refilled_bottle_percentage: int = serialized_data[
+            'windshield_washer_refilled_bottle_percentage'
+        ]
         additional_services: list[dict] = serialized_data['additional_services']
 
         staff_id = get_staff_id_by_car_id(car_id)
-        update_car_to_wash_additional_services(
+        interactor = CarTransferUpdateInteractor(
             car_id=car_id,
+            windshield_washer_refilled_bottle_percentage=(
+                windshield_washer_refilled_bottle_percentage
+            ),
             additional_services=additional_services,
         )
+        interactor.execute()
+
         update_last_activity_time(staff_id=staff_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
