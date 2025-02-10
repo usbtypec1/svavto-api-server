@@ -161,10 +161,13 @@ def create_car_to_wash(
             raise CarAlreadyWashedOnShiftError
         raise
 
-    additional_services = update_car_to_wash_additional_services(
+    additional_services = CarTransferUpdateInteractor(
         car_id=car_to_wash.id,
+        windshield_washer_refilled_bottle_percentage=(
+            windshield_washer_refilled_bottle_percentage
+        ),
         additional_services=additional_services,
-    )
+    ).execute()
 
     return map_create_result_to_dto(car_to_wash, additional_services)
 
