@@ -1,10 +1,54 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from car_washes.models import CarWash
 from shifts.models import Shift
 from staff.models import Staff
 
-__all__ = ('Penalty', 'Surcharge', 'StaffServicePrice')
+__all__ = (
+    'Penalty',
+    'Surcharge',
+    'StaffServicePrice',
+    'CarWashPenalty',
+    'CarWashSurcharge',
+)
+
+
+class CarWashPenalty(models.Model):
+    car_wash = models.ForeignKey(
+        to=CarWash,
+        on_delete=models.CASCADE,
+        related_name='penalties',
+    )
+    reason = models.TextField(max_length=1024)
+    amount = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('car wash penalty')
+        verbose_name_plural = _('car wash penalties')
+
+    def __str__(self):
+        return self.reason
+
+
+class CarWashSurcharge(models.Model):
+    car_wash = models.ForeignKey(
+        to=CarWash,
+        on_delete=models.CASCADE,
+        related_name='surcharges',
+    )
+    reason = models.TextField(max_length=1024)
+    amount = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('car wash surcharge')
+        verbose_name_plural = _('car wash surcharges')
+
+    def __str__(self):
+        return self.reason
 
 
 class Penalty(models.Model):
