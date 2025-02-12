@@ -7,6 +7,8 @@ from economics.views import (
     SurchargeCreateApi,
     CarWashPenaltyListCreateApi,
     CarWashSurchargeListCreateApi,
+    CarWashSurchargeDeleteApi,
+    CarWashPenaltyDeleteApi,
 )
 
 reports_urlpatterns = [
@@ -33,6 +35,16 @@ urlpatterns = [
         r'car-washes/surcharges/',
         CarWashSurchargeListCreateApi.as_view(),
         name='car-wash-surcharge-list-create',
+    ),
+    path(
+        r'car-washes/surcharges/<int:surcharge_id>/',
+        CarWashSurchargeDeleteApi.as_view(),
+        name='car-wash-surcharge-delete',
+    ),
+    path(
+        r'car-washes/penalties/<int:penalty_id>/',
+        CarWashPenaltyDeleteApi.as_view(),
+        name='car-wash-penalty-delete',
     ),
     path(
         r'penalties/',

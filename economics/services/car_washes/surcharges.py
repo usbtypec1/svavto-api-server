@@ -11,6 +11,7 @@ __all__ = (
     'CarWashSurchargeCreateResult',
     'CarWashSurchargeListInteractor',
     'CarWashSurchargeListItem',
+    'CarWashSurchargeDeleteInteractor',
 )
 
 
@@ -87,3 +88,17 @@ class CarWashSurchargeListInteractor:
             )
             for surcharge in surcharges
         ]
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CarWashSurchargeDeleteInteractor:
+    surcharge_id: int
+
+    def execute(self) -> None:
+        deleted_count, _ = (
+            CarWashSurcharge.objects
+            .filter(id=self.surcharge_id)
+            .delete()
+        )
+        if deleted_count == 0:
+            raise CarWashNotFoundError

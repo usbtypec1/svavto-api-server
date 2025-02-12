@@ -11,10 +11,19 @@ from economics.serializers import (
     CarWashPenaltyListInputSerializer,
 )
 from economics.services.car_washes.penalties import (
-    CarWashPenaltyCreateInteractor, CarWashPenaltyListInteractor,
+    CarWashPenaltyCreateInteractor, CarWashPenaltyDeleteInteractor,
+    CarWashPenaltyListInteractor,
 )
 
-__all__ = ('CarWashPenaltyListCreateApi',)
+__all__ = ('CarWashPenaltyListCreateApi', 'CarWashPenaltyDeleteApi')
+
+
+class CarWashPenaltyDeleteApi(APIView):
+
+    def delete(self, request: Request, penalty_id: int) -> Response:
+        interactor = CarWashPenaltyDeleteInteractor(penalty_id=penalty_id)
+        interactor.execute()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CarWashPenaltyListCreateApi(APIView):

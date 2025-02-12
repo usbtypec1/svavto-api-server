@@ -11,12 +11,23 @@ from economics.serializers import (
     CarWashSurchargeListInputSerializer,
 )
 from economics.services.car_washes.surcharges import (
+    CarWashSurchargeDeleteInteractor,
+)
+from economics.services.car_washes.surcharges import (
     CarWashSurchargeCreateInteractor,
     CarWashSurchargeListInteractor,
 
 )
 
-__all__ = ('CarWashSurchargeListCreateApi',)
+__all__ = ('CarWashSurchargeListCreateApi', 'CarWashSurchargeDeleteApi')
+
+
+class CarWashSurchargeDeleteApi(APIView):
+
+    def delete(self, request: Request, surcharge_id: int) -> Response:
+        interactor = CarWashSurchargeDeleteInteractor(surcharge_id=surcharge_id)
+        interactor.execute()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CarWashSurchargeListCreateApi(APIView):

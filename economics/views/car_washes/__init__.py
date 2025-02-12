@@ -1,4 +1,15 @@
-from .surcharges import CarWashSurchargeListCreateApi
-from .penalties import CarWashPenaltyListCreateApi
+from .surcharges import (
+    CarWashSurchargeListCreateApi,
+    CarWashSurchargeDeleteApi,
+)
+from .penalties import (
+    CarWashPenaltyListCreateApi,
+    CarWashPenaltyDeleteApi,
+)
 
-__all__ = ('CarWashPenaltyListCreateApi', 'CarWashSurchargeListCreateApi')
+__all__ = (
+    'CarWashPenaltyListCreateApi',
+    'CarWashSurchargeListCreateApi',
+    'CarWashPenaltyDeleteApi',
+    'CarWashSurchargeDeleteApi',
+)

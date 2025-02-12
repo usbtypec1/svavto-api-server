@@ -11,6 +11,7 @@ __all__ = (
     'CarWashPenaltyCreateResult',
     'CarWashPenaltyListInteractor',
     'CarWashPenaltyListItem',
+    'CarWashPenaltyDeleteInteractor',
 )
 
 
@@ -87,3 +88,17 @@ class CarWashPenaltyListInteractor:
             )
             for penalty in penalties
         ]
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CarWashPenaltyDeleteInteractor:
+    penalty_id: int
+
+    def execute(self) -> None:
+        deleted_count, _ = (
+            CarWashPenalty.objects
+            .filter(id=self.penalty_id)
+            .delete()
+        )
+        if deleted_count == 0:
+            raise CarWashNotFoundError
