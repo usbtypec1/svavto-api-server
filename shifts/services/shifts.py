@@ -25,6 +25,22 @@ from staff.models import Staff
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftsDeleteOnStaffBanInteractor:
+    """
+    Interactor to delete shifts of staff if he gets banned.
+    """
+    staff_id: int
+    from_date: datetime.date
+
+    def execute(self) -> None:
+        (
+            Shift.objects
+            .filter(staff_id=self.staff_id, date__gte=self.from_date)
+            .delete()
+        )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class ShiftItem:
     id: int
     date: datetime.date

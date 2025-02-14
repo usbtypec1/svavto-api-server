@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
+from shifts.services.shifts import ShiftsDeleteOnStaffBanInteractor
 from staff.exceptions import (
     StaffRegisterRequestAlreadyExistsError, StaffNotFoundError,
     StaffRegisterRequestNotFoundError,
@@ -150,12 +151,20 @@ class StaffRegisterRequestRejectInteractor:
         staff_register_request.delete()
 
 
+@transaction.atomic
 def update_staff(
         *,
         staff_id: int,
         is_banned: bool,
 ) -> None:
     banned_at = timezone.now() if is_banned else None
+
+    if banned_at is not None:
+        ShiftsDeleteOnStaffBanInteractor(
+            staff_id=staff_id,
+            from_date=banned_at,
+        ).execute()
+
     is_updated = Staff.objects.filter(id=staff_id).update(banned_at=banned_at)
     update_last_activity_time(staff_id=staff_id)
     if not is_updated:
