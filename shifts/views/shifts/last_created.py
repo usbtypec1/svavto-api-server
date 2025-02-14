@@ -28,5 +28,5 @@ class ShiftLastCreatedDateListApi(APIView):
             staff_id=staff_id,
             date__month=date.month,
             date__year=date.year,
-        ).values_list('date', flat=True)
+        ).order_by('date').values_list('date', flat=True)
         return Response({'shift_dates': shift_dates})
