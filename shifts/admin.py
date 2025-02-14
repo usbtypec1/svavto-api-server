@@ -35,6 +35,8 @@ class CurrentShiftFilter(admin.SimpleListFilter):
 class CarToWashAdditionalServiceResource(resources.ModelResource):
     staff = fields.Field('car__shift__staff__full_name', column_name=_('staff'))
     shift_date = fields.Field('car__shift__date', column_name=_('shift date'))
+    service_name = fields.Field('service__name', column_name=_('car wash service name'))
+    car_number = fields.Field('car__number', column_name=_('car number'))
 
     class Meta:
         model = CarToWashAdditionalService
