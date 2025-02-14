@@ -95,7 +95,7 @@ def get_all_flatten_car_wash_services(
         car_wash_services = sorted({
             service_price.service
             for service_price in service_prices
-        }, key=lambda service: service.priority, reverse=True)
+        }, key=lambda service: (not service.parent_id, service.priority), reverse=True)
     else:
         car_wash_services = (
             CarWashService.objects
