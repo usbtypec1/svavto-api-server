@@ -2,7 +2,23 @@ from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
-from economics.models import Penalty, StaffServicePrice, Surcharge
+from economics.models import (
+    Penalty,
+    StaffServicePrice,
+    Surcharge,
+    CarWashPenalty,
+    CarWashSurcharge,
+)
+
+
+class CarWashPenaltyResource(ModelResource):
+    class Meta:
+        model = CarWashPenalty
+
+
+class CarWashSurchargeResource(ModelResource):
+    class Meta:
+        model = CarWashSurcharge
 
 
 class PenaltyResource(ModelResource):
@@ -68,3 +84,37 @@ class StaffServicePriceAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, *args):
         return False
+
+
+@admin.register(CarWashPenalty)
+class CarWashPenaltyAdmin(ImportExportModelAdmin):
+    resource_class = CarWashPenaltyResource
+    list_display = (
+        'car_wash',
+        'reason',
+        'amount',
+        'created_at',
+    )
+    list_filter = (
+        'car_wash',
+        'reason',
+    )
+    search_fields = ('car_wash__name', 'reason')
+    search_help_text = 'Search by car wash name, reason'
+
+
+@admin.register(CarWashSurcharge)
+class CarWashSurchargeAdmin(ImportExportModelAdmin):
+    resource_class = CarWashSurchargeResource
+    list_display = (
+        'car_wash',
+        'reason',
+        'amount',
+        'created_at',
+    )
+    list_filter = (
+        'car_wash',
+        'reason',
+    )
+    search_fields = ('car_wash__name', 'reason')
+    search_help_text = 'Search by car wash name, reason'

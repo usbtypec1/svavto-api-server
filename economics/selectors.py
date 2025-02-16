@@ -4,8 +4,12 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from django.db.models import Sum
+from django.db.models.functions import TruncDate
 
-from economics.models import Penalty, StaffServicePrice, Surcharge
+from economics.models import (
+    CarWashPenalty, CarWashSurcharge, Penalty, StaffServicePrice,
+    Surcharge,
+)
 from shifts.exceptions import StaffServicePriceNotFoundError
 from shifts.models import CarToWash
 
@@ -24,7 +28,69 @@ __all__ = (
     'map_penalties_to_page_items',
     'PenaltiesPage',
     'PenaltiesPageItem',
+    'get_car_wash_penalties_and_surcharges_for_period',
+    'CarWashPenaltiesAndSurchargesByDate',
 )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CarWashPenaltiesAndSurchargesByDate:
+    date: datetime.date
+    penalties_amount: int
+    surcharges_amount: int
+
+
+def get_car_wash_penalties_and_surcharges_for_period(
+        *,
+        car_wash_ids: Iterable[int],
+        from_date: datetime.date,
+        to_date: datetime.date,
+) -> list[CarWashPenaltiesAndSurchargesByDate]:
+    penalties = (
+        CarWashPenalty.objects
+        .filter(
+            created_at__range=(from_date, to_date),
+            car_wash_id__in=car_wash_ids,
+        )
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(total_amount=Sum('amount'))
+    )
+    surcharges = (
+        CarWashSurcharge.objects
+        .filter(
+            created_at__range=(from_date, to_date),
+            car_wash_id__in=car_wash_ids,
+        )
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(total_amount=Sum('amount'))
+    )
+
+    surcharge_date_to_amount = {
+        surcharge['date']: surcharge['total_amount']
+        for surcharge in surcharges
+    }
+    penalty_date_to_amount = {
+        penalty['date']: penalty['total_amount']
+        for penalty in penalties
+    }
+    dates = set(surcharge_date_to_amount).union(penalty_date_to_amount)
+
+    result: list[CarWashPenaltiesAndSurchargesByDate] = []
+    for date in dates:
+        penalties_amount = surcharge_date_to_amount.get(date, 0)
+        surcharges_amount = penalty_date_to_amount.get(date, 0)
+
+        result.append(
+            CarWashPenaltiesAndSurchargesByDate(
+                date=date,
+                penalties_amount=penalties_amount,
+                surcharges_amount=surcharges_amount,
+            )
+        )
+
+    return result
 
 
 @dataclass(frozen=True, slots=True)

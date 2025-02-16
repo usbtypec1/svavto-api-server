@@ -60,6 +60,8 @@ class CarWashRevenueForShiftSerializer(serializers.Serializer):
     additional_services = serializers.ListField(
         child=CarWashRevenueForShiftAdditionalServiceSerializer(),
     )
+    penalties_amount = serializers.IntegerField()
+    surcharges_amount = serializers.IntegerField()
 
 
 class CarWashesRevenueReportOutputSerializer(serializers.Serializer):

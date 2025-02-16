@@ -2,6 +2,10 @@ import datetime
 from collections import defaultdict
 from collections.abc import Iterable
 
+from economics.selectors import (
+    CarWashPenaltiesAndSurchargesByDate,
+    get_car_wash_penalties_and_surcharges_for_period,
+)
 from shifts.models import CarToWash
 from shifts.selectors import (
     CarToWashAdditionalServiceDTO, CarToWashDTO, get_cars_to_wash_for_period,
@@ -55,7 +59,6 @@ def merge_additional_services(
     return list(service_id_to_service.values())
 
 
-
 def merge_cars_to_wash_to_statistics(
         cars: Iterable[CarToWashDTO],
 ) -> dict:
@@ -93,20 +96,43 @@ def merge_cars_to_wash_to_statistics(
 
 def group_cars_to_wash_by_shift_date(
         cars_to_wash: Iterable[CarToWashDTO],
+        penalties_and_surcharges: Iterable[CarWashPenaltiesAndSurchargesByDate],
 ) -> list[dict]:
     shift_date_to_cars = defaultdict(list)
 
     for car in cars_to_wash:
         shift_date_to_cars[car.shift_date].append(car)
 
-    return [
-        {
-            'shift_date': shift_date,
+    shift_date_to_penalties_and_surcharges = {
+        penalty_and_surcharge.date: penalty_and_surcharge
+        for penalty_and_surcharge in penalties_and_surcharges
+    }
+
+    all_dates = (
+        set(shift_date_to_cars)
+        .union(shift_date_to_penalties_and_surcharges)
+    )
+
+    result = []
+
+    for date in all_dates:
+        cars = shift_date_to_cars.get(date, [])
+        penalty_and_surcharge = shift_date_to_penalties_and_surcharges.get(date)
+
+        if penalty_and_surcharge is None:
+            penalties_amount = 0
+            surcharges_amount = 0
+        else:
+            penalties_amount = penalty_and_surcharge.penalties_amount
+            surcharges_amount = penalty_and_surcharge.surcharges_amount
+
+        result.append({
+            'shift_date': date,
             **merge_cars_to_wash_to_statistics(cars),
-        }
-        for shift_date, cars
-        in shift_date_to_cars.items()
-    ]
+            'penalties_amount': penalties_amount,
+            'surcharges_amount': surcharges_amount,
+        })
+    return result
 
 
 def get_car_washes_sales_report(
@@ -120,6 +146,15 @@ def get_car_washes_sales_report(
         to_date=to_date,
         car_wash_ids=car_wash_ids,
     )
+    car_wash_penalties_and_surcharges = (
+        get_car_wash_penalties_and_surcharges_for_period(
+            car_wash_ids=car_wash_ids,
+            from_date=from_date,
+            to_date=to_date,
+        )
+    )
+
     return group_cars_to_wash_by_shift_date(
         cars_to_wash=cars_to_wash,
+        penalties_and_surcharges=car_wash_penalties_and_surcharges,
     )
