@@ -238,7 +238,7 @@ def compute_washed_cars_total_cost(
 
     total_cars_count = planned_cars_count + urgent_cars_count
 
-    if total_cars_count < 7:
+    if total_cars_count < 9:
         planned_cars_transfer_cost = (
                 prices.under_plan_planned_car_transfer_price
                 * planned_cars_count
