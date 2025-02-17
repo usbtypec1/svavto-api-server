@@ -111,6 +111,7 @@ class CarToWashResource(resources.ModelResource):
     class Meta:
         model = CarToWash
         fields = (
+            'id',
             'car_wash',
             'shift_date',
             'staff',
