@@ -12,12 +12,12 @@ from django.utils import timezone
 
 from car_washes.models import CarWash
 from shifts.exceptions import (
-    ShiftAlreadyExistsError,
+    MonthNotAvailableError, ShiftAlreadyExistsError,
     ShiftNotFoundError,
     StaffHasActiveShiftError,
 )
 from shifts.models import (
-    CarToWash, CarToWashAdditionalService, Shift,
+    AvailableDate, CarToWash, CarToWashAdditionalService, Shift,
     ShiftFinishPhoto,
 )
 from shifts.selectors import has_any_finished_shift
@@ -498,3 +498,51 @@ def mark_shift_as_rejected_now(
         .update(rejected_at=timezone.now())
     )
     return bool(updated_count)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class StaffIdAndName:
+    id: int
+    full_name: str
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class StaffWithoutShiftsForMonthResult:
+    month: int
+    year: int
+    staff_list: list[StaffIdAndName]
+
+
+def ensure_month_is_available(*, month: int, year: int) -> None:
+    if not AvailableDate.objects.filter(month=month, year=year).exists():
+        raise MonthNotAvailableError(month=month, year=year)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class StaffWithoutShiftsForMonthReadInteractor:
+    month: int
+    year: int
+
+    def execute(self):
+        ensure_month_is_available(month=self.month, year=self.year)
+
+        staff_list = (
+            Staff.objects
+            .filter(banned_at__isnull=True)
+            .exclude(
+                shift__date__year=self.year,
+                shift__date__month=self.month,
+            )
+            .distinct('id')
+            .values('id', 'full_name')
+        )
+
+        staff_list = [
+            StaffIdAndName(id=staff['id'], full_name=staff['full_name'])
+            for staff in staff_list
+        ]
+        return StaffWithoutShiftsForMonthResult(
+            month=self.month,
+            year=self.year,
+            staff_list=staff_list,
+        )

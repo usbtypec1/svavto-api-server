@@ -19,6 +19,7 @@ __all__ = (
     'AdditionalServiceCouldNotBeProvidedError',
     'StaffServicePriceNotFoundError',
     'CarToWashNotFoundError',
+    'MonthNotAvailableError',
 )
 
 
@@ -112,3 +113,13 @@ class CarToWashNotFoundError(APIException):
     def __init__(self, car_to_wash_id: int):
         super().__init__(self.default_detail)
         self.extra = {'car_to_wash_id': car_to_wash_id}
+
+
+class MonthNotAvailableError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = 'month_not_available'
+    default_detail = _('month is not available')
+
+    def __init__(self, *, year: int, month: int):
+        super().__init__(self.default_detail)
+        self.extra = {'year': year, 'month': month}

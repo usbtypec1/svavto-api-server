@@ -2,10 +2,24 @@ import factory
 from django.utils import timezone
 from factory.django import DjangoModelFactory
 
+from shifts.models import AvailableDate
 from shifts.models.shifts import Shift
 from staff.tests.factories import StaffFactory
 
-__all__ = ('ShiftFactory',)
+__all__ = ('ShiftFactory', 'AvailableDateFactory')
+
+
+class AvailableDateFactory(DjangoModelFactory):
+
+    class Meta:
+        model = AvailableDate
+        django_get_or_create = (
+            'month',
+            'year',
+        )
+
+    month = factory.Faker('random_int', min=1, max=12)
+    year = factory.Faker('random_int', min=2000, max=2100)
 
 
 class ShiftFactory(DjangoModelFactory):

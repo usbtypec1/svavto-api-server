@@ -22,7 +22,7 @@ from shifts.views import (
     StaffCurrentShiftRetrieveApi,
     StaffReportPeriodsListApi,
     StaffShiftListApi,
-    ShiftListApiV2,
+    ShiftListApiV2, StaffWithoutShiftsApi,
 )
 
 router = DefaultRouter()
@@ -48,6 +48,11 @@ urlpatterns = [
         r'reject/',
         ShiftRejectApi.as_view(),
         name='reject',
+    ),
+    path(
+        r'staff-without-shifts/',
+        StaffWithoutShiftsApi.as_view(),
+        name='staff-without-shifts'
     ),
     path(
         r'report-periods/staff/<int:staff_id>/',
