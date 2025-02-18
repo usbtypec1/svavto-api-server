@@ -154,8 +154,7 @@ def create_car_to_wash(
         car_to_wash.save()
     except ValidationError as error:
         if (
-                'Добавленное авто с такими значениями полей Number'
-                ' и Shift уже существует.'
+                'Добавленное авто с такими значениями полей'
                 in error.messages
         ):
             raise CarAlreadyWashedOnShiftError
