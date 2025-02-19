@@ -536,6 +536,7 @@ def get_staff_with_one_test_shift(
     staff_list = (
         Staff.objects
         .filter(
+            banned_at__isnull=True,
             shift__date__year=year,
             shift__date__month=month,
             shift__is_test=True,
