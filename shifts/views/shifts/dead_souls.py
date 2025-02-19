@@ -3,18 +3,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shifts.serializers import (
-    StaffWithoutShiftsInputSerializer,
-    StaffWithoutShiftsOutputSerializer,
+    DeadSoulsInputSerializer,
+    DeadSoulsOutputSerializer,
 )
-from shifts.services.shifts import StaffWithoutShiftsForMonthReadInteractor
+from shifts.services.shifts import DeadSoulsReadInteractor
 
-__all__ = ('StaffWithoutShiftsApi',)
+__all__ = ('DeadSoulsApi',)
 
 
-class StaffWithoutShiftsApi(APIView):
+class DeadSoulsApi(APIView):
 
     def get(self, request: Request):
-        serializer = StaffWithoutShiftsInputSerializer(
+        serializer = DeadSoulsInputSerializer(
             data=request.query_params,
         )
         serializer.is_valid(raise_exception=True)
@@ -23,11 +23,11 @@ class StaffWithoutShiftsApi(APIView):
         month: int = data['month']
         year: int = data['year']
 
-        interactor = StaffWithoutShiftsForMonthReadInteractor(
+        interactor = DeadSoulsReadInteractor(
             month=month,
             year=year,
         )
         staff_without_shifts = interactor.execute()
 
-        serializer = StaffWithoutShiftsOutputSerializer(staff_without_shifts)
+        serializer = DeadSoulsOutputSerializer(staff_without_shifts)
         return Response(serializer.data)

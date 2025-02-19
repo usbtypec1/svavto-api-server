@@ -508,7 +508,7 @@ class StaffIdAndName:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class StaffWithoutShiftsForMonthResult:
+class DeadSoulsForMonth:
     month: int
     year: int
     staff_list: list[StaffIdAndName]
@@ -569,7 +569,7 @@ def get_staff_with_no_shifts(
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class StaffWithoutShiftsForMonthReadInteractor:
+class DeadSoulsReadInteractor:
     month: int
     year: int
 
@@ -581,7 +581,7 @@ class StaffWithoutShiftsForMonthReadInteractor:
             *get_staff_with_one_test_shift(month=self.month, year=self.year),
         }
 
-        return StaffWithoutShiftsForMonthResult(
+        return DeadSoulsForMonth(
             month=self.month,
             year=self.year,
             staff_list=list(staff_list),
