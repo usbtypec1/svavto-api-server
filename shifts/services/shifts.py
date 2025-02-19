@@ -7,7 +7,7 @@ from typing import Final
 from uuid import UUID
 
 from django.db import transaction
-from django.db.models import QuerySet, Sum
+from django.db.models import Count, Q, QuerySet, Sum
 from django.utils import timezone
 
 from car_washes.models import CarWash
@@ -395,7 +395,8 @@ class ShiftSummaryInteractor:
                 vans_count=car_class_to_count[CarToWash.CarType.VAN],
                 planned_cars_count=wash_type_to_count[
                     CarToWash.WashType.PLANNED],
-                urgent_cars_count=wash_type_to_count[CarToWash.WashType.URGENT],
+                urgent_cars_count=wash_type_to_count[
+                    CarToWash.WashType.URGENT],
                 dry_cleaning_count=dry_cleaning_items_count,
                 total_cars_count=total_cars_count,
                 refilled_cars_count=refilled_cars_count,
@@ -518,6 +519,54 @@ def ensure_month_is_available(*, month: int, year: int) -> None:
         raise MonthNotAvailableError(month=month, year=year)
 
 
+def map_dict_to_staff_id_and_name(
+        staff_list: Iterable[dict],
+) -> list[StaffIdAndName]:
+    return [
+        StaffIdAndName(id=staff['id'], full_name=staff['full_name'])
+        for staff in staff_list
+    ]
+
+
+def get_staff_with_one_test_shift(
+        *,
+        year: int,
+        month: int,
+) -> list[StaffIdAndName]:
+    staff_list = (
+        Staff.objects
+        .filter(
+            shift__date__year=year,
+            shift__date__month=month,
+            shift__is_test=True,
+        )
+        .annotate(
+            test_shift_count=Count('shift', filter=Q(shift__is_test=True))
+        )
+        .filter(test_shift_count=1)
+        .values('id', 'full_name')
+    )
+    return map_dict_to_staff_id_and_name(staff_list)
+
+
+def get_staff_with_no_shifts(
+        *,
+        year: int,
+        month: int,
+) -> list[StaffIdAndName]:
+    staff_list = (
+        Staff.objects
+        .filter(banned_at__isnull=True)
+        .exclude(
+            shift__date__year=year,
+            shift__date__month=month,
+        )
+        .distinct('id')
+        .values('id', 'full_name')
+    )
+    return map_dict_to_staff_id_and_name(staff_list)
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class StaffWithoutShiftsForMonthReadInteractor:
     month: int
@@ -526,23 +575,13 @@ class StaffWithoutShiftsForMonthReadInteractor:
     def execute(self):
         ensure_month_is_available(month=self.month, year=self.year)
 
-        staff_list = (
-            Staff.objects
-            .filter(banned_at__isnull=True)
-            .exclude(
-                shift__date__year=self.year,
-                shift__date__month=self.month,
-            )
-            .distinct('id')
-            .values('id', 'full_name')
-        )
+        staff_list = {
+            *get_staff_with_no_shifts(month=self.month, year=self.year),
+            *get_staff_with_one_test_shift(month=self.month, year=self.year),
+        }
 
-        staff_list = [
-            StaffIdAndName(id=staff['id'], full_name=staff['full_name'])
-            for staff in staff_list
-        ]
         return StaffWithoutShiftsForMonthResult(
             month=self.month,
             year=self.year,
-            staff_list=staff_list,
+            staff_list=list(staff_list),
         )
