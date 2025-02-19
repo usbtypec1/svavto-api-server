@@ -79,8 +79,8 @@ def get_car_wash_penalties_and_surcharges_for_period(
 
     result: list[CarWashPenaltiesAndSurchargesByDate] = []
     for date in dates:
-        penalties_amount = surcharge_date_to_amount.get(date, 0)
-        surcharges_amount = penalty_date_to_amount.get(date, 0)
+        penalties_amount = penalty_date_to_amount.get(date, 0)
+        surcharges_amount = surcharge_date_to_amount.get(date, 0)
 
         result.append(
             CarWashPenaltiesAndSurchargesByDate(
