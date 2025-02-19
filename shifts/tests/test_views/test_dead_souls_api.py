@@ -18,7 +18,7 @@ def available_date() -> AvailableDate:
 
 @pytest.mark.django_db
 def test_no_staff(available_date):
-    url = reverse('shifts:staff-without-shifts')
+    url = reverse('shifts:dead-souls')
     client = APIClient()
 
     response = client.get(
@@ -36,7 +36,7 @@ def test_no_staff(available_date):
 
 @pytest.mark.django_db
 def test_all_staff_with_shifts(available_date):
-    url = reverse('shifts:staff-without-shifts')
+    url = reverse('shifts:dead-souls')
     client = APIClient()
 
     staff = StaffFactory(banned_at=None)
@@ -60,7 +60,7 @@ def test_all_staff_with_shifts(available_date):
 
 @pytest.mark.django_db
 def test_staff_banned(available_date):
-    url = reverse('shifts:staff-without-shifts')
+    url = reverse('shifts:dead-souls')
     client = APIClient()
 
     StaffFactory(banned_at=timezone.now())
@@ -80,7 +80,7 @@ def test_staff_banned(available_date):
 
 @pytest.mark.django_db
 def test_staff_without_shifts(available_date):
-    url = reverse('shifts:staff-without-shifts')
+    url = reverse('shifts:dead-souls')
     client = APIClient()
 
     staff = StaffFactory(banned_at=None)
@@ -105,7 +105,7 @@ def test_staff_without_shifts(available_date):
 
 @pytest.mark.django_db
 def test_month_not_available():
-    url = reverse('shifts:staff-without-shifts')
+    url = reverse('shifts:dead-souls')
     client = APIClient()
 
     response = client.get(

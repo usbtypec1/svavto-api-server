@@ -22,7 +22,7 @@ from shifts.views import (
     StaffCurrentShiftRetrieveApi,
     StaffReportPeriodsListApi,
     StaffShiftListApi,
-    ShiftListApiV2, StaffWithoutShiftsApi,
+    ShiftListApiV2, DeadSoulsApi,
 )
 
 router = DefaultRouter()
@@ -50,9 +50,9 @@ urlpatterns = [
         name='reject',
     ),
     path(
-        r'staff-without-shifts/',
-        StaffWithoutShiftsApi.as_view(),
-        name='staff-without-shifts'
+        r'dead-souls/',
+        DeadSoulsApi.as_view(),
+        name='dead-souls',
     ),
     path(
         r'report-periods/staff/<int:staff_id>/',

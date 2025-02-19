@@ -24,8 +24,8 @@ __all__ = (
     'ShiftListV2OutputSerializer',
     'ShiftRejectInputSerializer',
     'ShiftRejectOutputSerializer',
-    'StaffWithoutShiftsInputSerializer',
-    'StaffWithoutShiftsOutputSerializer',
+    'DeadSoulsInputSerializer',
+    'DeadSoulsOutputSerializer',
     'StaffIdAndFullNameSerializer',
 )
 
@@ -226,7 +226,7 @@ class ShiftRejectOutputSerializer(serializers.Serializer):
     pass
 
 
-class StaffWithoutShiftsInputSerializer(serializers.Serializer):
+class DeadSoulsInputSerializer(serializers.Serializer):
     month = serializers.IntegerField(min_value=1, max_value=12)
     year = serializers.IntegerField(min_value=2000, max_value=2100)
 
@@ -236,7 +236,7 @@ class StaffIdAndFullNameSerializer(serializers.Serializer):
     full_name = serializers.CharField()
 
 
-class StaffWithoutShiftsOutputSerializer(serializers.Serializer):
+class DeadSoulsOutputSerializer(serializers.Serializer):
     month = serializers.IntegerField()
     year = serializers.IntegerField()
     staff_list = serializers.ListSerializer(

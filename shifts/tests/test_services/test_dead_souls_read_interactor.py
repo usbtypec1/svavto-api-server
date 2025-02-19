@@ -4,7 +4,7 @@ import pytest
 from django.utils import timezone
 
 from shifts.models import AvailableDate
-from shifts.services.shifts import StaffWithoutShiftsForMonthReadInteractor
+from shifts.services.shifts import DeadSoulsReadInteractor
 from shifts.tests.factories import AvailableDateFactory, ShiftFactory
 from staff.tests.factories import StaffFactory
 
@@ -16,7 +16,7 @@ def available_date() -> AvailableDate:
 
 @pytest.mark.django_db
 def test_month_and_year_are_the_same(available_date):
-    interactor = StaffWithoutShiftsForMonthReadInteractor(
+    interactor = DeadSoulsReadInteractor(
         month=available_date.month,
         year=available_date.year,
     )
@@ -34,7 +34,7 @@ def test_staff_without_shifts_for_month(available_date):
         date=datetime.date(available_date.year, available_date.month, 1),
     )
 
-    interactor = StaffWithoutShiftsForMonthReadInteractor(
+    interactor = DeadSoulsReadInteractor(
         month=available_date.month,
         year=available_date.year,
     )
@@ -47,7 +47,7 @@ def test_staff_without_shifts_for_month(available_date):
 def test_staff_without_shifts_for_month_with_staff(available_date):
     staff = StaffFactory(banned_at=None)
 
-    interactor = StaffWithoutShiftsForMonthReadInteractor(
+    interactor = DeadSoulsReadInteractor(
         month=available_date.month,
         year=available_date.year,
     )
@@ -62,7 +62,7 @@ def test_staff_without_shifts_for_month_with_staff(available_date):
 def test_staff_banned(available_date):
     StaffFactory(banned_at=timezone.now())
 
-    interactor = StaffWithoutShiftsForMonthReadInteractor(
+    interactor = DeadSoulsReadInteractor(
         month=available_date.month,
         year=available_date.year,
     )
