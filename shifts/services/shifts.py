@@ -542,7 +542,7 @@ def get_staff_with_one_test_shift(
             shift__is_test=True,
         )
         .annotate(
-            test_shift_count=Count('shift', filter=Q(shift__is_test=True))
+            test_shift_count=Count('shift')
         )
         .filter(test_shift_count=1)
         .values('id', 'full_name')
