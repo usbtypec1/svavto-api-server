@@ -11,6 +11,7 @@ from shifts.selectors import (
     CarToWashAdditionalServiceDTO, CarToWashDTO, get_cars_to_wash_for_period,
 )
 
+
 __all__ = ('get_car_washes_sales_report',)
 
 
@@ -96,7 +97,8 @@ def merge_cars_to_wash_to_statistics(
 
 def group_cars_to_wash_by_shift_date(
         cars_to_wash: Iterable[CarToWashDTO],
-        penalties_and_surcharges: Iterable[CarWashPenaltiesAndSurchargesByDate],
+        penalties_and_surcharges: Iterable[
+            CarWashPenaltiesAndSurchargesByDate],
 ) -> list[dict]:
     shift_date_to_cars = defaultdict(list)
 
@@ -117,7 +119,9 @@ def group_cars_to_wash_by_shift_date(
 
     for date in all_dates:
         cars = shift_date_to_cars.get(date, [])
-        penalty_and_surcharge = shift_date_to_penalties_and_surcharges.get(date)
+        penalty_and_surcharge = shift_date_to_penalties_and_surcharges.get(
+            date
+            )
 
         if penalty_and_surcharge is None:
             penalties_amount = 0
@@ -126,12 +130,20 @@ def group_cars_to_wash_by_shift_date(
             penalties_amount = penalty_and_surcharge.penalties_amount
             surcharges_amount = penalty_and_surcharge.surcharges_amount
 
-        result.append({
-            'shift_date': date,
-            **merge_cars_to_wash_to_statistics(cars),
-            'penalties_amount': penalties_amount,
-            'surcharges_amount': surcharges_amount,
-        })
+        cars_to_wash_to_statistics = merge_cars_to_wash_to_statistics(cars)
+        total_cost = cars_to_wash_to_statistics.get(
+            'total_cost', 0
+            ) - penalties_amount + surcharges_amount
+
+        result.append(
+            {
+                'shift_date': date,
+                **cars_to_wash_to_statistics,
+                'total_cost': total_cost,
+                'penalties_amount': penalties_amount,
+                'surcharges_amount': surcharges_amount,
+            }
+        )
     return result
 
 
