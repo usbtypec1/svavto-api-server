@@ -10,13 +10,18 @@ from economics.serializers import (
     PenaltyListInputSerializer,
     PenaltyListOutputSerializer,
 )
-from economics.services.penalties import create_penalty
+from economics.services.penalties import (
+    CarTransporterPenaltyDeleteInteractor,
+    create_penalty,
+)
 from shifts.services.shifts import ensure_shift_exists
 
-__all__ = ('PenaltyListCreateApi',)
+
+__all__ = ('PenaltyListCreateApi', 'CarTransporterPenaltyDeleteApi')
 
 
 class PenaltyListCreateApi(APIView):
+
     def get(self, request: Request) -> Response:
         serializer = PenaltyListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -53,3 +58,13 @@ class PenaltyListCreateApi(APIView):
 
         serializer = PenaltyCreateOutputSerializer(penalty)
         return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class CarTransporterPenaltyDeleteApi(APIView):
+
+    def delete(self, request: Request, penalty_id: int) -> Response:
+        interactor = CarTransporterPenaltyDeleteInteractor(
+            penalty_id=penalty_id,
+        )
+        interactor.execute()
+        return Response(status=status.HTTP_204_NO_CONTENT)

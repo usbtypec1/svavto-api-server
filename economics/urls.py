@@ -9,7 +9,10 @@ from economics.views import (
     CarWashSurchargeListCreateApi,
     CarWashSurchargeDeleteApi,
     CarWashPenaltyDeleteApi,
+    CarTransporterPenaltyDeleteApi,
+    CarTransporterSurchargeDeleteApi,
 )
+
 
 reports_urlpatterns = [
     path(
@@ -51,6 +54,18 @@ urlpatterns = [
         PenaltyListCreateApi.as_view(),
         name='penalty-list-create',
     ),
-    path(r'surcharges/', SurchargeCreateApi.as_view(), name='surcharge-create'),
+    path(
+        r'penalties/<int:penalty_id>/',
+        CarTransporterPenaltyDeleteApi.as_view(),
+        name='car-transporter-penalty-delete',
+    ),
+    path(
+        r'surcharges/', SurchargeCreateApi.as_view(), name='surcharge-create'
+    ),
+    path(
+        r'surcharges/<int:surcharge_id>/',
+        CarTransporterSurchargeDeleteApi.as_view(),
+        name='car-transporter-surcharge-delete',
+    ),
     path(r'reports/', include(reports_urlpatterns)),
 ]

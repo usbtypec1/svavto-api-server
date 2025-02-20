@@ -1,10 +1,13 @@
 import datetime
 from dataclasses import dataclass
-from enum import StrEnum, auto
+from enum import auto, StrEnum
 from typing import Final, TypeAlias, TypedDict
 
-from economics.exceptions import InvalidPenaltyConsequenceError
-from economics.models import Penalty
+from economics.exceptions import (
+    CarTransporterPenaltyNotFoundError,
+    CarTransporterSurchargeNotFoundError, InvalidPenaltyConsequenceError,
+)
+from economics.models import Penalty, Surcharge
 from economics.selectors import compute_staff_penalties_count
 from shifts.selectors import get_shift_by_id
 
@@ -158,10 +161,11 @@ def create_penalty(
 
     consequence: str | None = None
     if amount is None:
-        penalty_amount_and_consequence = compute_penalty_amount_and_consequence(
-            staff_id=shift.staff_id,
-            reason=reason,
-        )
+        penalty_amount_and_consequence = (
+            compute_penalty_amount_and_consequence(
+                staff_id=shift.staff_id,
+                reason=reason,
+            ))
         amount = penalty_amount_and_consequence.amount
         consequence = penalty_amount_and_consequence.consequence
 
@@ -184,3 +188,23 @@ def create_penalty(
         amount=amount,
         created_at=penalty.created_at,
     )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CarTransporterPenaltyDeleteInteractor:
+    penalty_id: int
+
+    def execute(self) -> None:
+        deleted_count = Penalty.objects.filter(id=self.penalty_id).delete()
+        if deleted_count == 0:
+            raise CarTransporterPenaltyNotFoundError
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CarTransporterSurchargeDeleteInteractor:
+    surcharge_id: int
+
+    def execute(self) -> None:
+        deleted_count = Surcharge.objects.filter(id=self.surcharge_id).delete()
+        if deleted_count == 0:
+            raise CarTransporterSurchargeNotFoundError

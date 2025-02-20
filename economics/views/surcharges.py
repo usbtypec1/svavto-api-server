@@ -9,10 +9,14 @@ from economics.serializers import (
     SurchargeCreateOutputSerializer, SurchargeListInputSerializer,
     SurchargeListOutputSerializer,
 )
+from economics.services.penalties import (
+    CarTransporterSurchargeDeleteInteractor,
+)
 from economics.services.surcharges import create_surcharge
 from shifts.services.shifts import ensure_shift_exists
 
-__all__ = ('SurchargeCreateApi',)
+
+__all__ = ('SurchargeCreateApi', 'CarTransporterSurchargeDeleteApi')
 
 
 class SurchargeCreateApi(APIView):
@@ -53,3 +57,13 @@ class SurchargeCreateApi(APIView):
 
         serializer = SurchargeCreateOutputSerializer(surcharge)
         return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class CarTransporterSurchargeDeleteApi(APIView):
+
+    def delete(self, request: Request, surcharge_id: int) -> Response:
+        interactor = CarTransporterSurchargeDeleteInteractor(
+            surcharge_id=surcharge_id,
+        )
+        interactor.execute()
+        return Response(status=status.HTTP_204_NO_CONTENT)
