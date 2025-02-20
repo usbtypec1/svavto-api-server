@@ -539,12 +539,15 @@ def get_staff_with_one_test_shift(
             banned_at__isnull=True,
             shift__date__year=year,
             shift__date__month=month,
-            shift__is_test=True,
         )
         .annotate(
-            test_shift_count=Count('shift')
+            test_shift_count=Count('shift', filter=Q(shift__is_test=True)),
+            all_shift_count=Count('shift'),
         )
-        .filter(test_shift_count=1)
+        .filter(
+            test_shift_count=1,
+            all_shift_count=1,
+        )
         .values('id', 'full_name')
     )
     return map_dict_to_staff_id_and_name(staff_list)
