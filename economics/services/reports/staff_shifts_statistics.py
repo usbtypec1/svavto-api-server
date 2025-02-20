@@ -293,7 +293,6 @@ def get_shifts_dry_cleaning_items(
         .filter(
             car__shift__date__range=(from_date, to_date),
             service__is_dry_cleaning=True,
-            car__shift__is_test=False,
         )
     )
     if staff_ids is not None:
@@ -332,7 +331,6 @@ def get_cars_to_wash_statistics(
         CarToWash.objects
         .filter(
             shift__date__range=(from_date, to_date),
-            shift__is_test=False,
         )
     )
     if staff_ids is not None:

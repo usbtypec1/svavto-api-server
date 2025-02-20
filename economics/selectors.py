@@ -192,7 +192,6 @@ def get_penalties_for_period(
     penalties = Penalty.objects.filter(
         shift__date__gte=from_date,
         shift__date__lte=to_date,
-        shift__is_test=False,
     )
     if staff_ids is not None:
         penalties = penalties.filter(shift__staff_id__in=staff_ids)
@@ -213,7 +212,6 @@ def get_surcharges_for_period(
     surcharges = Surcharge.objects.filter(
         shift__date__gte=from_date,
         shift__date__lte=to_date,
-        shift__is_test=False,
     )
     if staff_ids is not None:
         surcharges = surcharges.filter(shift__staff_id__in=staff_ids)
