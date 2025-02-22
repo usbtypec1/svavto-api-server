@@ -177,7 +177,11 @@ def separate_conflict_non_test_shifts(
     }
     filters = reduce(
         operator.or_,
-        [Q(staff_id=staff_id, date=date) for staff_id, date in expected_shifts]
+        [
+            Q(staff_id=staff_id, date=date)
+            for staff_id, date in expected_shifts
+        ],
+        Q(),
     )
 
     existing_shifts: QuerySet[Shift | dict] = (
@@ -258,7 +262,7 @@ class ShiftExtraCreateInteractor:
         ]
 
     @transaction.atomic
-    def execute(self):
+    def execute(self) -> ExtraShiftsCreateResult:
         staff_ids = [shift['staff_id'] for shift in self.shifts]
         separated_staff = separate_staff_by_existence(staff_ids)
         shifts_of_existing_staff = self.get_shifts_of_staff(

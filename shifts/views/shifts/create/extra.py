@@ -18,14 +18,9 @@ class ShiftExtraCreateApi(APIView):
         serializer = ShiftExtraCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data: dict = serializer.validated_data
-
         shifts: list[StaffIdAndDateTypedDict] = validated_data['shifts']
 
         created_shifts = ShiftExtraCreateInteractor(shifts=shifts).execute()
 
-        serializer = ShiftExtraCreateOutputSerializer(
-            created_shifts,
-            many=True,
-        )
-        response_data = {'shifts': serializer.data}
-        return Response(response_data, status.HTTP_201_CREATED)
+        serializer = ShiftExtraCreateOutputSerializer(created_shifts)
+        return Response(serializer.data, status.HTTP_200_OK)

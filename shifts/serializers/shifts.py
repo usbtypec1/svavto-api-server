@@ -29,6 +29,7 @@ __all__ = (
     'DeadSoulsOutputSerializer',
     'StaffIdAndFullNameSerializer',
     'StaffIdAndDateSerializer',
+    'ExtraShiftItemSerializer',
 )
 
 
@@ -181,11 +182,23 @@ class ShiftTestCreateOutputSerializer(serializers.Serializer):
     shift_date = serializers.DateField()
 
 
-class ShiftExtraCreateOutputSerializer(serializers.Serializer):
+class ExtraShiftItemSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     staff_id = serializers.IntegerField()
     date = serializers.DateField()
     created_at = serializers.DateTimeField()
+
+
+class ShiftExtraCreateOutputSerializer(serializers.Serializer):
+    created_shifts = serializers.ListSerializer(
+        child=ExtraShiftItemSerializer()
+    )
+    missing_staff_ids = serializers.ListSerializer(
+        child=serializers.IntegerField()
+    )
+    conflict_shifts = serializers.ListSerializer(
+        child=StaffIdAndDateSerializer()
+    )
 
 
 class ShiftListV2InputSerializer(serializers.Serializer):
