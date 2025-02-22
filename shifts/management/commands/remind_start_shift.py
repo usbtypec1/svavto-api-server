@@ -2,7 +2,6 @@ import time
 
 from django.core.management import BaseCommand
 
-from shifts.selectors import get_staff_ids_with_active_shift
 from shifts.services.shifts import (
     get_staff_ids_with_not_started_shifts_for_today
 )
@@ -25,17 +24,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         bot = get_telegram_bot()
-        staff_ids = get_staff_ids_with_active_shift()
-
         extra_warn: bool = options['extra_warn']
 
         staff_ids = get_staff_ids_with_not_started_shifts_for_today()
 
         if extra_warn:
             text = ('❗️ Для корректного подсчета внесенных вами данных '
-                    'начните смену до 23:59!')
+                    'начните смену до 23:59')
         else:
-            text = 'Начните смену на сегодня'
+            text = '❗ Не забудьте начать смену на сегодня'
 
         for staff_id in staff_ids:
             is_sent = try_send_message(
