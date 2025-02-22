@@ -20,11 +20,7 @@ class ShiftExtraCreateApi(APIView):
         serializer.is_valid(raise_exception=True)
         validated_data: dict = serializer.validated_data
 
-        staff_id: int = validated_data['staff_id']
-        date: datetime.date = validated_data['date']
-
-        staff = get_staff_by_id(staff_id)
-        update_last_activity_time(staff_id=staff_id)
+        shifts: list = validated_data['shifts']
 
         shifts_create_result = create_extra_shift(staff=staff, date=date)
 

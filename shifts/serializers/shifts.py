@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from shifts.models import Shift
 
+
 __all__ = (
     'ShiftListForSpecificDateOutputSerializer',
     'StaffCurrentShiftRetrieveOutputSerializer',
@@ -27,6 +28,7 @@ __all__ = (
     'DeadSoulsInputSerializer',
     'DeadSoulsOutputSerializer',
     'StaffIdAndFullNameSerializer',
+    'StaffIdAndDateSerializer',
 )
 
 
@@ -102,19 +104,28 @@ class ShiftListOutputSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class StaffIdAndDateSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    date = serializers.DateField()
+
+
 class ShiftTestCreateInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
     date = serializers.DateField()
 
 
 class ShiftExtraCreateInputSerializer(serializers.Serializer):
-    staff_id = serializers.IntegerField()
-    date = serializers.DateField()
+    shifts = serializers.ListField(
+        child=StaffIdAndDateSerializer(),
+        min_length=1,
+    )
 
 
 class ShiftCreateInputSerializer(serializers.Serializer):
-    staff_id = serializers.IntegerField()
-    dates = serializers.ListField(child=serializers.DateField())
+    shifts = serializers.ListField(
+        child=StaffIdAndDateSerializer(),
+        min_length=1,
+    )
 
 
 class ShiftCreateItemSerializer(serializers.Serializer):

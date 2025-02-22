@@ -1,9 +1,10 @@
 import collections
 import datetime
+import operator
 from collections.abc import Iterable
 from dataclasses import dataclass
-from functools import lru_cache
-from typing import Final
+from functools import lru_cache, reduce
+from typing import Final, TypeAlias, TypedDict
 from uuid import UUID
 
 from django.db import transaction
@@ -150,6 +151,120 @@ def create_test_shift(
         shift_id=shift.id,
         shift_date=shift.date,
     )
+
+
+class StaffIdAndDateTypedDict(TypedDict):
+    staff_id: int
+    date: datetime.date
+
+
+StaffIdAndDate: TypeAlias = tuple[int, datetime.date]
+
+
+def get_conflict_shifts(
+        shifts: Iterable[StaffIdAndDateTypedDict],
+) -> list[StaffIdAndDateTypedDict]:
+    expected_shifts: set[StaffIdAndDate] = {
+        (shift['staff_id'], shift['date'])
+        for shift in shifts
+    }
+    filters = reduce(
+        operator.or_,
+        [Q(staff_id=staff_id, date=date) for staff_id, date in expected_shifts]
+    )
+
+    existing_shifts: QuerySet[Shift | dict] = (
+        Shift.objects
+        .filter(filters, is_test=False)
+        .values('staff_id', 'date')
+    )
+    existing_shifts: set[StaffIdAndDate] = {
+        (shift['staff_id'], shift['date'])
+        for shift in existing_shifts
+    }
+
+    conflict_shifts = expected_shifts.intersection(existing_shifts)
+    return [
+        {'staff_id': staff_id, 'date': date}
+        for staff_id, date in conflict_shifts
+    ]
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class MissingAndExistingStaffIds:
+    missing_staff_ids: tuple[int, ...]
+    existing_staff_ids: tuple[int, ...]
+
+
+def separate_staff_by_existence(
+        staff_ids: Iterable[int],
+) -> MissingAndExistingStaffIds:
+    staff_ids = set(staff_ids)
+    existing_staff_ids = set(
+        Staff.objects
+        .filter(id__in=staff_ids)
+        .values_list('id', flat=True)
+    )
+    missing_staff_ids = tuple(staff_ids - existing_staff_ids)
+    existing_staff_ids = tuple(existing_staff_ids)
+    return MissingAndExistingStaffIds(
+        missing_staff_ids=missing_staff_ids,
+        existing_staff_ids=existing_staff_ids,
+    )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CreatedExtraShift:
+    id: int
+    staff_id: int
+    date: datetime.date
+    created_at: datetime.datetime
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftExtraCreateInteractor:
+    shifts: list[StaffIdAndDateTypedDict]
+
+    def get_shifts_of_staff(
+            self,
+            staff_ids: Iterable[int],
+    ) -> list[StaffIdAndDateTypedDict]:
+        staff_ids = set(staff_ids)
+        return [
+            shift for shift in self.shifts
+            if shift['staff_id'] in staff_ids
+        ]
+
+    @transaction.atomic
+    def execute(self):
+        staff_ids = [shift['staff_id'] for shift in self.shifts]
+        separated_staff = separate_staff_by_existence(staff_ids)
+        shifts_of_existing_staff = self.get_shifts_of_staff(
+            separated_staff.existing_staff_ids,
+        )
+        conflict_shifts = get_conflict_shifts(shifts=shifts_of_existing_staff)
+        non_conflict_shifts = [
+            shift for shift in self.shifts
+            if shift not in conflict_shifts
+        ]
+        shifts_to_create = [
+            Shift(
+                staff_id=shift['staff_id'],
+                date=shift['date'],
+                is_extra=True,
+            )
+            for shift in non_conflict_shifts
+        ]
+        created_shifts = Shift.objects.bulk_create(shifts_to_create)
+        return [
+            CreatedExtraShift(
+                id=shift.id,
+                staff_id=shift.staff_id,
+                date=shift.date,
+                created_at=shift.created_at,
+            )
+            for shift in created_shifts
+        ]
 
 
 @transaction.atomic
