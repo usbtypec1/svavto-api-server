@@ -267,42 +267,6 @@ class ShiftExtraCreateInteractor:
         ]
 
 
-@transaction.atomic
-def create_extra_shift(
-        *,
-        staff: Staff,
-        date: datetime.date,
-) -> ShiftExtraCreateResult:
-    """
-    Create extra shift for staff for specific date.
-
-    Keyword Args:
-        staff: staff ORM object.
-        date: date of extra shift.
-
-    Raises:
-        ShiftAlreadyExistsError: If shift already exists on the date.
-
-    Returns:
-        ShiftExtraCreateResult object.
-    """
-    validate_conflict_shift_dates(staff_id=staff.id, expected_dates=[date])
-
-    shift = Shift(
-        staff_id=staff.id,
-        date=date,
-        is_extra=True,
-    )
-    shift.full_clean()
-    shift.save()
-    return ShiftExtraCreateResult(
-        staff_id=staff.id,
-        staff_full_name=staff.full_name,
-        shift_id=shift.id,
-        shift_date=shift.date,
-    )
-
-
 def create_regular_shifts(
         *,
         staff: Staff,

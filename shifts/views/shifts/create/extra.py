@@ -8,9 +8,7 @@ from rest_framework.views import APIView
 from shifts.serializers import (
     ShiftExtraCreateInputSerializer, ShiftExtraCreateOutputSerializer,
 )
-from shifts.services.shifts import create_extra_shift
-from staff.selectors import get_staff_by_id
-from staff.services import update_last_activity_time
+from shifts.services.shifts import ShiftExtraCreateInteractor
 
 
 class ShiftExtraCreateApi(APIView):
@@ -22,7 +20,11 @@ class ShiftExtraCreateApi(APIView):
 
         shifts: list = validated_data['shifts']
 
-        shifts_create_result = create_extra_shift(staff=staff, date=date)
+        created_shifts = ShiftExtraCreateInteractor(shifts=shifts).execute()
 
-        serializer = ShiftExtraCreateOutputSerializer(shifts_create_result)
-        return Response(serializer.data, status.HTTP_201_CREATED)
+        serializer = ShiftExtraCreateOutputSerializer(
+            created_shifts,
+            many=True,
+        )
+        response_data = {'shifts': serializer.data}
+        return Response(response_data, status.HTTP_201_CREATED)

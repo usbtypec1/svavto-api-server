@@ -182,10 +182,10 @@ class ShiftTestCreateOutputSerializer(serializers.Serializer):
 
 
 class ShiftExtraCreateOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     staff_id = serializers.IntegerField()
-    staff_full_name = serializers.CharField()
-    shift_id = serializers.IntegerField()
-    shift_date = serializers.DateField()
+    date = serializers.DateField()
+    created_at = serializers.DateTimeField()
 
 
 class ShiftListV2InputSerializer(serializers.Serializer):
