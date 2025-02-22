@@ -12,6 +12,7 @@ from django.db.models import Count, Q, QuerySet, Sum
 from django.utils import timezone
 
 from car_washes.models import CarWash
+from core.services import get_current_shift_date
 from shifts.exceptions import (
     MonthNotAvailableError, ShiftAlreadyExistsError,
     ShiftNotFoundError,
@@ -265,7 +266,7 @@ class ShiftExtraCreateInteractor:
         )
         separated_shifts = separate_conflict_non_test_shifts(
             shifts=shifts_of_existing_staff
-            )
+        )
         shifts_to_create = [
             Shift(
                 staff_id=shift['staff_id'],
@@ -692,3 +693,15 @@ class DeadSoulsReadInteractor:
             year=self.year,
             staff_list=list(staff_list),
         )
+
+
+def get_staff_ids_with_not_started_shifts_for_today() -> set[int]:
+    return set(
+        Shift.objects
+        .filter(
+            date=get_current_shift_date(),
+            started_at__isnull=True,
+            rejected_at__isnull=True,
+        )
+        .values_list('staff_id', flat=True)
+    )
