@@ -1,5 +1,3 @@
-import datetime
-
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -8,7 +6,10 @@ from rest_framework.views import APIView
 from shifts.serializers import (
     ShiftExtraCreateInputSerializer, ShiftExtraCreateOutputSerializer,
 )
-from shifts.services.shifts import ShiftExtraCreateInteractor
+from shifts.services.shifts import (
+    ShiftExtraCreateInteractor,
+    StaffIdAndDateTypedDict,
+)
 
 
 class ShiftExtraCreateApi(APIView):
@@ -18,7 +19,7 @@ class ShiftExtraCreateApi(APIView):
         serializer.is_valid(raise_exception=True)
         validated_data: dict = serializer.validated_data
 
-        shifts: list = validated_data['shifts']
+        shifts: list[StaffIdAndDateTypedDict] = validated_data['shifts']
 
         created_shifts = ShiftExtraCreateInteractor(shifts=shifts).execute()
 
