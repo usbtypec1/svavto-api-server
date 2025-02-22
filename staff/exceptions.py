@@ -6,7 +6,7 @@ __all__ = (
     'StaffNotFoundError',
     'StaffAlreadyExistsError',
     'StaffRegisterRequestAlreadyExistsError',
-    'RegistrationAwaitingStaffNotFoundError',
+    'StaffRegisterRequestNotFoundError',
 )
 
 

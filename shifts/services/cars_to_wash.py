@@ -1,11 +1,12 @@
 import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Final
 from uuid import UUID
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils import timezone
 
 from car_washes.models import CarWash, CarWashServicePrice
@@ -176,7 +177,8 @@ class CarTransferUpdateInteractor:
     """
     Args:
         car_id: The ID of the car to wash
-        additional_services: List of dictionaries containing additional services
+        additional_services: List of dictionaries containing additional
+        services
 
     """
     car_id: int
@@ -229,7 +231,8 @@ class CarTransferUpdateInteractor:
 
 def get_staff_cars_count_by_date(date: datetime.date) -> dict:
     """
-    Compute the count of cars assigned to each staff member for a specific date,
+    Compute the count of cars assigned to each staff member for a specific
+    date,
     categorized by shift status.
 
     Args:
@@ -314,3 +317,42 @@ def update_shift_car_wash(
         raise CarWashSameAsCurrentError
     shift.car_wash_id = car_wash_id
     shift.save(update_fields=['car_wash_id'])
+
+
+TRUNK_VACUUM_SERVICE_ID: Final[UUID] = UUID(
+    '8d263cb9-f11c-456e-b055-ee89655682f1'
+)
+
+
+def compute_trunk_vacuum_count(
+        *,
+        car_wash_id: int,
+        shift_id: int,
+) -> int:
+    result = (
+        CarToWashAdditionalService.objects
+        .filter(
+            car__car_wash_id=car_wash_id,
+            car__shift_id=shift_id,
+            service_id=TRUNK_VACUUM_SERVICE_ID,
+        )
+        .aggregate(count=Sum('count'))
+    )
+    return result['count'] or 0
+
+
+def compute_dry_cleaning_items_count(
+        *,
+        car_wash_id: int,
+        shift_id: int,
+) -> int:
+    result = (
+        CarToWashAdditionalService.objects
+        .filter(
+            car__car_wash_id=car_wash_id,
+            car__shift_id=shift_id,
+            service__is_dry_cleaning=True,
+        )
+        .aggregate(count=Sum('count'))
+    )
+    return result['count'] or 0

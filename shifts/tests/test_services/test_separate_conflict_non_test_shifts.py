@@ -2,14 +2,16 @@ import datetime
 
 import pytest
 
-from shifts.services.shifts import separate_conflict_non_test_shifts
+from shifts.services.shifts.create.extra_shift import (
+    separate_conflict_non_test_shifts
+)
 from shifts.tests.factories import ShiftFactory
 from staff.tests.factories import StaffFactory
 
 
 @pytest.mark.django_db
 def test_no_conflict_shifts():
-    ShiftFactory(date=datetime.date(2025, 1, 1))
+    shift = ShiftFactory(date=datetime.date(2025, 1, 1))
 
     separated_shifts = separate_conflict_non_test_shifts(
         [

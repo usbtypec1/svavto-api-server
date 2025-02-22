@@ -14,7 +14,7 @@ from economics.services.penalties import (
     CarTransporterPenaltyDeleteInteractor,
     create_penalty,
 )
-from shifts.services.shifts import ensure_shift_exists
+from shifts.services import ensure_shift_exists
 
 
 __all__ = ('PenaltyListCreateApi', 'CarTransporterPenaltyDeleteApi')

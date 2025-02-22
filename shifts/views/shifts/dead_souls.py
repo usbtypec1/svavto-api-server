@@ -6,7 +6,8 @@ from shifts.serializers import (
     DeadSoulsInputSerializer,
     DeadSoulsOutputSerializer,
 )
-from shifts.services.shifts import DeadSoulsReadInteractor
+from shifts.services import DeadSoulsReadInteractor
+
 
 __all__ = ('DeadSoulsApi',)
 
@@ -14,20 +15,16 @@ __all__ = ('DeadSoulsApi',)
 class DeadSoulsApi(APIView):
 
     def get(self, request: Request):
-        serializer = DeadSoulsInputSerializer(
-            data=request.query_params,
-        )
+        serializer = DeadSoulsInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         data: dict = serializer.validated_data
-
         month: int = data['month']
         year: int = data['year']
 
-        interactor = DeadSoulsReadInteractor(
+        dead_souls = DeadSoulsReadInteractor(
             month=month,
             year=year,
-        )
-        staff_without_shifts = interactor.execute()
+        ).execute()
 
-        serializer = DeadSoulsOutputSerializer(staff_without_shifts)
+        serializer = DeadSoulsOutputSerializer(dead_souls)
         return Response(serializer.data)

@@ -1,6 +1,8 @@
 import pytest
 
-from shifts.services.shifts import separate_staff_by_existence
+from shifts.services.shifts.create.extra_shift import (
+    separate_staff_by_existence,
+)
 from staff.tests.factories import StaffFactory
 
 
