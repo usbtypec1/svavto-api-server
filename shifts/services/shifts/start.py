@@ -4,10 +4,10 @@ from django.utils import timezone
 
 from shifts.exceptions import ShiftNotFoundError
 from shifts.models import Shift
-from shifts.services.shifts import ensure_time_to_start_shift
 from shifts.services.shifts.validators import (
     ensure_staff_has_no_active_shift,
     ensure_shift_confirmed,
+    ensure_time_to_start_shift,
 )
 
 
