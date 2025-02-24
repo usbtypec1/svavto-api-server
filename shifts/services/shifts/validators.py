@@ -4,7 +4,8 @@ from django.utils import timezone
 
 from core.services import get_current_shift_date
 from shifts.exceptions import (
-    InvalidTimeToStartShiftError, ShiftNotConfirmedError, ShiftNotFoundError,
+    InvalidTimeToStartShiftError, ShiftAlreadyFinishedError,
+    ShiftNotConfirmedError, ShiftNotFoundError,
     StaffHasActiveShiftError,
 )
 from shifts.models import Shift
@@ -19,13 +20,18 @@ def ensure_staff_has_no_active_shift(staff_id: int) -> None:
         raise StaffHasActiveShiftError
 
 
+def ensure_shift_not_finished(shift: Shift) -> None:
+    if shift.finished_at is not None:
+        raise ShiftAlreadyFinishedError(shift_date=shift.date)
+
+
 def ensure_shift_exists(shift_id: int) -> None:
     if not Shift.objects.filter(id=shift_id).exists():
         raise ShiftNotFoundError
 
 
 def ensure_shift_confirmed(shift: Shift) -> None:
-    if shift.confirmed_at is not None:
+    if shift.confirmed_at is None:
         raise ShiftNotConfirmedError
 
 

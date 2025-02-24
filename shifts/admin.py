@@ -14,7 +14,7 @@ from shifts.models import (
     Shift,
     ShiftFinishPhoto,
 )
-from shifts.services.shifts import ensure_staff_has_no_active_shift
+from shifts.services.shifts.validators import ensure_staff_has_no_active_shift
 
 
 class CurrentShiftFilter(admin.SimpleListFilter):

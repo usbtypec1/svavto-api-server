@@ -30,6 +30,7 @@ __all__ = (
     'StaffIdAndFullNameSerializer',
     'StaffIdAndDateSerializer',
     'ExtraShiftItemSerializer',
+    'ShiftConfirmInputSerializer',
 )
 
 
@@ -233,6 +234,7 @@ class ShiftListV2ItemSerializer(serializers.Serializer):
     started_at = serializers.DateTimeField(allow_null=True)
     finished_at = serializers.DateTimeField(allow_null=True)
     rejected_at = serializers.DateTimeField(allow_null=True)
+    confirmed_at = serializers.DateTimeField(allow_null=True)
     created_at = serializers.DateTimeField()
     type = serializers.ChoiceField(choices=Shift.Type.choices)
 
@@ -266,3 +268,7 @@ class DeadSoulsOutputSerializer(serializers.Serializer):
     staff_list = serializers.ListSerializer(
         child=StaffIdAndFullNameSerializer(),
     )
+
+
+class ShiftConfirmInputSerializer(serializers.Serializer):
+    shift_id = serializers.IntegerField()

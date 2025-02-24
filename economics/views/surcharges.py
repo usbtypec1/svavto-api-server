@@ -13,7 +13,7 @@ from economics.services.penalties import (
     CarTransporterSurchargeDeleteInteractor,
 )
 from economics.services.surcharges import create_surcharge
-from shifts.services.shifts import ensure_shift_exists
+from shifts.services.shifts.validators import ensure_shift_exists
 
 
 __all__ = ('SurchargeCreateApi', 'CarTransporterSurchargeDeleteApi')

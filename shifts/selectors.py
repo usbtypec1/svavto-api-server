@@ -300,6 +300,7 @@ class ShiftsPageItem:
     started_at: datetime.datetime | None
     finished_at: datetime.datetime | None
     rejected_at: datetime.datetime | None
+    confirmed_at: datetime.datetime | None
     created_at: datetime.datetime
     type: Shift.Type
 
@@ -333,6 +334,7 @@ def map_shifts_page_items(shifts: Iterable[Shift]) -> list[ShiftsPageItem]:
             started_at=shift.started_at,
             finished_at=shift.finished_at,
             rejected_at=shift.rejected_at,
+            confirmed_at=shift.confirmed_at,
             created_at=shift.created_at,
             type=shift.type,
         )

@@ -4,7 +4,7 @@ import pytest
 from freezegun import freeze_time
 
 from shifts.exceptions import InvalidTimeToStartShiftError
-from shifts.services.shifts import ensure_time_to_start_shift
+from shifts.services.shifts.validators import ensure_time_to_start_shift
 
 
 @pytest.mark.parametrize(

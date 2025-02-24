@@ -1,8 +1,10 @@
+from .confirm import ShiftConfirmApi
 from .create import (
     ShiftExtraCreateApi, ShiftRegularCreateApi,
     ShiftTestCreateApi,
 )
 from .current import *
+from .dead_souls import DeadSoulsApi
 from .last_created import *
 from .list import ShiftListApi, ShiftListApiV2
 from .reject import ShiftRejectApi
@@ -11,5 +13,4 @@ from .retrieve import *
 from .retrieve_delete import *
 from .shift_dates import *
 from .specific_date import *
-from .dead_souls import DeadSoulsApi
-from .start import *
+from .start import ShiftStartApi
