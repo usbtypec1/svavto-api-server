@@ -25,6 +25,7 @@ psycopg2-binary = "^2.9.10"
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
 factory-boy = "^3.3.1"
+freezegun = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]

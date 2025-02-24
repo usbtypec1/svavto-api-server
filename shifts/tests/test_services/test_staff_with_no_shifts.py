@@ -3,7 +3,7 @@ import datetime
 import pytest
 from django.utils import timezone
 
-from shifts.services.shifts import get_staff_with_no_shifts
+from shifts.services.shifts.dead_souls import get_staff_with_no_shifts
 from shifts.tests.factories import ShiftFactory
 from staff.tests.factories import StaffFactory
 

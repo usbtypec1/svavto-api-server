@@ -48,7 +48,7 @@ def test_execute_with_car_wash_ids_filter():
 @pytest.mark.django_db
 def test_execute_with_from_date_filter():
     CarWashSurchargeFactory()
-    surcharge = CarWashSurchargeFactory()
+    CarWashSurchargeFactory()
     interactor = CarWashSurchargeListInteractor(
         from_date=timezone.now() + datetime.timedelta(days=1),
         to_date=None,

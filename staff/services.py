@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
-from shifts.services.shifts import ShiftsDeleteOnStaffBanInteractor
+from shifts.services import ShiftsDeleteOnStaffBanInteractor
 from staff.exceptions import (
     StaffRegisterRequestAlreadyExistsError, StaffNotFoundError,
     StaffRegisterRequestNotFoundError,

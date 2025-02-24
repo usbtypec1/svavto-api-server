@@ -7,7 +7,7 @@ from shifts.serializers import (
     ShiftFinishInputSerializer,
     ShiftFinishOutputSerializer,
 )
-from shifts.services.shifts import ShiftFinishInteractor, ShiftSummaryInteractor
+from shifts.services import ShiftFinishInteractor, ShiftSummaryInteractor
 from staff.selectors import ensure_staff_exists
 from staff.services import update_last_activity_time
 

@@ -1,7 +1,7 @@
 import pytest
 
 from shifts.exceptions import MonthNotAvailableError
-from shifts.services.shifts import ensure_month_is_available
+from shifts.services.shifts.dead_souls import ensure_month_is_available
 from shifts.tests.factories import AvailableDateFactory
 
 

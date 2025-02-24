@@ -9,12 +9,13 @@ from shifts.serializers import (
     ShiftCreateInputSerializer,
     ShiftCreateOutputSerializer,
 )
-from shifts.services.shifts import create_regular_shifts
+from shifts.services import ShiftRegularCreateInteractor
 from staff.selectors import get_staff_by_id
 from staff.services import update_last_activity_time
 
 
 class ShiftRegularCreateApi(APIView):
+
     def post(self, request: Request) -> Response:
         serializer = ShiftCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -26,7 +27,10 @@ class ShiftRegularCreateApi(APIView):
         staff = get_staff_by_id(staff_id)
         update_last_activity_time(staff_id=staff_id)
 
-        shifts_create_result = create_regular_shifts(staff=staff, dates=dates)
+        shifts_create_result = ShiftRegularCreateInteractor(
+            staff=staff,
+            dates=dates,
+        ).execute()
 
         serializer = ShiftCreateOutputSerializer(shifts_create_result)
         return Response(serializer.data, status.HTTP_201_CREATED)

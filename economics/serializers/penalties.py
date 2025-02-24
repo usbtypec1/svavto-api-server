@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from economics.models import Penalty
 
+
 __all__ = (
     'PenaltyCreateInputSerializer',
     'PenaltyCreateOutputSerializer',

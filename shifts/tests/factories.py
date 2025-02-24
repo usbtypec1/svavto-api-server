@@ -48,6 +48,10 @@ class ShiftFactory(DjangoModelFactory):
         'date_time',
         tzinfo=timezone.get_current_timezone(),
     )
+    confirmed_at = factory.Faker(
+        'date_time',
+        tzinfo=timezone.get_current_timezone(),
+    )
     rejected_at = factory.Faker(
         'date_time',
         tzinfo=timezone.get_current_timezone(),

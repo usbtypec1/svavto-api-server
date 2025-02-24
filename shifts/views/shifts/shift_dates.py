@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shifts.models import Shift
-from shifts.services.shifts import get_shifts_by_staff_id
+from shifts.services import get_shifts_by_staff_id
+
 
 __all__ = ('StaffShiftListApi',)
 
@@ -30,6 +31,7 @@ class StaffShiftListOutputSerializer(serializers.ModelSerializer):
 
 
 class StaffShiftListApi(APIView):
+
     def get(self, request: Request, staff_id: int) -> Response:
         serializer = StaffShiftListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)

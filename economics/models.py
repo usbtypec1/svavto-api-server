@@ -1,10 +1,10 @@
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash
 from shifts.models import Shift
 from staff.models import Staff
+
 
 __all__ = (
     'Penalty',

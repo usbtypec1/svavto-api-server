@@ -33,6 +33,11 @@ class Shift(models.Model):
         blank=True,
         verbose_name=_('finished at'),
     )
+    confirmed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('confirmed at'),
+    )
     rejected_at = models.DateTimeField(
         null=True,
         blank=True,

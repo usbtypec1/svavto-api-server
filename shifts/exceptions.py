@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.exceptions import APIException
 
+
 __all__ = (
     'StaffHasNoActiveShiftError',
     'CarWashSameAsCurrentError',
@@ -20,6 +21,9 @@ __all__ = (
     'StaffServicePriceNotFoundError',
     'CarToWashNotFoundError',
     'MonthNotAvailableError',
+    'ShiftNotConfirmedError',
+    'InvalidTimeToStartShiftError',
+    'ShiftAlreadyConfirmedError',
 )
 
 
@@ -51,6 +55,10 @@ class ShiftAlreadyFinishedError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _('shift is already finished')
     default_code = 'shift_already_finished'
+
+    def __init__(self, *, shift_date: datetime.date):
+        super().__init__(self.default_detail)
+        self.extra = {'shift_date': shift_date}
 
 
 class StaffHasNoAnyShiftError(APIException):
@@ -123,3 +131,21 @@ class MonthNotAvailableError(APIException):
     def __init__(self, *, year: int, month: int):
         super().__init__(self.default_detail)
         self.extra = {'year': year, 'month': month}
+
+
+class ShiftNotConfirmedError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = 'shift_not_confirmed'
+    default_detail = _('shift is not confirmed')
+
+
+class InvalidTimeToStartShiftError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = 'invalid_time_to_start_shift'
+    default_detail = _('invalid time to start the shift')
+
+
+class ShiftAlreadyConfirmedError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_code = 'shift_already_confirmed'
+    default_detail = _('shift is already confirmed')

@@ -9,7 +9,7 @@ from shifts.views import (
     CarsWithoutWindshieldWasherApi,
     CurrentShiftCarWashUpdateApi,
     RetrieveUpdateCarsToWashApi,
-    ShiftExtraCreateApi,
+    ShiftConfirmApi, ShiftExtraCreateApi,
     ShiftFinishApi,
     ShiftLastCreatedDateListApi,
     ShiftListApi,
@@ -24,6 +24,7 @@ from shifts.views import (
     StaffShiftListApi,
     ShiftListApiV2, DeadSoulsApi,
 )
+
 
 router = DefaultRouter()
 router.register(
@@ -73,6 +74,11 @@ urlpatterns = [
         r'create/',
         ShiftRegularCreateApi.as_view(),
         name='create-regular',
+    ),
+    path(
+        r'confirm/',
+        ShiftConfirmApi.as_view(),
+        name='confirm',
     ),
     path(
         r'create/test/',

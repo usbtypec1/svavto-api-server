@@ -25,7 +25,6 @@ def try_send_message(
             return bool(bot.send_message(chat_id, text))
         except Exception:
             pass
-        return True
     else:
         return False
 

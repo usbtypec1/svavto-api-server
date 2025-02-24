@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from shifts.models import Shift
 
+
 __all__ = (
     'ShiftListForSpecificDateOutputSerializer',
     'StaffCurrentShiftRetrieveOutputSerializer',
@@ -27,6 +28,9 @@ __all__ = (
     'DeadSoulsInputSerializer',
     'DeadSoulsOutputSerializer',
     'StaffIdAndFullNameSerializer',
+    'StaffIdAndDateSerializer',
+    'ExtraShiftItemSerializer',
+    'ShiftConfirmInputSerializer',
 )
 
 
@@ -102,19 +106,28 @@ class ShiftListOutputSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class StaffIdAndDateSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    date = serializers.DateField()
+
+
 class ShiftTestCreateInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
     date = serializers.DateField()
 
 
 class ShiftExtraCreateInputSerializer(serializers.Serializer):
-    staff_id = serializers.IntegerField()
-    date = serializers.DateField()
+    shifts = serializers.ListField(
+        child=StaffIdAndDateSerializer(),
+        min_length=1,
+    )
 
 
 class ShiftCreateInputSerializer(serializers.Serializer):
-    staff_id = serializers.IntegerField()
-    dates = serializers.ListField(child=serializers.DateField())
+    shifts = serializers.ListField(
+        child=StaffIdAndDateSerializer(),
+        min_length=1,
+    )
 
 
 class ShiftCreateItemSerializer(serializers.Serializer):
@@ -170,11 +183,23 @@ class ShiftTestCreateOutputSerializer(serializers.Serializer):
     shift_date = serializers.DateField()
 
 
-class ShiftExtraCreateOutputSerializer(serializers.Serializer):
+class ExtraShiftItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     staff_id = serializers.IntegerField()
-    staff_full_name = serializers.CharField()
-    shift_id = serializers.IntegerField()
-    shift_date = serializers.DateField()
+    date = serializers.DateField()
+    created_at = serializers.DateTimeField()
+
+
+class ShiftExtraCreateOutputSerializer(serializers.Serializer):
+    created_shifts = serializers.ListSerializer(
+        child=ExtraShiftItemSerializer()
+    )
+    missing_staff_ids = serializers.ListSerializer(
+        child=serializers.IntegerField()
+    )
+    conflict_shifts = serializers.ListSerializer(
+        child=StaffIdAndDateSerializer()
+    )
 
 
 class ShiftListV2InputSerializer(serializers.Serializer):
@@ -209,6 +234,7 @@ class ShiftListV2ItemSerializer(serializers.Serializer):
     started_at = serializers.DateTimeField(allow_null=True)
     finished_at = serializers.DateTimeField(allow_null=True)
     rejected_at = serializers.DateTimeField(allow_null=True)
+    confirmed_at = serializers.DateTimeField(allow_null=True)
     created_at = serializers.DateTimeField()
     type = serializers.ChoiceField(choices=Shift.Type.choices)
 
@@ -242,3 +268,7 @@ class DeadSoulsOutputSerializer(serializers.Serializer):
     staff_list = serializers.ListSerializer(
         child=StaffIdAndFullNameSerializer(),
     )
+
+
+class ShiftConfirmInputSerializer(serializers.Serializer):
+    shift_id = serializers.IntegerField()
