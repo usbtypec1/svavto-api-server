@@ -11,8 +11,13 @@ from .read import (
     get_staff_ids_with_not_started_shifts_for_today,
 )
 from .reject import mark_shift_as_rejected_now
-from .start import start_shift
-from .validators import ensure_shift_exists, ensure_staff_has_no_active_shift
+from .start import ShiftStartInteractor
+from .validators import (
+    ensure_shift_confirmed,
+    ensure_shift_exists,
+    ensure_staff_has_no_active_shift,
+    ensure_time_to_start_shift,
+)
 
 
 __all__ = (
@@ -30,5 +35,7 @@ __all__ = (
     'get_shifts_by_staff_id',
     'get_current_shift_date',
     'get_staff_ids_with_not_started_shifts_for_today',
-    'start_shift',
+    'ShiftStartInteractor',
+    'ensure_shift_confirmed',
+    'ensure_time_to_start_shift',
 )
