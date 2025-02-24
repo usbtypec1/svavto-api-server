@@ -1,28 +1,41 @@
+from dataclasses import dataclass
+
 from django.utils import timezone
 
-from shifts.exceptions import ShiftNotFoundError, StaffHasActiveShiftError
+from shifts.exceptions import ShiftNotFoundError
 from shifts.models import Shift
+from shifts.services.shifts import ensure_time_to_start_shift
+from shifts.services.shifts.validators import (
+    ensure_staff_has_no_active_shift,
+    ensure_shift_confirmed,
+)
 
 
-def start_shift(
-        *,
-        shift_id: int,
-        car_wash_id: int,
-) -> Shift:
-    try:
-        shift = (
-            Shift.objects.select_related('car_wash', 'staff')
-            .only('id', 'date', 'car_wash', 'staff')
-            .get(id=shift_id)
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftStartResult:
+    id: int
+    staff_id: int
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ShiftStartInteractor:
+    shift_id: int
+
+    def execute(self) -> ShiftStartResult:
+        ensure_time_to_start_shift()
+
+        try:
+            shift = Shift.objects.get(id=self.shift_id)
+        except Shift.DoesNotExist:
+            raise ShiftNotFoundError
+
+        ensure_staff_has_no_active_shift(staff_id=shift.staff_id)
+        ensure_shift_confirmed(shift)
+
+        shift.started_at = timezone.now()
+        shift.save(update_fields=('started_at',))
+
+        return ShiftStartResult(
+            id=shift.id,
+            staff_id=shift.staff_id,
         )
-    except Shift.DoesNotExist:
-        raise ShiftNotFoundError
-
-    if shift.is_started:
-        raise StaffHasActiveShiftError
-
-    shift.started_at = timezone.now()
-    shift.car_wash_id = car_wash_id
-    shift.save(update_fields=('started_at', 'car_wash_id'))
-
-    return shift

@@ -12,7 +12,7 @@ from .shifts import (
     get_current_shift_date,
     get_staff_ids_with_not_started_shifts_for_today,
     get_shifts_by_staff_id,
-    start_shift,
+    ShiftStartInteractor,
 )
 
 
@@ -30,5 +30,5 @@ __all__ = (
     'get_current_shift_date',
     'get_staff_ids_with_not_started_shifts_for_today',
     'get_shifts_by_staff_id',
-    'start_shift',
+    'ShiftStartInteractor',
 )
