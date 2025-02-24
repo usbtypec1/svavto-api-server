@@ -2,6 +2,7 @@ import datetime
 from dataclasses import dataclass
 
 from django.db import transaction
+from django.utils import timezone
 
 from shifts.models import Shift
 from staff.models import Staff
@@ -34,6 +35,7 @@ class ShiftTestCreateInteractor:
         shift = Shift(
             staff_id=self.staff.id,
             date=self.date,
+            confirmed_at=timezone.now(),
             is_test=True,
         )
         shift.full_clean()
