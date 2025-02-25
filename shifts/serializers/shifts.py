@@ -124,10 +124,8 @@ class ShiftExtraCreateInputSerializer(serializers.Serializer):
 
 
 class ShiftCreateInputSerializer(serializers.Serializer):
-    shifts = serializers.ListField(
-        child=StaffIdAndDateSerializer(),
-        min_length=1,
-    )
+    staff_id = serializers.IntegerField()
+    dates = serializers.ListField(child=serializers.DateField(), min_length=1)
 
 
 class ShiftCreateItemSerializer(serializers.Serializer):
