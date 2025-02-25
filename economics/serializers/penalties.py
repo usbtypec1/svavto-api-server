@@ -62,6 +62,7 @@ class PenaltyListItemSerializer(serializers.Serializer):
         allow_null=True,
     )
     amount = serializers.IntegerField()
+    photo_urls = serializers.ListSerializer(child=serializers.URLField())
     created_at = serializers.DateTimeField()
 
 

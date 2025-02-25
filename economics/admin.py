@@ -8,6 +8,7 @@ from economics.models import (
     Surcharge,
     CarWashPenalty,
     CarWashSurcharge,
+    PenaltyPhoto,
 )
 
 
@@ -29,6 +30,11 @@ class PenaltyResource(ModelResource):
 class SurchargeResource(ModelResource):
     class Meta:
         model = Surcharge
+
+
+@admin.register(PenaltyPhoto)
+class PenaltyPhotoAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Penalty)

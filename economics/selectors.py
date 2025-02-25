@@ -7,11 +7,12 @@ from django.db.models import Sum
 from django.db.models.functions import TruncDate
 
 from economics.models import (
-    CarWashPenalty, CarWashSurcharge, Penalty, StaffServicePrice,
+    CarWashPenalty, CarWashSurcharge, Penalty, PenaltyPhoto, StaffServicePrice,
     Surcharge,
 )
 from shifts.exceptions import StaffServicePriceNotFoundError
 from shifts.models import CarToWash
+
 
 __all__ = (
     'compute_car_transfer_price',
@@ -251,6 +252,7 @@ class PenaltiesPageItem:
     consequence: str | None
     reason: str
     amount: int
+    photo_urls: list[str]
     created_at: datetime.datetime
 
 
@@ -314,7 +316,12 @@ def get_surcharges_page(
 
 def map_penalties_to_page_items(
         penalties: Iterable[Penalty],
+        photos: Iterable[PenaltyPhoto],
 ) -> list[PenaltiesPageItem]:
+    penalty_id_photo_urls = defaultdict(list)
+    for photo in photos:
+        penalty_id_photo_urls[photo.penalty_id].append(photo.photo_url)
+
     return [
         PenaltiesPageItem(
             id=penalty.id,
@@ -325,6 +332,7 @@ def map_penalties_to_page_items(
             consequence=penalty.consequence,
             reason=penalty.reason,
             amount=penalty.amount,
+            photo_urls=penalty_id_photo_urls[penalty.id],
             created_at=penalty.created_at,
         )
         for penalty in penalties
@@ -360,7 +368,13 @@ def get_penalties_page(
     is_end_of_list_reached = len(penalties) <= limit
     penalties = penalties[:limit]
 
+    penalty_ids = [penalty.id for penalty in penalties]
+    photos = PenaltyPhoto.objects.filter(penalty_id__in=penalty_ids)
+
     return PenaltiesPage(
-        penalties=map_penalties_to_page_items(penalties),
+        penalties=map_penalties_to_page_items(
+            penalties=penalties,
+            photos=photos,
+        ),
         is_end_of_list_reached=is_end_of_list_reached,
     )
