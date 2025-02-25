@@ -1,13 +1,16 @@
 import datetime
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import auto, StrEnum
 from typing import Final, TypeAlias, TypedDict
+
+from django.db import transaction
 
 from economics.exceptions import (
     CarTransporterPenaltyNotFoundError,
     CarTransporterSurchargeNotFoundError, InvalidPenaltyConsequenceError,
 )
-from economics.models import Penalty, Surcharge
+from economics.models import Penalty, PenaltyPhoto, Surcharge
 from economics.selectors import compute_staff_penalties_count
 from shifts.selectors import get_shift_by_id
 
@@ -135,14 +138,17 @@ class PenaltyCreateResult:
     reason: str
     consequence: str | None
     amount: int
+    photo_urls: list[str]
     created_at: datetime.datetime
 
 
+@transaction.atomic
 def create_penalty(
         *,
         shift_id: int,
         reason: str,
         amount: int | None,
+        photo_urls: Iterable[str],
 ) -> PenaltyCreateResult:
     """
     Give penalty for staff member.
@@ -153,6 +159,7 @@ def create_penalty(
         shift_id: shift penalty related to.
         reason: reason for penalty.
         amount: penalty amount.
+        photo_urls: penalty photo urls.
 
     Returns:
         Created penalty.
@@ -177,6 +184,13 @@ def create_penalty(
     )
     penalty.save()
 
+    photos = [
+        PenaltyPhoto(penalty=penalty, photo_url=photo_url)
+        for photo_url in photo_urls
+    ]
+    created_photos = PenaltyPhoto.objects.bulk_create(photos)
+    created_photo_urls = [photo.photo_url for photo in created_photos]
+
     return PenaltyCreateResult(
         id=penalty.id,
         staff_id=shift.staff_id,
@@ -186,6 +200,7 @@ def create_penalty(
         reason=reason,
         consequence=consequence,
         amount=amount,
+        photo_urls=created_photo_urls,
         created_at=penalty.created_at,
     )
 

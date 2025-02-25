@@ -48,12 +48,14 @@ class PenaltyListCreateApi(APIView):
         shift_id: int = serialized_data['shift_id']
         reason: str = serialized_data['reason']
         amount: int | None = serialized_data['amount']
+        photo_urls: list[str] = serialized_data['photo_urls']
 
         ensure_shift_exists(shift_id)
         penalty = create_penalty(
             shift_id=shift_id,
             reason=reason,
             amount=amount,
+            photo_urls=photo_urls,
         )
 
         serializer = PenaltyCreateOutputSerializer(penalty)

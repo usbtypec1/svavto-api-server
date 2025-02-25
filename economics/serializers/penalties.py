@@ -20,6 +20,10 @@ class PenaltyCreateInputSerializer(serializers.Serializer):
         allow_null=True,
         default=None,
     )
+    photo_urls = serializers.ListField(
+        child=serializers.URLField(),
+        default=list,
+    )
 
 
 class PenaltyCreateOutputSerializer(serializers.Serializer):

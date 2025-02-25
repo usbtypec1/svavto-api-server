@@ -12,6 +12,7 @@ __all__ = (
     'StaffServicePrice',
     'CarWashPenalty',
     'CarWashSurcharge',
+    'PenaltyPhoto',
 )
 
 
@@ -73,6 +74,16 @@ class Penalty(models.Model):
 
     def __str__(self):
         return self.reason
+
+
+class PenaltyPhoto(models.Model):
+    penalty = models.ForeignKey(Penalty, on_delete=models.CASCADE)
+    photo_url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('penalty photo')
+        verbose_name_plural = _('penalty photos')
 
 
 class Surcharge(models.Model):
