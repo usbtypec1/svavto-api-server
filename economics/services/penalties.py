@@ -13,6 +13,7 @@ from economics.exceptions import (
 from economics.models import Penalty, PenaltyPhoto, Surcharge
 from economics.selectors import compute_staff_penalties_count
 from shifts.selectors import get_shift_by_id
+from telegram.services import get_telegram_bot, try_send_photos_media_group
 
 
 class PenaltyReason(StrEnum):
@@ -190,6 +191,19 @@ def create_penalty(
     ]
     created_photos = PenaltyPhoto.objects.bulk_create(photos)
     created_photo_urls = [photo.photo_url for photo in created_photos]
+
+    bot = get_telegram_bot()
+    penalty_notification_text = (
+        '❗️ Вы получили новый штраф:'
+        f'\nСумма: {amount} рублей'
+        f'\nПричина: {reason}'
+    )
+    try_send_photos_media_group(
+        bot=bot,
+        chat_id=shift.staff_id,
+        file_ids=created_photo_urls,
+        caption=penalty_notification_text,
+    )
 
     return PenaltyCreateResult(
         id=penalty.id,
