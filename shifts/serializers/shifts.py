@@ -31,6 +31,8 @@ __all__ = (
     'StaffIdAndDateSerializer',
     'ExtraShiftItemSerializer',
     'ShiftConfirmInputSerializer',
+    'StaffShiftsMonthListOutputSerializer',
+    'MonthAndYearSerializer',
 )
 
 
@@ -270,3 +272,13 @@ class DeadSoulsOutputSerializer(serializers.Serializer):
 
 class ShiftConfirmInputSerializer(serializers.Serializer):
     shift_id = serializers.IntegerField()
+
+
+class MonthAndYearSerializer(serializers.Serializer):
+    month = serializers.IntegerField()
+    year = serializers.IntegerField()
+
+
+class StaffShiftsMonthListOutputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    months = serializers.ListSerializer(child=MonthAndYearSerializer())

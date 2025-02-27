@@ -22,7 +22,7 @@ from shifts.views import (
     StaffCurrentShiftRetrieveApi,
     StaffReportPeriodsListApi,
     StaffShiftListApi,
-    ShiftListApiV2, DeadSoulsApi,
+    ShiftListApiV2, DeadSoulsApi, StaffShiftsMonthListApi,
 )
 
 
@@ -69,6 +69,11 @@ urlpatterns = [
         r'staff/<int:staff_id>/last-created/',
         ShiftLastCreatedDateListApi.as_view(),
         name='last-created',
+    ),
+    path(
+        r'staff/<int:staff_id>/months/',
+        StaffShiftsMonthListApi.as_view(),
+        name='staff-shifts-months',
     ),
     path(
         r'create/',

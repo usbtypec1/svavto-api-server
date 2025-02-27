@@ -12,6 +12,8 @@ from .shifts import (
     get_shifts_by_staff_id,
     ShiftStartInteractor,
     ShiftConfirmInteractor,
+    StaffShiftsMonthListInteractor,
+    ShiftExtraCreateInteractor,
 )
 
 
@@ -29,4 +31,6 @@ __all__ = (
     'get_shifts_by_staff_id',
     'ShiftStartInteractor',
     'ShiftConfirmInteractor',
+    'StaffShiftsMonthListInteractor',
+    'ShiftExtraCreateInteractor',
 )
