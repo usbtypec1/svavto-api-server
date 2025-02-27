@@ -4,6 +4,7 @@ from django.db.models.functions import TruncMonth
 from django.utils import timezone
 
 from shifts.models import Shift
+from staff.selectors import ensure_staff_exists
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -23,11 +24,13 @@ class StaffShiftsMonthListInteractor:
     staff_id: int
 
     def execute(self) -> StaffShiftsMonths:
+        ensure_staff_exists(self.staff_id)
         now = timezone.localdate()
         months = (
             Shift.objects.filter(
                 staff_id=self.staff_id,
-                date__gte=now,
+                date__month__gte=now.month,
+                date__year__gte=now.year,
             )
             .annotate(month_year=TruncMonth('date'))
             .values('month_year')

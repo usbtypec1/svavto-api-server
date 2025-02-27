@@ -73,7 +73,7 @@ urlpatterns = [
     path(
         r'staff/<int:staff_id>/months/',
         StaffShiftsMonthListApi.as_view(),
-        name='staff-shifts-months',
+        name='staff-shifts-month-list',
     ),
     path(
         r'create/',
