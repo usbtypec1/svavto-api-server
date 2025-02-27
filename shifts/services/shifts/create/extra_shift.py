@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TypeAlias, TypedDict
 
 from django.db.models import Q, QuerySet
+from django.utils import timezone
 
 from shifts.models import Shift
 from staff.models import Staff
@@ -132,6 +133,7 @@ class ShiftExtraCreateInteractor:
                 staff_id=shift['staff_id'],
                 date=shift['date'],
                 is_extra=True,
+                confirmed_at=timezone.now(),
             )
             for shift in separated_shifts.non_conflict_shifts
         ]
