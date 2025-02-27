@@ -5,7 +5,6 @@ from .create import (
 )
 from .current import *
 from .dead_souls import DeadSoulsApi
-from .last_created import *
 from .list import ShiftListApi, ShiftListApiV2
 from .months import StaffShiftsMonthListApi
 from .reject import ShiftRejectApi

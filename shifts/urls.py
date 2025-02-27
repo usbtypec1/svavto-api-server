@@ -11,7 +11,6 @@ from shifts.views import (
     RetrieveUpdateCarsToWashApi,
     ShiftConfirmApi, ShiftExtraCreateApi,
     ShiftFinishApi,
-    ShiftLastCreatedDateListApi,
     ShiftListApi,
     ShiftListForSpecificDateApi,
     ShiftRegularCreateApi,
@@ -64,11 +63,6 @@ urlpatterns = [
         'specific-date/',
         ShiftListForSpecificDateApi.as_view(),
         name='specific-date',
-    ),
-    path(
-        r'staff/<int:staff_id>/last-created/',
-        ShiftLastCreatedDateListApi.as_view(),
-        name='last-created',
     ),
     path(
         r'staff/<int:staff_id>/months/',
