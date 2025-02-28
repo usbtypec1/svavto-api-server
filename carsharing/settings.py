@@ -141,6 +141,8 @@ cloudinary.config(
     api_secret=CLOUDINARY_API_SECRET,
 )
 
+APP_NAME = env.str('APP_NAME', default=None)
+
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
