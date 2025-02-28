@@ -114,13 +114,17 @@ def test_mixed_shifts_of_multiple_staff():
             'date': datetime.date(2025, 1, 2),
         },
     ]
-    assert separated_shifts.conflict_shifts == [
-        {
-            'staff_id': staff_1.id,
-            'date': datetime.date(2025, 1, 1),
-        },
-        {
-            'staff_id': staff_2.id,
-            'date': datetime.date(2025, 1, 1),
-        },
-    ]
+    assert sorted(
+        separated_shifts.conflict_shifts, key=lambda x: x['staff_id']
+    ) == sorted(
+        [
+            {
+                'staff_id': staff_1.id,
+                'date': datetime.date(2025, 1, 1),
+            },
+            {
+                'staff_id': staff_2.id,
+                'date': datetime.date(2025, 1, 1),
+            },
+        ], key=lambda x: x['staff_id']
+    )

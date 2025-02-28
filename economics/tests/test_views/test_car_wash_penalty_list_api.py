@@ -25,4 +25,5 @@ def test_car_wash_penalty_create_api_without_params():
         'car_wash_id': penalty.car_wash_id,
         'reason': penalty.reason,
         'amount': penalty.amount,
+        'date': str(penalty.date),
     }

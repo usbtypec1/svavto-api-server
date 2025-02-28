@@ -15,6 +15,7 @@ def test_car_wash_surcharge_create_api_success():
         'car_wash_id': car_wash.id,
         'reason': 'some reason',
         'amount': 1000,
+        'date': '2025-01-01',
     }
 
     response = client.post(url, data=data, format='json')
@@ -26,6 +27,7 @@ def test_car_wash_surcharge_create_api_success():
         'car_wash_id': car_wash.id,
         'reason': 'some reason',
         'amount': 1000,
+        'date': '2025-01-01',
         'created_at': response_data['created_at'],
     }
 
@@ -38,6 +40,7 @@ def test_car_wash_surcharge_create_car_wash_not_found():
         'car_wash_id': 5345345,
         'reason': 'some reason',
         'amount': 1000,
+        'date': '2025-01-01',
     }
 
     response = client.post(url, data=data, format='json')

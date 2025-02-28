@@ -43,6 +43,7 @@ class CarWashPenaltyFactory(DjangoModelFactory):
     car_wash = factory.SubFactory(CarWashFactory)
     reason = factory.Faker('sentence')
     amount = factory.Faker('random_int', min=100, max=10000)
+    date = factory.Faker('date_object')
     created_at = factory.Faker(
         'date_time',
         tzinfo=timezone.get_current_timezone(),
@@ -56,6 +57,7 @@ class CarWashSurchargeFactory(DjangoModelFactory):
     car_wash = factory.SubFactory(CarWashFactory)
     reason = factory.Faker('sentence')
     amount = factory.Faker('random_int', min=100, max=10000)
+    date = factory.Faker('date_object')
     created_at = factory.Faker(
         'date_time',
         tzinfo=timezone.get_current_timezone(),

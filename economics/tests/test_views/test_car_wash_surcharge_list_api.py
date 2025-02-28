@@ -25,4 +25,5 @@ def test_car_wash_surcharge_create_api_without_params():
         'car_wash_id': surcharge.car_wash_id,
         'reason': surcharge.reason,
         'amount': surcharge.amount,
+        'date': str(surcharge.date),
     }

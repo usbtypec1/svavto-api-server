@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from car_washes.exceptions import CarWashNotFoundError
@@ -14,6 +16,7 @@ def test_car_wash_surcharge_create_successfully():
         car_wash_id=car_wash.id,
         reason='reason',
         amount=100,
+        date=datetime.date(2025, 1, 1),
     )
 
     surcharge = interactor.execute()
@@ -31,6 +34,7 @@ def test_car_wash_surcharge_create_car_wash_does_not_exist():
         car_wash_id=1231432,
         reason='reason',
         amount=100,
+        date=datetime.date(2025, 1, 1),
     )
     with pytest.raises(CarWashNotFoundError):
         interactor.execute()
