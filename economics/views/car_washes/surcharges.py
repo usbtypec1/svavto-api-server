@@ -63,11 +63,13 @@ class CarWashSurchargeListCreateApi(APIView):
         car_wash_id: int = data['car_wash_id']
         reason: str = data['reason']
         amount: int = data['amount']
+        date: datetime.date = data['date']
 
         interactor = CarWashSurchargeCreateInteractor(
             car_wash_id=car_wash_id,
             reason=reason,
             amount=amount,
+            date=date,
         )
         surcharge = interactor.execute()
 

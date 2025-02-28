@@ -20,6 +20,7 @@ class CarWashSurchargeCreateInputSerializer(serializers.Serializer):
     car_wash_id = serializers.IntegerField()
     amount = serializers.IntegerField(min_value=1)
     reason = serializers.CharField(max_length=1024)
+    date = serializers.DateField()
 
 
 class CarWashSurchargeListCreateOutputSerializer(serializers.Serializer):
@@ -27,4 +28,5 @@ class CarWashSurchargeListCreateOutputSerializer(serializers.Serializer):
     car_wash_id = serializers.IntegerField()
     amount = serializers.IntegerField()
     reason = serializers.CharField()
+    date = serializers.DateField()
     created_at = serializers.DateTimeField()

@@ -21,6 +21,7 @@ class CarWashPenaltyCreateResult:
     car_wash_id: int
     reason: str
     amount: int
+    date: datetime.date
     created_at: datetime.datetime
 
 
@@ -30,6 +31,7 @@ class CarWashPenaltyListItem:
     car_wash_id: int
     reason: str
     amount: int
+    date: datetime.date
     created_at: datetime.datetime
 
 
@@ -38,12 +40,14 @@ class CarWashPenaltyCreateInteractor:
     car_wash_id: int
     reason: str
     amount: int
+    date: datetime.date
 
     def execute(self) -> CarWashPenaltyCreateResult:
         penalty = CarWashPenalty(
             car_wash_id=self.car_wash_id,
             reason=self.reason,
             amount=self.amount,
+            date=self.date,
         )
         try:
             penalty.full_clean()
@@ -59,6 +63,7 @@ class CarWashPenaltyCreateInteractor:
             car_wash_id=penalty.car_wash_id,
             reason=penalty.reason,
             amount=penalty.amount,
+            date=penalty.date,
             created_at=penalty.created_at,
         )
 
@@ -84,6 +89,7 @@ class CarWashPenaltyListInteractor:
                 car_wash_id=penalty.car_wash_id,
                 reason=penalty.reason,
                 amount=penalty.amount,
+                date=penalty.date,
                 created_at=penalty.created_at,
             )
             for penalty in penalties

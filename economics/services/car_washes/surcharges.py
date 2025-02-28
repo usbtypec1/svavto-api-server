@@ -21,6 +21,7 @@ class CarWashSurchargeCreateResult:
     car_wash_id: int
     reason: str
     amount: int
+    date: datetime.date
     created_at: datetime.datetime
 
 
@@ -30,6 +31,7 @@ class CarWashSurchargeListItem:
     car_wash_id: int
     reason: str
     amount: int
+    date: datetime.date
     created_at: datetime.datetime
 
 
@@ -38,12 +40,14 @@ class CarWashSurchargeCreateInteractor:
     car_wash_id: int
     reason: str
     amount: int
+    date: datetime.date
 
     def execute(self) -> CarWashSurchargeCreateResult:
         surcharge = CarWashSurcharge(
             car_wash_id=self.car_wash_id,
             reason=self.reason,
             amount=self.amount,
+            date=self.date,
         )
         try:
             surcharge.full_clean()
@@ -59,6 +63,7 @@ class CarWashSurchargeCreateInteractor:
             car_wash_id=surcharge.car_wash_id,
             reason=surcharge.reason,
             amount=surcharge.amount,
+            date=surcharge.date,
             created_at=surcharge.created_at,
         )
 
@@ -84,6 +89,7 @@ class CarWashSurchargeListInteractor:
                 car_wash_id=surcharge.car_wash_id,
                 reason=surcharge.reason,
                 amount=surcharge.amount,
+                date=surcharge.date,
                 created_at=surcharge.created_at,
             )
             for surcharge in surcharges
