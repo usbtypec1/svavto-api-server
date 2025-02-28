@@ -24,6 +24,7 @@ class CarWashPenalty(models.Model):
     )
     reason = models.TextField(max_length=1024)
     amount = models.PositiveIntegerField()
+    date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -42,6 +43,7 @@ class CarWashSurcharge(models.Model):
     )
     reason = models.TextField(max_length=1024)
     amount = models.PositiveIntegerField()
+    date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
