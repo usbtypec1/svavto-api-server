@@ -50,20 +50,18 @@ def get_car_wash_penalties_and_surcharges_for_period(
     penalties = (
         CarWashPenalty.objects
         .filter(
-            created_at__range=(from_date, to_date),
+            date__range=(from_date, to_date),
             car_wash_id__in=car_wash_ids,
         )
-        .annotate(date=TruncDate('created_at'))
         .values('date')
         .annotate(total_amount=Sum('amount'))
     )
     surcharges = (
         CarWashSurcharge.objects
         .filter(
-            created_at__range=(from_date, to_date),
+            date__range=(from_date, to_date),
             car_wash_id__in=car_wash_ids,
         )
-        .annotate(date=TruncDate('created_at'))
         .values('date')
         .annotate(total_amount=Sum('amount'))
     )
