@@ -4,10 +4,12 @@ from django.conf import settings
 from telebot import TeleBot
 from telebot.types import InputMediaPhoto
 
+
 __all__ = (
     'get_telegram_bot',
     'try_send_message',
     'try_send_photos_media_group',
+    'try_get_chat_username',
 )
 
 
@@ -16,9 +18,9 @@ def get_telegram_bot() -> TeleBot:
 
 
 def try_send_message(
-    bot: TeleBot,
-    chat_id: int,
-    text: str,
+        bot: TeleBot,
+        chat_id: int,
+        text: str,
 ) -> bool:
     for _ in range(5):
         try:
@@ -30,10 +32,10 @@ def try_send_message(
 
 
 def try_send_photos_media_group(
-    bot: TeleBot,
-    chat_id: int,
-    file_ids: Iterable[str],
-    caption: str | None,
+        bot: TeleBot,
+        chat_id: int,
+        file_ids: Iterable[str],
+        caption: str | None,
 ) -> bool:
     media = []
     file_ids = tuple(file_ids)
@@ -54,6 +56,21 @@ def try_send_photos_media_group(
             )
         except Exception as error:
             print(error)
+            return False
         return True
     else:
         return False
+
+
+def try_get_chat_username(
+        bot: TeleBot,
+        chat_id: int,
+) -> str | None:
+    for _ in range(5):
+        try:
+            chat = bot.get_chat(chat_id)
+            return chat.username
+        except Exception:
+            return None
+    else:
+        return None
