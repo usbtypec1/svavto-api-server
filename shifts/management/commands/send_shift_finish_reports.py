@@ -1,7 +1,5 @@
 from django.core.management import BaseCommand
 
-from django.core.management import BaseCommand
-
 from core.services import get_current_shift_date
 from shifts.models import Shift
 from shifts.services import ShiftSummaryInteractor
