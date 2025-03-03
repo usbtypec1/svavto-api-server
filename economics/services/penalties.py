@@ -169,6 +169,7 @@ def create_penalty(
         Created penalty.
     """
     shift = get_shift_by_id(shift_id)
+    photo_urls = list(photo_urls)
 
     consequence: str | None = None
     if amount is None:
@@ -223,7 +224,7 @@ def create_penalty(
         reason=reason,
         consequence=consequence,
         amount=amount,
-        photo_urls=created_photo_urls,
+        photo_urls=photo_urls,
         created_at=penalty.created_at,
     )
 
