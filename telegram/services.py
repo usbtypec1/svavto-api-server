@@ -21,10 +21,11 @@ def try_send_message(
         bot: TeleBot,
         chat_id: int,
         text: str,
+        parse_mode: str | None = 'html',
 ) -> bool:
     for _ in range(5):
         try:
-            return bool(bot.send_message(chat_id, text))
+            return bool(bot.send_message(chat_id, text, parse_mode=parse_mode))
         except Exception:
             pass
     else:
@@ -36,6 +37,7 @@ def try_send_photos_media_group(
         chat_id: int,
         file_ids: Iterable[str],
         caption: str | None,
+        parse_mode: str | None = 'html',
 ) -> bool:
     media = []
     file_ids = tuple(file_ids)
@@ -45,7 +47,13 @@ def try_send_photos_media_group(
 
     if caption is not None:
         file_id, *file_ids = file_ids
-        media.append(InputMediaPhoto(media=file_id, caption=caption))
+        media.append(
+            InputMediaPhoto(
+                media=file_id,
+                caption=caption,
+                parse_mode=parse_mode,
+            ),
+        )
     media += [InputMediaPhoto(media=file_id) for file_id in file_ids]
 
     for _ in range(5):
