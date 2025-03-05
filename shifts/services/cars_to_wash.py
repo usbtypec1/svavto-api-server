@@ -181,8 +181,7 @@ class CarTransferUpdateInteractor:
         car_id: The ID of the car to wash.
         number: The car's number.
         car_wash_id: The ID of the car wash.
-        shift_id: The ID of the shift.
-        car_class: The car class.
+        class_type: The car class.
         wash_type: The type of wash.
         windshield_washer_refilled_bottle_percentage: Windshield washer
         refill percentage.
@@ -191,11 +190,10 @@ class CarTransferUpdateInteractor:
     car_id: int
     number: str | None = None
     car_wash_id: int | None = None
-    shift_id: int | None = None
-    car_class: str | None = None
+    class_type: str | None = None
     wash_type: str | None = None
     windshield_washer_refilled_bottle_percentage: int | None = None
-    additional_services: list[dict]
+    additional_services: list[dict] | None = None
 
     @transaction.atomic
     def execute(self):
@@ -208,10 +206,8 @@ class CarTransferUpdateInteractor:
             update_fields['number'] = self.number.lower()
         if self.car_wash_id is not None:
             update_fields['car_wash_id'] = self.car_wash_id
-        if self.shift_id is not None:
-            update_fields['shift_id'] = self.shift_id
-        if self.car_class is not None:
-            update_fields['car_class'] = self.car_class
+        if self.class_type is not None:
+            update_fields['car_class'] = self.class_type
         if self.wash_type is not None:
             update_fields['wash_type'] = self.wash_type
         if self.windshield_washer_refilled_bottle_percentage is not None:
@@ -222,7 +218,7 @@ class CarTransferUpdateInteractor:
         if update_fields:
             CarToWash.objects.filter(id=self.car_id).update(**update_fields)
 
-        if self.additional_services:
+        if self.additional_services is not None:
             service_ids = [service['id'] for service in
                            self.additional_services]
             service_id_to_price = get_car_wash_service_prices(
@@ -232,6 +228,8 @@ class CarTransferUpdateInteractor:
             CarToWashAdditionalService.objects.filter(
                 car_id=self.car_id
             ).delete()
+            if not self.additional_services:
+                return []
             services = [
                 CarToWashAdditionalService(
                     car_id=self.car_id,

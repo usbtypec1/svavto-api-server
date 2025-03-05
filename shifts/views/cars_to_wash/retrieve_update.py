@@ -8,15 +8,17 @@ from shifts.models import CarToWash
 from shifts.selectors import get_staff_id_by_car_id
 from shifts.serializers import (
     CarToWashDetailOutputSerializer,
-    UpdateCarToWashInputSerializer,
+    TransferredCarUpdateInputSerializer,
 )
 from shifts.services.cars_to_wash import CarTransferUpdateInteractor
 from staff.services import update_last_activity_time
+
 
 __all__ = ('RetrieveUpdateCarsToWashApi',)
 
 
 class RetrieveUpdateCarsToWashApi(APIView):
+
     def get(self, request: Request, car_id: int) -> Response:
         try:
             car = (
@@ -31,22 +33,13 @@ class RetrieveUpdateCarsToWashApi(APIView):
         return Response(serializer.data)
 
     def patch(self, request: Request, car_id: int) -> Response:
-        serializer = UpdateCarToWashInputSerializer(data=request.data)
+        serializer = TransferredCarUpdateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serialized_data = serializer.validated_data
-
-        windshield_washer_refilled_bottle_percentage: int = serialized_data[
-            'windshield_washer_refilled_bottle_percentage'
-        ]
-        additional_services: list[dict] = serialized_data['additional_services']
 
         staff_id = get_staff_id_by_car_id(car_id)
         interactor = CarTransferUpdateInteractor(
             car_id=car_id,
-            windshield_washer_refilled_bottle_percentage=(
-                windshield_washer_refilled_bottle_percentage
-            ),
-            additional_services=additional_services,
+            **serializer.validated_data
         )
         interactor.execute()
 

@@ -9,7 +9,7 @@ __all__ = (
     'CarToWashCreateInputSerializer',
     'CarToWashCreateOutputSerializer',
     'CarToWashDetailOutputSerializer',
-    'UpdateCarToWashInputSerializer',
+    'TransferredCarUpdateInputSerializer',
     'CarToWashAdditionalServiceSerializer',
     'TransferredCarListOutputSerializer',
     'TransferredCarListItemSerializer',
@@ -109,6 +109,25 @@ class CarToWashDetailOutputSerializer(serializers.ModelSerializer):
         )
 
 
-class UpdateCarToWashInputSerializer(serializers.Serializer):
-    windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
-    additional_services = AdditionalServiceSerializer(many=True, default=list)
+class TransferredCarUpdateInputSerializer(serializers.Serializer):
+    number = serializers.CharField(allow_null=True, default=None)
+    car_wash_id = serializers.CharField(allow_null=True, default=None)
+    class_type = serializers.ChoiceField(
+        choices=CarToWash.CarType.choices,
+        allow_null=True,
+        default=None,
+    )
+    wash_type = serializers.ChoiceField(
+        choices=CarToWash.WashType.choices,
+        allow_null=True,
+        default=None,
+    )
+    windshield_washer_refilled_bottle_percentage = serializers.CharField(
+        allow_null=True,
+        default=None,
+    )
+    additional_services = serializers.ListSerializer(
+        child=AdditionalServiceSerializer(),
+        allow_null=True,
+        default=None,
+    )
