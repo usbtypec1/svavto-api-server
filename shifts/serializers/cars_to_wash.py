@@ -4,13 +4,52 @@ from shifts.models import CarToWash, CarToWashAdditionalService
 from shifts.serializers.additional_services import AdditionalServiceSerializer
 from shifts.serializers.car_washes import CarWashSerializer
 
+
 __all__ = (
     'CarToWashCreateInputSerializer',
     'CarToWashCreateOutputSerializer',
     'CarToWashDetailOutputSerializer',
     'UpdateCarToWashInputSerializer',
     'CarToWashAdditionalServiceSerializer',
+    'TransferredCarListOutputSerializer',
+    'TransferredCarListItemSerializer',
+    'TransferredCarAdditionService',
+    'TransferredCarListInputSerializer',
 )
+
+
+class TransferredCarAdditionService(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    count = serializers.IntegerField()
+
+
+class TransferredCarListItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    number = serializers.CharField()
+    class_type = serializers.CharField()
+    wash_type = serializers.CharField()
+    car_wash_id = serializers.IntegerField()
+    car_wash_name = serializers.CharField()
+    windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
+    additional_services = serializers.ListField(
+        child=TransferredCarAdditionService(),
+    )
+    created_at = serializers.DateTimeField()
+
+
+class TransferredCarListOutputSerializer(serializers.Serializer):
+    shift_id = serializers.IntegerField()
+    shift_date = serializers.DateField()
+    staff_id = serializers.IntegerField()
+    staff_full_name = serializers.CharField()
+    transferred_cars = serializers.ListField(
+        child=TransferredCarListItemSerializer(),
+    )
+
+
+class TransferredCarListInputSerializer(serializers.Serializer):
+    shift_id = serializers.IntegerField()
 
 
 class CarToWashCreateInputSerializer(serializers.ModelSerializer):

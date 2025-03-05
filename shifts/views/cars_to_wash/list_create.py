@@ -7,15 +7,28 @@ from shifts.selectors import get_staff_current_shift
 from shifts.serializers import (
     CarToWashCreateInputSerializer,
     CarToWashCreateOutputSerializer,
+    TransferredCarListInputSerializer,
+    TransferredCarListOutputSerializer,
 )
+from shifts.services import TransferredCarListInteractor
 from shifts.services.cars_to_wash import create_car_to_wash
 from staff.services import update_last_activity_time
 
-__all__ = ('CarToWashCreateApi',)
 
+class TransferredCarListCreateApi(APIView):
 
-class CarToWashCreateApi(APIView):
-    """Add moved car to car wash."""
+    def get(self, request: Request) -> Response:
+        serializer = TransferredCarListInputSerializer(
+            data=request.query_params,
+        )
+        serializer.is_valid(raise_exception=True)
+        shift_id: int = serializer.validated_data['shift_id']
+
+        interactor = TransferredCarListInteractor(shift_id=shift_id)
+        transferred_cars = interactor.execute()
+
+        serializer = TransferredCarListOutputSerializer(transferred_cars)
+        return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
         serializer = CarToWashCreateInputSerializer(data=request.data)
