@@ -133,7 +133,7 @@ def create_car_to_wash(
     car_wash: CarWash = shift.car_wash
     car_to_wash = CarToWash(
         shift_id=shift.id,
-        number=number,
+        number=number.lower(),
         car_class=car_class,
         wash_type=wash_type,
         windshield_washer_refilled_bottle_percentage=(
@@ -175,58 +175,70 @@ def create_car_to_wash(
 @dataclass(frozen=True, slots=True, kw_only=True)
 class CarTransferUpdateInteractor:
     """
-    Args:
-        car_id: The ID of the car to wash
-        additional_services: List of dictionaries containing additional
-        services
+    Interactor to update all fields of CarToWash model.
 
+    Args:
+        car_id: The ID of the car to wash.
+        number: The car's number.
+        car_wash_id: The ID of the car wash.
+        class_type: The car class.
+        wash_type: The type of wash.
+        windshield_washer_refilled_bottle_percentage: Windshield washer
+        refill percentage.
+        additional_services: List of additional services.
     """
     car_id: int
-    windshield_washer_refilled_bottle_percentage: int
-    additional_services: list[dict]
+    number: str | None = None
+    car_wash_id: int | None = None
+    class_type: str | None = None
+    wash_type: str | None = None
+    windshield_washer_refilled_bottle_percentage: int | None = None
+    additional_services: list[dict] | None = None
 
     @transaction.atomic
     def execute(self):
         """
-        Update additional services for a car to wash.
-
-        Raises:
-            AdditionalServiceCouldNotBeProvidedError:
-                If the car wash does not provide all needed services.
+        Update all fields of CarToWash and its additional services.
         """
-        car_wash = (
-            CarToWash.objects
-            .filter(id=self.car_id)
-            .values('car_wash_id').first()
-        )
-        car_wash_id = car_wash['car_wash_id']
+        transferred_car = CarToWash.objects.get(id=self.car_id)
+        old_car_wash_id = transferred_car.car_wash_id
 
-        service_ids: list[UUID] = [
-            service['id'] for service in
-            self.additional_services
-        ]
-
-        service_id_to_price = get_car_wash_service_prices(
-            car_wash_id=car_wash_id,
-            car_wash_service_ids=service_ids,
-        )
-
-        CarToWash.objects.filter(id=self.car_id).update(
-            windshield_washer_refilled_bottle_percentage=(
+        if self.number is not None:
+            transferred_car.number = self.number.lower()
+        if self.car_wash_id is not None:
+            transferred_car.car_wash_id = self.car_wash_id
+        if self.class_type is not None:
+            transferred_car.car_class = self.class_type
+        if self.wash_type is not None:
+            transferred_car.wash_type = self.wash_type
+        if self.windshield_washer_refilled_bottle_percentage is not None:
+            transferred_car.windshield_washer_refilled_bottle_percentage = (
                 self.windshield_washer_refilled_bottle_percentage
-            ),
-        )
-        services = [
-            CarToWashAdditionalService(
-                car_id=self.car_id,
-                service_id=service['id'],
-                count=service['count'],
-                price=service_id_to_price[service['id']],
             )
-            for service in self.additional_services
-        ]
-        CarToWashAdditionalService.objects.filter(car_id=self.car_id).delete()
-        return CarToWashAdditionalService.objects.bulk_create(services)
+        transferred_car.save()
+
+        if self.additional_services is not None:
+            service_ids = [service['id'] for service in
+                           self.additional_services]
+            service_id_to_price = get_car_wash_service_prices(
+                car_wash_id=old_car_wash_id,
+                car_wash_service_ids=service_ids,
+            )
+            CarToWashAdditionalService.objects.filter(
+                car_id=self.car_id
+            ).delete()
+            if not self.additional_services:
+                return []
+            services = [
+                CarToWashAdditionalService(
+                    car_id=self.car_id,
+                    service_id=service['id'],
+                    count=service['count'],
+                    price=service_id_to_price[service['id']],
+                )
+                for service in self.additional_services
+            ]
+            return CarToWashAdditionalService.objects.bulk_create(services)
 
 
 def get_staff_cars_count_by_date(date: datetime.date) -> dict:

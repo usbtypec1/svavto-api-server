@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from shifts.views import (
     AvailableDateApi,
-    CarToWashCreateApi,
+    TransferredCarListCreateApi,
     CarToWashListApi,
     CarsToWashCountByEachStaffApi,
     CarsWithoutWindshieldWasherApi,
@@ -125,8 +125,8 @@ urlpatterns = [
     ),
     path(
         r'cars/',
-        CarToWashCreateApi.as_view(),
-        name='car-create',
+        TransferredCarListCreateApi.as_view(),
+        name='transferred-car-list-create',
     ),
     path(
         r'cars/staff/<int:staff_id>/',
