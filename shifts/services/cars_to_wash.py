@@ -200,29 +200,28 @@ class CarTransferUpdateInteractor:
         """
         Update all fields of CarToWash and its additional services.
         """
-        update_fields = {}
+        transferred_car = CarToWash.objects.get(id=self.car_id)
+        old_car_wash_id = transferred_car.car_wash_id
 
         if self.number is not None:
-            update_fields['number'] = self.number.lower()
+            transferred_car.number = self.number.lower()
         if self.car_wash_id is not None:
-            update_fields['car_wash_id'] = self.car_wash_id
+            transferred_car.car_wash_id = self.car_wash_id
         if self.class_type is not None:
-            update_fields['car_class'] = self.class_type
+            transferred_car.car_class = self.class_type
         if self.wash_type is not None:
-            update_fields['wash_type'] = self.wash_type
+            transferred_car.wash_type = self.wash_type
         if self.windshield_washer_refilled_bottle_percentage is not None:
-            update_fields['windshield_washer_refilled_bottle_percentage'] = (
+            transferred_car.windshield_washer_refilled_bottle_percentage = (
                 self.windshield_washer_refilled_bottle_percentage
             )
-
-        if update_fields:
-            CarToWash.objects.filter(id=self.car_id).update(**update_fields)
+        transferred_car.save()
 
         if self.additional_services is not None:
             service_ids = [service['id'] for service in
                            self.additional_services]
             service_id_to_price = get_car_wash_service_prices(
-                car_wash_id=self.car_wash_id,
+                car_wash_id=old_car_wash_id,
                 car_wash_service_ids=service_ids,
             )
             CarToWashAdditionalService.objects.filter(
