@@ -15,7 +15,10 @@ from .shifts import (
     StaffShiftsMonthListInteractor,
     ShiftExtraCreateInteractor,
 )
-from .transferred_cars import TransferredCarListInteractor
+from .transferred_cars import (
+    TransferredCarListInteractor,
+    TransferredCarRetrieveInteractor,
+)
 
 
 __all__ = (
@@ -35,4 +38,5 @@ __all__ = (
     'StaffShiftsMonthListInteractor',
     'ShiftExtraCreateInteractor',
     'TransferredCarListInteractor',
+    'TransferredCarRetrieveInteractor',
 )

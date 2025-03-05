@@ -45,7 +45,7 @@ class TransferredCarListInteractor:
 
         transferred_cars = (
             CarToWash.objects
-            .select_related('shift__staff')
+            .select_related('shift__staff', 'car_wash')
             .filter(shift_id=self.shift_id)
             .only(
                 'id',

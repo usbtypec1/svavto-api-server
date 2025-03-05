@@ -3,13 +3,12 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from shifts.exceptions import CarToWashNotFoundError
-from shifts.models import CarToWash
 from shifts.selectors import get_staff_id_by_car_id
 from shifts.serializers import (
-    CarToWashDetailOutputSerializer,
+    TransferredCarDetailOutputSerializer,
     TransferredCarUpdateInputSerializer,
 )
+from shifts.services import TransferredCarRetrieveInteractor
 from shifts.services.cars_to_wash import CarTransferUpdateInteractor
 from staff.services import update_last_activity_time
 
@@ -20,16 +19,10 @@ __all__ = ('RetrieveUpdateCarsToWashApi',)
 class RetrieveUpdateCarsToWashApi(APIView):
 
     def get(self, request: Request, car_id: int) -> Response:
-        try:
-            car = (
-                CarToWash.objects.select_related('car_wash')
-                .prefetch_related('additional_services')
-                .get(id=car_id)
-            )
-        except CarToWash.DoesNotExist:
-            raise CarToWashNotFoundError(car_to_wash_id=car_id)
-
-        serializer = CarToWashDetailOutputSerializer(car)
+        transferred_car = TransferredCarRetrieveInteractor(
+            transferred_car_id=car_id,
+        ).execute()
+        serializer = TransferredCarDetailOutputSerializer(transferred_car)
         return Response(serializer.data)
 
     def patch(self, request: Request, car_id: int) -> Response:
