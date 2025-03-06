@@ -255,8 +255,8 @@ class CarToWashAdmin(ExportActionModelAdmin, ImportExportModelAdmin):
             title=_('shift date'),
         )),
     )
-    search_fields = ('number', 'shift__date',)
-    search_help_text = _('search by number and shift date')
+    search_fields = ('shift__id', 'number', 'shift__date',)
+    search_help_text = _('search by shift ID, car number and shift date')
     list_select_related = ('shift', 'car_wash')
     list_per_page = 100
 
