@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-06 23:14+0300\n"
+"POT-Creation-Date: 2025-03-07 00:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -536,6 +536,34 @@ msgstr "запрос на регистрацию"
 #: staff/models.py:46
 msgid "staff register requests"
 msgstr "запросы на регистрацию"
+
+#: texts/exceptions.py:8
+msgid "Text not found"
+msgstr "Текст не найден"
+
+#: texts/models.py:9
+msgid "Transferred car number help text"
+msgstr "Вспомогательный текст для гос.номера авто"
+
+#: texts/models.py:13
+msgid "Transferred car class help text"
+msgstr "Вспомогательный текст для класса авто"
+
+#: texts/models.py:20
+msgid "Key"
+msgstr "Ключ"
+
+#: texts/models.py:22
+msgid "Value"
+msgstr "Значение"
+
+#: texts/models.py:28
+msgid "Text"
+msgstr "Текст"
+
+#: texts/models.py:29
+msgid "Texts"
+msgstr "Тексты"
 
 #~ msgid "not started"
 #~ msgstr "не начата"
