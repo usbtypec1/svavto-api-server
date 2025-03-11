@@ -22,6 +22,7 @@ from shifts.views import (
     StaffReportPeriodsListApi,
     StaffShiftListApi,
     ShiftListApiV2, DeadSoulsApi, StaffShiftsMonthListApi,
+    DryCleaningRequestListCreateApi,
 )
 
 
@@ -34,6 +35,11 @@ router.register(
 
 app_name = 'shifts'
 urlpatterns = [
+    path(
+        r'dry-cleaning-requests/',
+        DryCleaningRequestListCreateApi.as_view(),
+        name='dry-cleaning-requests',
+    ),
     path(
         'v2/',
         ShiftListApiV2.as_view(),

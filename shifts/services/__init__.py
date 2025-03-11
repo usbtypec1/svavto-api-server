@@ -19,6 +19,10 @@ from .transferred_cars import (
     TransferredCarListInteractor,
     TransferredCarRetrieveInteractor,
 )
+from .dry_cleaning_requests import (
+    DryCleaningRequestCreateInteractor,
+    DryCleaningRequestListInteractor,
+)
 
 
 __all__ = (
@@ -39,4 +43,6 @@ __all__ = (
     'ShiftExtraCreateInteractor',
     'TransferredCarListInteractor',
     'TransferredCarRetrieveInteractor',
+    'DryCleaningRequestCreateInteractor',
+    'DryCleaningRequestListInteractor',
 )
