@@ -78,7 +78,7 @@ class DryCleaningRequestPhoto(models.Model):
         related_name='photos',
         verbose_name=_('Dry cleaning request'),
     )
-    file_id = models.CharField(max_length=255, verbose_name=_('File ID'))
+    url = models.URLField(max_length=255, verbose_name=_('url'))
 
     class Meta:
         verbose_name = _('Dry cleaning request photo')

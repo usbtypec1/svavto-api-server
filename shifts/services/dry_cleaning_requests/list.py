@@ -2,7 +2,6 @@ import datetime
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Protocol
 from uuid import UUID
 
 from shifts.models.dry_cleaning_requests import (
@@ -24,7 +23,7 @@ class DryCleaningRequestListItemDto:
     id: int
     shift_id: int
     car_number: str
-    photo_file_ids: list[str]
+    photo_urls: list[str]
     services: Iterable[DryCleaningRequestServiceDto]
     status: int
     response_comment: str | None
@@ -60,7 +59,7 @@ class DryCleaningRequestListInteractor:
         result: list[DryCleaningRequestListItemDto] = []
         for request in requests:
             services = request_id_to_services.get(request.id, [])
-            file_ids = [photo.file_id for photo in request.photos.all()]
+            photo_urls = [photo.url for photo in request.photos.all()]
             services = [
                 DryCleaningRequestServiceDto(
                     id=service.service_id,
@@ -74,7 +73,7 @@ class DryCleaningRequestListInteractor:
                 id=request.id,
                 shift_id=request.shift_id,
                 car_number=request.car_number,
-                photo_file_ids=file_ids,
+                photo_urls=photo_urls,
                 services=services,
                 status=request.status,
                 response_comment=request.response_comment,

@@ -24,7 +24,7 @@ class DryCleaningRequestRetrieveResponseDto:
     id: int
     shift_id: int
     car_number: str
-    photo_file_ids: list[str]
+    photo_urls: list[str]
     services: Iterable[DryCleaningRequestServiceDto]
     status: int
     response_comment: str | None
@@ -59,7 +59,7 @@ class DryCleaningRequestRetrieveByIdInteractor:
             id=dry_cleaning_request.id,
             shift_id=dry_cleaning_request.shift_id,
             car_number=dry_cleaning_request.car_number,
-            photo_file_ids=[photo.file_id for photo in photos],
+            photo_urls=[photo.url for photo in photos],
             services=[
                 DryCleaningRequestServiceDto(
                     id=service.service.id,
