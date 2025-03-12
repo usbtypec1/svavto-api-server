@@ -55,6 +55,8 @@ class DryCleaningRequestServiceOutputSerializer(serializers.Serializer):
 class DryCleaningRequestSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     shift_id = serializers.IntegerField()
+    staff_id = serializers.IntegerField()
+    staff_full_name = serializers.CharField()
     car_number = serializers.CharField()
     photo_urls = serializers.ListField(child=serializers.URLField())
     services = DryCleaningRequestServiceOutputSerializer(many=True)
