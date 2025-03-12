@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, gettext
 
 from car_washes.models import CarWashService
 from shifts.models.shifts import Shift
@@ -38,6 +38,12 @@ class DryCleaningRequest(models.Model):
     class Meta:
         verbose_name = _('Dry cleaning request')
         verbose_name_plural = _('Dry cleaning requests')
+
+    def __str__(self):
+        return gettext('Car number %(car_number)s - shift %(shift_date)s') % {
+            'car_number': self.car_number,
+            'shift_date': self.shift.date,
+        }
 
 
 class DryCleaningRequestService(models.Model):
