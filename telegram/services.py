@@ -2,7 +2,7 @@ from collections.abc import Iterable
 
 from django.conf import settings
 from telebot import TeleBot
-from telebot.types import InputMediaPhoto
+from telebot.types import InlineKeyboardMarkup, InputMediaPhoto
 
 
 __all__ = (
@@ -10,6 +10,7 @@ __all__ = (
     'try_send_message',
     'try_send_photos_media_group',
     'try_get_chat_username',
+    'get_dry_cleaning_telegram_bot',
 )
 
 
@@ -17,15 +18,27 @@ def get_telegram_bot() -> TeleBot:
     return TeleBot(token=settings.TELEGRAM_BOT_TOKEN)
 
 
+def get_dry_cleaning_telegram_bot() -> TeleBot:
+    return TeleBot(token=settings.DRY_CLEANING_TELEGRAM_BOT_TOKEN)
+
+
 def try_send_message(
         bot: TeleBot,
         chat_id: int,
         text: str,
         parse_mode: str | None = 'html',
+        reply_markup: InlineKeyboardMarkup | None = None
 ) -> bool:
     for _ in range(5):
         try:
-            return bool(bot.send_message(chat_id, text, parse_mode=parse_mode))
+            return bool(
+                bot.send_message(
+                    chat_id,
+                    text,
+                    parse_mode=parse_mode,
+                    reply_markup=reply_markup,
+                ),
+            )
         except Exception:
             pass
     else:

@@ -13,6 +13,9 @@ from shifts.models import (
     CarToWashAdditionalService,
     Shift,
     ShiftFinishPhoto,
+    DryCleaningRequest,
+    DryCleaningRequestService,
+    DryCleaningRequestPhoto,
 )
 from shifts.services.shifts.validators import ensure_staff_has_no_active_shift
 
@@ -33,9 +36,13 @@ class CurrentShiftFilter(admin.SimpleListFilter):
 
 
 class CarToWashAdditionalServiceResource(resources.ModelResource):
-    staff = fields.Field('car__shift__staff__full_name', column_name=_('staff'))
+    staff = fields.Field(
+        'car__shift__staff__full_name', column_name=_('staff')
+        )
     shift_date = fields.Field('car__shift__date', column_name=_('shift date'))
-    service_name = fields.Field('service__name', column_name=_('car wash service name'))
+    service_name = fields.Field(
+        'service__name', column_name=_('car wash service name')
+        )
     car_number = fields.Field('car__number', column_name=_('car number'))
 
     class Meta:
@@ -292,3 +299,28 @@ class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
     resource_class = ShiftFinishPhotoResource
     list_display = ('shift', 'file_id')
     list_select_related = ('shift',)
+
+
+class DryCleaningRequestPhotoInline(admin.TabularInline):
+    model = DryCleaningRequestPhoto
+    extra = 0
+
+
+class DryCleaningRequestServiceInline(admin.TabularInline):
+    model = DryCleaningRequestService
+    extra = 0
+
+
+@admin.register(DryCleaningRequest)
+class DryCleaningRequestAdmin(admin.ModelAdmin):
+    inlines = (DryCleaningRequestPhotoInline, DryCleaningRequestServiceInline)
+
+
+@admin.register(DryCleaningRequestPhoto)
+class DryCleaningRequestPhotoAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DryCleaningRequestService)
+class DryCleaningRequestServiceAdmin(admin.ModelAdmin):
+    pass
