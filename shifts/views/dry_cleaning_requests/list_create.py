@@ -21,9 +21,11 @@ class DryCleaningRequestListCreateApi(APIView):
         )
         serializer.is_valid(raise_exception=True)
         shift_ids: list[int] | None = serializer.validated_data['shift_ids']
+        statuses: list[int] | None = serializer.validated_data['statuses']
 
         dry_cleaning_requests = DryCleaningRequestListInteractor(
-            shift_ids=shift_ids
+            shift_ids=shift_ids,
+            statuses=statuses,
         ).execute()
 
         serializer = DryCleaningRequestSerializer(
