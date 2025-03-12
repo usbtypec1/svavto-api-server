@@ -67,9 +67,9 @@ class DryCleaningRequestApproveInteractor:
             ]
         )
 
-        photo_file_ids = DryCleaningRequestPhoto.objects.filter(
+        photo_urls = DryCleaningRequestPhoto.objects.filter(
             request=dry_cleaning_request,
-        ).values_list('file_id', flat=True)
+        ).values_list('url', flat=True)
         services = DryCleaningRequestService.objects.filter(
             request=dry_cleaning_request,
         ).select_related('service')
@@ -93,7 +93,7 @@ class DryCleaningRequestApproveInteractor:
 
         try_send_photos_media_group(
             bot=bot,
-            file_ids=photo_file_ids,
+            file_ids=photo_urls,
             caption=caption,
             chat_id=dry_cleaning_request.shift.staff_id,
         )
