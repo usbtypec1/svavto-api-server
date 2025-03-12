@@ -48,6 +48,7 @@ def get_services_grouped_by_request_id(
 @dataclass(frozen=True, slots=True, kw_only=True)
 class DryCleaningRequestListInteractor:
     shift_ids: Iterable[int] | None = None
+    statuses: Iterable[int] | None = None
 
     def execute(self) -> list[DryCleaningRequestListItemDto]:
         requests = DryCleaningRequest.objects.prefetch_related('photos')
@@ -55,6 +56,9 @@ class DryCleaningRequestListInteractor:
 
         if self.shift_ids is not None:
             requests = requests.filter(shift_id__in=self.shift_ids)
+
+        if self.statuses is not None:
+            requests = requests.filter(status__in=self.statuses)
 
         result: list[DryCleaningRequestListItemDto] = []
         for request in requests:

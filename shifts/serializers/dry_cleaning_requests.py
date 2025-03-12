@@ -37,6 +37,12 @@ class DryCleaningRequestListInputSerializer(serializers.Serializer):
         child=serializers.IntegerField(),
         default=None,
     )
+    statuses = serializers.ListField(
+        child=serializers.ChoiceField(
+            choices=DryCleaningRequest.Status.choices,
+        ),
+        default=None,
+    )
 
 
 class DryCleaningRequestServiceOutputSerializer(serializers.Serializer):
