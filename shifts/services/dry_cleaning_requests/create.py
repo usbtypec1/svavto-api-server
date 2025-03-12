@@ -40,6 +40,8 @@ class DryCleaningRequestServiceDto:
 class DryCleaningRequestCreateResponseDto:
     id: int
     shift_id: int
+    staff_id: int
+    staff_full_name: str
     car_number: str
     photo_urls: list[str]
     services: Iterable[DryCleaningRequestServiceDto]
@@ -99,7 +101,10 @@ class DryCleaningRequestCreateInteractor:
         )
         reply_markup = InlineKeyboardMarkup(keyboard=[[button]])
 
-        lines: list[str] = ['<b>Запрашиваемые услуги:</b>']
+        lines: list[str] = [
+            f'<b>Сотрудник {dry_cleaning_request.shift.staff.full_name} '
+            'запрашивает химчистку:</b>',
+        ]
         for service in services:
             if service.service.is_countable:
                 lines.append(f'{service.service.name} - {service.count} шт.')
@@ -127,6 +132,8 @@ class DryCleaningRequestCreateInteractor:
         return DryCleaningRequestCreateResponseDto(
             id=dry_cleaning_request.id,
             shift_id=dry_cleaning_request.shift_id,
+            staff_id=dry_cleaning_request.shift.staff_id,
+            staff_full_name=dry_cleaning_request.shift.staff.full_name,
             car_number=dry_cleaning_request.car_number,
             photo_urls=photo_urls,
             services=[

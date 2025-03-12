@@ -23,6 +23,8 @@ class DryCleaningRequestServiceDto:
 class DryCleaningRequestRetrieveResponseDto:
     id: int
     shift_id: int
+    staff_id: int
+    staff_full_name: str
     car_number: str
     photo_urls: list[str]
     services: Iterable[DryCleaningRequestServiceDto]
@@ -41,6 +43,7 @@ class DryCleaningRequestRetrieveByIdInteractor:
             dry_cleaning_request = (
                 DryCleaningRequest.objects
                 .prefetch_related('photos')
+                .select_related('shift__staff')
                 .get(id=self.dry_cleaning_request_id)
             )
         except DryCleaningRequest.DoesNotExist:
@@ -58,6 +61,8 @@ class DryCleaningRequestRetrieveByIdInteractor:
         return DryCleaningRequestRetrieveResponseDto(
             id=dry_cleaning_request.id,
             shift_id=dry_cleaning_request.shift_id,
+            staff_id=dry_cleaning_request.shift.staff_id,
+            staff_full_name=dry_cleaning_request.shift.staff.full_name,
             car_number=dry_cleaning_request.car_number,
             photo_urls=[photo.url for photo in photos],
             services=[

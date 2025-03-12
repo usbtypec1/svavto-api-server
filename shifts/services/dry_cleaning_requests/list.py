@@ -22,6 +22,8 @@ class DryCleaningRequestServiceDto:
 class DryCleaningRequestListItemDto:
     id: int
     shift_id: int
+    staff_id: int
+    staff_full_name: str
     car_number: str
     photo_urls: list[str]
     services: Iterable[DryCleaningRequestServiceDto]
@@ -51,7 +53,11 @@ class DryCleaningRequestListInteractor:
     statuses: Iterable[int] | None = None
 
     def execute(self) -> list[DryCleaningRequestListItemDto]:
-        requests = DryCleaningRequest.objects.prefetch_related('photos')
+        requests = (
+            DryCleaningRequest.objects
+            .prefetch_related('photos')
+            .select_related('shift__staff')
+        )
         request_id_to_services = get_services_grouped_by_request_id(requests)
 
         if self.shift_ids is not None:
@@ -76,6 +82,8 @@ class DryCleaningRequestListInteractor:
             item = DryCleaningRequestListItemDto(
                 id=request.id,
                 shift_id=request.shift_id,
+                staff_id=request.shift.staff_id,
+                staff_full_name=request.shift.staff.full_name,
                 car_number=request.car_number,
                 photo_urls=photo_urls,
                 services=services,
