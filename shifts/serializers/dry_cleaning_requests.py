@@ -39,12 +39,19 @@ class DryCleaningRequestListInputSerializer(serializers.Serializer):
     )
 
 
+class DryCleaningRequestServiceOutputSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    count = serializers.IntegerField()
+    is_countable = serializers.BooleanField()
+
+
 class DryCleaningRequestSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     shift_id = serializers.IntegerField()
     car_number = serializers.CharField()
     photo_file_ids = serializers.ListField(child=serializers.CharField())
-    services = DryCleaningRequestServiceSerializer(many=True)
+    services = DryCleaningRequestServiceOutputSerializer(many=True)
     status = serializers.ChoiceField(choices=DryCleaningRequest.Status.choices)
     response_comment = serializers.CharField(allow_null=True)
     created_at = serializers.DateTimeField()

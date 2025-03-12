@@ -1,16 +1,22 @@
 import datetime
+from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Protocol
 from uuid import UUID
 
-from shifts.models.dry_cleaning_requests import DryCleaningRequest
+from shifts.models.dry_cleaning_requests import (
+    DryCleaningRequest,
+    DryCleaningRequestService,
+)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class DryCleaningRequestServiceDto:
     id: UUID
+    name: str
     count: int
+    is_countable: bool
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -26,26 +32,43 @@ class DryCleaningRequestListItemDto:
     updated_at: datetime.datetime
 
 
+def get_services_grouped_by_request_id(
+        requests: Iterable[DryCleaningRequest],
+) -> dict[int, list[DryCleaningRequestService]]:
+    services = (
+        DryCleaningRequestService.objects
+        .select_related('service')
+        .filter(request__in=requests)
+    )
+    services_grouped_by_request_id = defaultdict(list)
+    for service in services:
+        services_grouped_by_request_id[service.request_id].append(service)
+    return services_grouped_by_request_id
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class DryCleaningRequestListInteractor:
     shift_ids: Iterable[int] | None = None
 
     def execute(self) -> list[DryCleaningRequestListItemDto]:
-        requests = DryCleaningRequest.objects.prefetch_related(
-            'services', 'photos'
-        )
+        requests = DryCleaningRequest.objects.prefetch_related('photos')
+        request_id_to_services = get_services_grouped_by_request_id(requests)
+
         if self.shift_ids is not None:
             requests = requests.filter(shift_id__in=self.shift_ids)
 
         result: list[DryCleaningRequestListItemDto] = []
         for request in requests:
+            services = request_id_to_services.get(request.id, [])
             file_ids = [photo.file_id for photo in request.photos.all()]
             services = [
                 DryCleaningRequestServiceDto(
                     id=service.service_id,
-                    count=service.count
+                    name=service.service.name,
+                    count=service.count,
+                    is_countable=service.service.is_countable,
                 )
-                for service in request.services.all()
+                for service in services
             ]
             item = DryCleaningRequestListItemDto(
                 id=request.id,

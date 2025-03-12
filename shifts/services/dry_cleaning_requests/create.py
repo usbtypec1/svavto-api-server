@@ -22,7 +22,9 @@ class HasIdAndCount(TypedDict):
 @dataclass(frozen=True, slots=True, kw_only=True)
 class DryCleaningRequestServiceDto:
     id: UUID
+    name: str
     count: int
+    is_countable: bool
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -75,7 +77,9 @@ class DryCleaningRequestCreateInteractor:
             services=[
                 DryCleaningRequestServiceDto(
                     id=service.service_id,
+                    name=service.service.name,
                     count=service.count,
+                    is_countable=service.service.is_countable,
                 )
                 for service in services
             ],
