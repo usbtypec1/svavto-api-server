@@ -89,6 +89,9 @@ class DryCleaningRequestApproveInteractor:
             else:
                 lines.append(service.service.name)
 
+        if self.response_comment:
+            lines.append(f'Комментарий: {self.response_comment}')
+
         caption = '\n'.join(lines)
 
         try_send_photos_media_group(
