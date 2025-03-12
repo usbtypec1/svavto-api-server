@@ -23,6 +23,7 @@ from shifts.views import (
     StaffShiftListApi,
     ShiftListApiV2, DeadSoulsApi, StaffShiftsMonthListApi,
     DryCleaningRequestListCreateApi,
+    DryCleaningRequestRetrieveUpdateApi,
 )
 
 
@@ -38,7 +39,12 @@ urlpatterns = [
     path(
         r'dry-cleaning-requests/',
         DryCleaningRequestListCreateApi.as_view(),
-        name='dry-cleaning-requests',
+        name='dry-cleaning-request-list-create',
+    ),
+    path(
+        r'dry-cleaning-requests/<int:dry_cleaning_request_id>/',
+        DryCleaningRequestRetrieveUpdateApi.as_view(),
+        name='dry-cleaning-request-retrieve-update',
     ),
     path(
         'v2/',

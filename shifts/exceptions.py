@@ -24,6 +24,7 @@ __all__ = (
     'ShiftNotConfirmedError',
     'InvalidTimeToStartShiftError',
     'ShiftAlreadyConfirmedError',
+    'DryCleaningRequestNotFoundError',
 )
 
 
@@ -149,3 +150,9 @@ class ShiftAlreadyConfirmedError(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_code = 'shift_already_confirmed'
     default_detail = _('shift is already confirmed')
+
+
+class DryCleaningRequestNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_code = 'dry_cleaning_request_not_found'
+    default_detail = _('Dry cleaning request not found')
