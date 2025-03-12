@@ -144,9 +144,12 @@ cloudinary.config(
 
 APP_NAME = env.str('APP_NAME', default=None)
 
+DRY_CLEANING_TELEGRAM_BOT_TOKEN = env.str('DRY_CLEANING_TELEGRAM_BOT_TOKEN')
+
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,

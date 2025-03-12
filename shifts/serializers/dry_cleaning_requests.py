@@ -56,3 +56,15 @@ class DryCleaningRequestSerializer(serializers.Serializer):
     response_comment = serializers.CharField(allow_null=True)
     created_at = serializers.DateTimeField()
     updated_at = serializers.DateTimeField()
+
+
+class DryCleaningRequestApproveInputSerializer(serializers.Serializer):
+    response_comment = serializers.CharField(allow_null=True)
+    services = serializers.ListField(
+        child=DryCleaningRequestServiceSerializer(),
+        min_length=1,
+    )
+
+
+class DryCleaningRequestRejectInputSerializer(serializers.Serializer):
+    response_comment = serializers.CharField(allow_null=True)

@@ -6,7 +6,7 @@ from shifts.serializers import DryCleaningRequestSerializer
 from shifts.services import DryCleaningRequestRetrieveByIdInteractor
 
 
-class DryCleaningRequestRetrieveUpdateApi(APIView):
+class DryCleaningRequestRetrieveApi(APIView):
 
     def get(self, request: Request, dry_cleaning_request_id: int) -> Response:
         dry_cleaning_request = DryCleaningRequestRetrieveByIdInteractor(
@@ -14,6 +14,3 @@ class DryCleaningRequestRetrieveUpdateApi(APIView):
         ).execute()
         serializer = DryCleaningRequestSerializer(dry_cleaning_request)
         return Response(serializer.data)
-
-    def patch(self, request: Request) -> Response:
-        return Response()

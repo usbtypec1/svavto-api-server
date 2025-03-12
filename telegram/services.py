@@ -17,6 +17,10 @@ def get_telegram_bot() -> TeleBot:
     return TeleBot(token=settings.TELEGRAM_BOT_TOKEN)
 
 
+def get_dry_cleaning_telegram_bot() -> TeleBot:
+    return TeleBot(token=settings.DRY_CLEANING_TELEGRAM_BOT_TOKEN)
+
+
 def try_send_message(
         bot: TeleBot,
         chat_id: int,

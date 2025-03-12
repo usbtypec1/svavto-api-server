@@ -23,6 +23,8 @@ from .dry_cleaning_requests import (
     DryCleaningRequestCreateInteractor,
     DryCleaningRequestListInteractor,
     DryCleaningRequestRetrieveByIdInteractor,
+    DryCleaningRequestRejectInteractor,
+    DryCleaningRequestApproveInteractor,
 )
 
 
@@ -47,4 +49,6 @@ __all__ = (
     'DryCleaningRequestCreateInteractor',
     'DryCleaningRequestListInteractor',
     'DryCleaningRequestRetrieveByIdInteractor',
+    'DryCleaningRequestRejectInteractor',
+    'DryCleaningRequestApproveInteractor',
 )
