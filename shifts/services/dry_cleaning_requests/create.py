@@ -1,16 +1,14 @@
-import contextlib
 import datetime
-import tempfile
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID, uuid4
 
-import cloudinary.uploader
 from django.conf import settings
 from django.db import transaction
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from photo_upload.services import upload_via_url
 from shifts.models.dry_cleaning_requests import (
     DryCleaningRequest,
     DryCleaningRequestPhoto,
@@ -70,12 +68,8 @@ class DryCleaningRequestCreateInteractor:
         urls: list[str] = []
         for photo_file_id in self.photo_file_ids:
             url = bot.get_file_url(photo_file_id)
-            url = cloudinary.uploader.upload(
-                url,
-                folder='svavto',
-                public_id=uuid4().hex,
-            )['secure_url']
-            urls.append(url)
+            uploaded_file = upload_via_url(url, folder='dry_cleaning')
+            urls.append(uploaded_file.url)
 
         photos = DryCleaningRequestPhoto.objects.bulk_create(
             DryCleaningRequestPhoto(
