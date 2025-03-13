@@ -97,7 +97,8 @@ class DryCleaningRequestCreateInteractor:
 
         lines: list[str] = [
             f'<b>Сотрудник {dry_cleaning_request.shift.staff.full_name} '
-            'запрашивает химчистку:</b>',
+            'запрашивает химчистку</b>',
+            f'Гос.номер: {dry_cleaning_request.car_number}',
         ]
         for service in services:
             if service.service.is_countable:

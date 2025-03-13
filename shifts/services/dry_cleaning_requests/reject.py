@@ -49,6 +49,7 @@ class DryCleaningRequestRejectInteractor:
 
         lines: list[str] = [
             '❌ Ваш запрос на химчистку отклонен',
+            f'Гос.номер: {dry_cleaning_request.car_number}',
             'Услуги:',
         ]
 

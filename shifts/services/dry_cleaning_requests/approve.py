@@ -78,6 +78,7 @@ class DryCleaningRequestApproveInteractor:
 
         lines: list[str] = [
             '✅ Ваш запрос на химчистку одобрен',
+            f'Гос.номер: {dry_cleaning_request.car_number}',
             'Одобренные услуги:',
         ]
 
