@@ -1,77 +1,31 @@
-[tool.poetry]
+[project]
 name = "carsharing"
 version = "0.1.0"
-description = ""
-authors = ["Eldos <eldos.baktybekov@gmail.com>"]
+description = "Add your description here"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-django = "^5.1.1"
-djangorestframework = "^3.15.2"
-drf-standardized-errors = "^0.14.1"
-pytelegrambotapi = "^4.23.0"
-redis = "^5.1.1"
-django-environ = "^0.11.2"
-django-cors-headers = "^4.5.0"
-django-import-export = "^4.2.1"
-sentry-sdk = {extras = ["django"], version = "^2.19.0"}
-openpyxl = "^3.1.5"
-django-admin-rangefilter = "^0.13.2"
-pendulum = "^3.0.0"
-psycopg2-binary = "^2.9.10"
-cloudinary = "^1.42.2"
-
-
-[tool.poetry.group.dev.dependencies]
-pytest-django = "^4.9.0"
-factory-boy = "^3.3.1"
-freezegun = "^1.5.1"
-pytest-cov = "^6.0.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.ruff]
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".ipynb_checkpoints",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pyenv",
-    ".pytest_cache",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    ".vscode",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "site-packages",
-    "venv",
+requires-python = ">=3.12"
+dependencies = [
+    "cloudinary>=1.42.2",
+    "django>=5.1.7",
+    "django-admin-rangefilter>=0.13.2",
+    "django-cors-headers>=4.7.0",
+    "django-environ>=0.12.0",
+    "django-import-export>=4.3.7",
+    "djangorestframework>=3.15.2",
+    "drf-standardized-errors>=0.14.1",
+    "pendulum>=3.0.0",
+    "psycopg2-binary>=2.9.10",
+    "pytelegrambotapi>=4.26.0",
+    "sentry-sdk>=2.22.0",
 ]
 
-line-length = 80
-indent-width = 4
-
-[tool.ruff.format]
-quote-style = "single"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
-exclude = ["*.pyi", "pyproject.toml", "poetry.lock", "ruff.toml", "ruff_cache"]
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3.3",
+    "freezegun>=1.5.1",
+    "pytest-cov>=6.0.0",
+    "pytest-django>=4.10.0",
+]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "carsharing.settings"
