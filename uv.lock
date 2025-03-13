@@ -49,7 +49,6 @@ name = "carsharing"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "cloudinary" },
     { name = "django" },
     { name = "django-admin-rangefilter" },
     { name = "django-cors-headers" },
@@ -75,7 +74,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cloudinary", specifier = ">=1.42.2" },
     { name = "django", specifier = ">=5.1.7" },
     { name = "django-admin-rangefilter", specifier = ">=0.13.2" },
     { name = "django-cors-headers", specifier = ">=4.7.0" },
@@ -174,20 +172,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/cd/e5/131d2fb1b0dddafc37be4f3a2fa79aa4c037368be9423061dccadfd90091/charset_normalizer-3.4.1-cp313-cp313-win32.whl", hash = "sha256:eb8178fe3dba6450a3e024e95ac49ed3400e506fd4e9e5c32d30adda88cbd407", size = 95391 },
     { url = "https://files.pythonhosted.org/packages/27/f2/4f9a69cc7712b9b5ad8fdb87039fd89abba997ad5cbe690d1835d40405b0/charset_normalizer-3.4.1-cp313-cp313-win_amd64.whl", hash = "sha256:b1ac5992a838106edb89654e0aebfc24f5848ae2547d22c2c3f66454daa11971", size = 102702 },
     { url = "https://files.pythonhosted.org/packages/0e/f6/65ecc6878a89bb1c23a086ea335ad4bf21a588990c3f535a227b9eea9108/charset_normalizer-3.4.1-py3-none-any.whl", hash = "sha256:d98b1668f06378c6dbefec3b92299716b931cd4e6061f3c875a71ced1780ab85", size = 49767 },
-]
-
-[[package]]
-name = "cloudinary"
-version = "1.42.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "certifi" },
-    { name = "six" },
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a8/95/d8614ff4dbec0bf0c0af5127b76956f412153b8f675d2a90c36f230efa0e/cloudinary-1.42.2.tar.gz", hash = "sha256:e4191b470c5bae55542b64e0a78659af42971880294456dca480bc974fa9280a", size = 185136 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/70/fb/1e3e5cbb99b5a339debd936e7b697e4488d8279a39a71586c1fc55b36cee/cloudinary-1.42.2-py3-none-any.whl", hash = "sha256:ba223705409b2aaddd5196c2184d65f50a83dffcba3b94f3727658ff6a0172a3", size = 146952 },
 ]
 
 [[package]]
