@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 
-import cloudinary
 from environ import Env
 
 
@@ -132,22 +131,17 @@ STATIC_ROOT = BASE_DIR / 'static'
 SENTRY_DSN = env.str('SENTRY_DSN', default=None)
 SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.5)
 
-CLOUDINARY_CLOUD_NAME = env.str('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = env.str('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = env.str('CLOUDINARY_API_SECRET')
-
-cloudinary.config(
-    cloud_name=CLOUDINARY_CLOUD_NAME,
-    api_key=CLOUDINARY_API_KEY,
-    api_secret=CLOUDINARY_API_SECRET,
-)
-
 APP_NAME = env.str('APP_NAME', default=None)
 
 DRY_CLEANING_TELEGRAM_BOT_TOKEN = env.str('DRY_CLEANING_TELEGRAM_BOT_TOKEN')
 DRY_CLEANING_USER_IDS = env.list('DRY_CLEANING_USER_IDS', cast=int)
 
 DEPARTMENT_NAME = env.str('DEPARTMENT_NAME').lower()
+
+S3_BUCKET_NAME = env.str('S3_BUCKET_NAME')
+S3_ACCESS_KEY = env.str('S3_ACCESS_KEY')
+S3_SECRET_KEY = env.str('S3_SECRET_KEY')
+S3_ENDPOINT = env.str('S3_ENDPOINT').rstrip('/')
 
 if SENTRY_DSN:
     import sentry_sdk
