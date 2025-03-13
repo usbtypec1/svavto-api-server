@@ -15,6 +15,7 @@ dependencies = [
     "gunicorn>=23.0.0",
     "httpx>=0.28.1",
     "minio>=7.2.15",
+    "openpyxl>=3.1.5",
     "pendulum>=3.0.0",
     "psycopg2-binary>=2.9.10",
     "pytelegrambotapi>=4.26.0",
