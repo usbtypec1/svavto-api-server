@@ -1,4 +1,7 @@
+import functools
 import io
+from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import BinaryIO
 from uuid import uuid4
@@ -30,10 +33,11 @@ def upload_binary(
         length: int,
         content_type: str,
         object_name: str,
+        client: Minio,
 ) -> UploadedFile:
     file_io.seek(0)
     try:
-        result = get_s3_client().put_object(
+        result = client.put_object(
             bucket_name=settings.S3_BUCKET_NAME,
             object_name=object_name,
             data=file_io,
@@ -58,6 +62,7 @@ def upload_in_memory_file(
         length=file.size,
         content_type=file.content_type,
         object_name=object_name,
+        client=get_s3_client(),
     )
 
 
@@ -72,7 +77,10 @@ def build_object_name(name: str, folder: str | None = None) -> str:
 def upload_via_url(
         url: str,
         folder: str | None = None,
+        client: Minio | None = None,
 ) -> UploadedFile:
+    if client is None:
+        client = get_s3_client()
     response = httpx.get(url)
     response.raise_for_status()
     object_name = build_object_name(url, folder)
@@ -84,7 +92,21 @@ def upload_via_url(
                 "Content-Type", "application/octet-stream"
             ),
             object_name=object_name,
+            client=client,
         )
+
+
+def upload_via_urls(
+        urls: Iterable[str],
+        folder: str | None = None,
+) -> list[UploadedFile]:
+    upload = functools.partial(
+        upload_via_url,
+        folder=folder,
+        client=get_s3_client(),
+    )
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        return list(executor.map(upload, urls))
 
 
 def get_public_url(object_name: str) -> str:
