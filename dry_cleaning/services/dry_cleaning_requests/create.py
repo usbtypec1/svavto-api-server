@@ -1,5 +1,6 @@
 import datetime
 from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID
@@ -7,13 +8,14 @@ from uuid import UUID
 from django.conf import settings
 from django.db import transaction
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from telebot import TeleBot
 
 from dry_cleaning.models import (
     DryCleaningRequest,
     DryCleaningRequestPhoto,
     DryCleaningRequestService,
 )
-from photo_upload.services import upload_via_url
+from photo_upload.services import upload_via_url, upload_via_urls
 from shifts.services.shifts.validators import ensure_shift_exists
 from telegram.services import (
     get_dry_cleaning_telegram_bot, get_telegram_bot, try_send_message,
@@ -49,6 +51,11 @@ class DryCleaningRequestCreateResponseDto:
     updated_at: datetime.datetime
 
 
+def get_file_urls(bot: TeleBot, file_ids: Iterable[str]) -> list[str]:
+    with ThreadPoolExecutor() as executor:
+        return list(executor.map(bot.get_file_url, file_ids))
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class DryCleaningRequestCreateInteractor:
     shift_id: int
@@ -65,11 +72,11 @@ class DryCleaningRequestCreateInteractor:
         )
         bot = get_telegram_bot()
 
-        urls: list[str] = []
-        for photo_file_id in self.photo_file_ids:
-            url = bot.get_file_url(photo_file_id)
-            uploaded_file = upload_via_url(url, folder='dry_cleaning')
-            urls.append(uploaded_file.url)
+        urls = get_file_urls(bot, self.photo_file_ids)
+        urls = [
+            uploaded_photo.url
+            for uploaded_photo in upload_via_urls(urls, folder='dry_cleaning')
+        ]
 
         photos = DryCleaningRequestPhoto.objects.bulk_create(
             DryCleaningRequestPhoto(
