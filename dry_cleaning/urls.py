@@ -3,6 +3,7 @@ from django.urls import path, include
 from dry_cleaning.views import (
     DryCleaningRequestApproveApi, DryCleaningRequestListCreateApi,
     DryCleaningRequestRejectApi, DryCleaningRequestRetrieveApi,
+    DryCleaningAdminListApi,
 )
 
 
@@ -27,6 +28,11 @@ requests_urlpatterns = [
         DryCleaningRequestRejectApi.as_view(),
         name='dry-cleaning-request-reject',
     ),
+    path(
+        r'admins/',
+        DryCleaningAdminListApi.as_view(),
+        name='dry-cleaning-admin-list',
+    )
 ]
 
 urlpatterns = [

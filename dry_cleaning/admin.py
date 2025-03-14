@@ -3,7 +3,8 @@ from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
 from dry_cleaning.models import (
-    DryCleaningRequest, DryCleaningRequestPhoto, DryCleaningRequestService,
+    DryCleaningAdmin, DryCleaningRequest, DryCleaningRequestPhoto,
+    DryCleaningRequestService,
 )
 
 
@@ -46,3 +47,8 @@ class DryCleaningRequestPhotoAdmin(ImportExportModelAdmin):
 @admin.register(DryCleaningRequestService)
 class DryCleaningRequestServiceAdmin(ImportExportModelAdmin):
     resource_class = DryCleaningRequestServiceResource
+
+
+@admin.register(DryCleaningAdmin)
+class DryCleaningAdminAdmin(admin.ModelAdmin):
+    pass
