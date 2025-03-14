@@ -19,7 +19,7 @@ from .transferred_cars import (
     TransferredCarListInteractor,
     TransferredCarRetrieveInteractor,
 )
-from .dry_cleaning_requests import (
+from dry_cleaning.services.dry_cleaning_requests import (
     DryCleaningRequestCreateInteractor,
     DryCleaningRequestListInteractor,
     DryCleaningRequestRetrieveByIdInteractor,

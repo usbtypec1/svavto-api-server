@@ -2,18 +2,18 @@ import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import TypedDict
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from django.conf import settings
 from django.db import transaction
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from photo_upload.services import upload_via_url
-from shifts.models.dry_cleaning_requests import (
+from dry_cleaning.models import (
     DryCleaningRequest,
     DryCleaningRequestPhoto,
     DryCleaningRequestService,
 )
+from photo_upload.services import upload_via_url
 from shifts.services.shifts.validators import ensure_shift_exists
 from telegram.services import (
     get_dry_cleaning_telegram_bot, get_telegram_bot, try_send_message,

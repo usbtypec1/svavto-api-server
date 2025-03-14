@@ -10,4 +10,5 @@ urlpatterns = [
     path('shifts/', include('shifts.urls')),
     path('photo-upload/', include('photo_upload.urls')),
     path('texts/', include('texts.urls')),
+    path('dry-cleaning/', include('dry_cleaning.urls')),
 ]
