@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-14 16:44+0300\n"
+"POT-Creation-Date: 2025-03-14 17:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,6 +111,22 @@ msgstr "услуги моек"
 #: dry_cleaning/apps.py:8
 msgid "Dry cleaning"
 msgstr "Химчистка"
+
+#: dry_cleaning/exceptions.py:9
+msgid "Dry cleaning request not found"
+msgstr "Запрос на химчистку не найден"
+
+#: dry_cleaning/exceptions.py:15
+msgid "Dry cleaning request has invalid status"
+msgstr "Запрос на химчистку имеет неправильный статус"
+
+#: dry_cleaning/models/dry_cleaning_admins.py:15
+msgid "Dry cleaning admin"
+msgstr "Администратор химчистки"
+
+#: dry_cleaning/models/dry_cleaning_admins.py:16
+msgid "Dry cleaning admins"
+msgstr "Администраторы химчисток"
 
 #: dry_cleaning/models/dry_cleaning_request_photos.py:12
 #: dry_cleaning/models/dry_cleaning_request_services.py:13
@@ -370,7 +386,7 @@ msgstr "завершена"
 msgid "you can search by staff name or staff id"
 msgstr "поиск по имени сотрудника или его id"
 
-#: shifts/admin.py:230 shifts/exceptions.py:52
+#: shifts/admin.py:230 shifts/exceptions.py:50
 msgid "staff has active shift"
 msgstr "сотрудник уже начал смену"
 
@@ -387,75 +403,65 @@ msgstr "поиск по ID смены, гос.номеру, названию у�
 msgid "shift"
 msgstr "смена"
 
-#: shifts/exceptions.py:34
+#: shifts/exceptions.py:32
 msgid "staff has no active shift"
 msgstr "сотрудник не начинал смену"
 
-#: shifts/exceptions.py:40
+#: shifts/exceptions.py:38
 msgid "car wash is the same as the current one"
 msgstr "выбранная мойка совпадает с текущей"
 
-#: shifts/exceptions.py:46
+#: shifts/exceptions.py:44
 msgid "shift for the specific date not found"
 msgstr "смена на указанную дату не найдена"
 
-#: shifts/exceptions.py:58
+#: shifts/exceptions.py:56
 msgid "shift is already finished"
 msgstr "смена уже завершена"
 
-#: shifts/exceptions.py:68
+#: shifts/exceptions.py:66
 msgid "staff has no any shift"
 msgstr "у сотрудника нет ни одной смены"
 
-#: shifts/exceptions.py:74 shifts/tests/test_views/test_shift_reject_api.py:37
+#: shifts/exceptions.py:72 shifts/tests/test_views/test_shift_reject_api.py:37
 msgid "shift not found"
 msgstr "смена не найдена"
 
-#: shifts/exceptions.py:80
+#: shifts/exceptions.py:78
 msgid "car was already washed on the shift"
 msgstr "авто уже добавлено за эту смену"
 
-#: shifts/exceptions.py:86
+#: shifts/exceptions.py:84
 msgid "shift already exists"
 msgstr "смена уже существует"
 
-#: shifts/exceptions.py:100
+#: shifts/exceptions.py:98
 msgid "additional service could not be provided"
 msgstr "доп. услуга не может быть предоставлена"
 
-#: shifts/exceptions.py:114
+#: shifts/exceptions.py:112
 msgid "staff service price not found"
 msgstr "стоимость услуги сотрудника"
 
-#: shifts/exceptions.py:120
+#: shifts/exceptions.py:118
 msgid "car to wash not found"
 msgstr "авто не найдено"
 
-#: shifts/exceptions.py:131
+#: shifts/exceptions.py:129
 msgid "month is not available"
 msgstr "месяц не доступен"
 
-#: shifts/exceptions.py:141
+#: shifts/exceptions.py:139
 msgid "shift is not confirmed"
 msgstr "смена не подтверждена"
 
-#: shifts/exceptions.py:147
+#: shifts/exceptions.py:145
 msgid "invalid time to start the shift"
 msgstr "неправильное время начала смены"
 
-#: shifts/exceptions.py:153
+#: shifts/exceptions.py:151
 msgid "shift is already confirmed"
 msgstr "смена уже завершена"
-
-#: shifts/exceptions.py:159
-msgid "Dry cleaning request not found"
-msgstr "Запрос на химчистку не найден"
-
-#: shifts/exceptions.py:165
-#, fuzzy
-#| msgid "Dry cleaning request services"
-msgid "Dry cleaning request has invalid status"
-msgstr "Услуги в запросе на химчистку"
 
 #: shifts/models/additional_services.py:15 shifts/models/cars_to_wash.py:70
 msgid "car to wash"

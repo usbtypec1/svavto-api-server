@@ -15,6 +15,7 @@ from dry_cleaning.models import (
     DryCleaningRequestPhoto,
     DryCleaningRequestService,
 )
+from dry_cleaning.models.dry_cleaning_admins import DryCleaningAdmin
 from photo_upload.services import upload_via_url, upload_via_urls
 from shifts.services.shifts.validators import ensure_shift_exists
 from telegram.services import (
@@ -116,7 +117,8 @@ class DryCleaningRequestCreateInteractor:
         photo_urls = [photo.url for photo in photos]
 
         bot = get_dry_cleaning_telegram_bot()
-        for chat_id in settings.DRY_CLEANING_USER_IDS:
+        user_ids = DryCleaningAdmin.objects.values_list('id', flat=True)
+        for chat_id in user_ids:
             try_send_photos_media_group(
                 bot=bot,
                 file_ids=photo_urls,
