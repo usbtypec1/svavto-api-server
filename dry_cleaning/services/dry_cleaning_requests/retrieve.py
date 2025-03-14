@@ -3,8 +3,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 
-from shifts.exceptions import DryCleaningRequestNotFoundError
-from shifts.models.dry_cleaning_requests import (
+from dry_cleaning.exceptions import DryCleaningRequestNotFoundError
+from dry_cleaning.models import (
     DryCleaningRequest,
     DryCleaningRequestPhoto,
     DryCleaningRequestService,

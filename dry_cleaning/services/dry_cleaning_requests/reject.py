@@ -1,38 +1,26 @@
-from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import TypedDict
-from uuid import UUID
 
-from django.db import transaction
-
-from shifts.exceptions import (
+from dry_cleaning.exceptions import (
     DryCleaningRequestInvalidStatusError,
     DryCleaningRequestNotFoundError,
 )
-from shifts.models import (
-    DryCleaningRequest, DryCleaningRequestPhoto,
+from dry_cleaning.models import (
+    DryCleaningRequest,
+    DryCleaningRequestPhoto,
     DryCleaningRequestService,
 )
 from telegram.services import get_telegram_bot, try_send_photos_media_group
 
 
-class HasIdAndCount(TypedDict):
-    id: UUID
-    count: int
-
-
 @dataclass(frozen=True, slots=True, kw_only=True)
-class DryCleaningRequestApproveInteractor:
+class DryCleaningRequestRejectInteractor:
     dry_cleaning_request_id: int
-    services: Iterable[HasIdAndCount]
     response_comment: str | None
 
-    @transaction.atomic
     def execute(self) -> None:
         try:
             dry_cleaning_request = (
                 DryCleaningRequest.objects
-                .select_related('shift')
                 .get(id=self.dry_cleaning_request_id)
             )
         except DryCleaningRequest.DoesNotExist:
@@ -41,7 +29,7 @@ class DryCleaningRequestApproveInteractor:
         if dry_cleaning_request.status != DryCleaningRequest.Status.PENDING:
             raise DryCleaningRequestInvalidStatusError
 
-        dry_cleaning_request.status = DryCleaningRequest.Status.APPROVED
+        dry_cleaning_request.status = DryCleaningRequest.Status.REJECTED
         dry_cleaning_request.response_comment = self.response_comment
         dry_cleaning_request.save(
             update_fields=(
@@ -49,22 +37,6 @@ class DryCleaningRequestApproveInteractor:
                 'response_comment',
                 'updated_at',
             ),
-        )
-
-        (
-            DryCleaningRequestService.objects
-            .filter(request=dry_cleaning_request)
-            .delete()
-        )
-        DryCleaningRequestService.objects.bulk_create(
-            [
-                DryCleaningRequestService(
-                    request=dry_cleaning_request,
-                    service_id=service['id'],
-                    count=service['count'],
-                )
-                for service in self.services
-            ]
         )
 
         photo_urls = DryCleaningRequestPhoto.objects.filter(
@@ -77,9 +49,9 @@ class DryCleaningRequestApproveInteractor:
         bot = get_telegram_bot()
 
         lines: list[str] = [
-            '✅ Ваш запрос на химчистку одобрен',
+            '❌ Ваш запрос на химчистку отклонен',
             f'Гос.номер: {dry_cleaning_request.car_number}',
-            'Одобренные услуги:',
+            'Услуги:',
         ]
 
         for service in services:

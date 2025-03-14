@@ -22,10 +22,6 @@ from shifts.views import (
     StaffReportPeriodsListApi,
     StaffShiftListApi,
     ShiftListApiV2, DeadSoulsApi, StaffShiftsMonthListApi,
-    DryCleaningRequestListCreateApi,
-    DryCleaningRequestApproveApi,
-    DryCleaningRequestRejectApi,
-    DryCleaningRequestRetrieveApi,
 )
 
 
@@ -38,26 +34,6 @@ router.register(
 
 app_name = 'shifts'
 urlpatterns = [
-    path(
-        r'dry-cleaning-requests/',
-        DryCleaningRequestListCreateApi.as_view(),
-        name='dry-cleaning-request-list-create',
-    ),
-    path(
-        r'dry-cleaning-requests/<int:dry_cleaning_request_id>/',
-        DryCleaningRequestRetrieveApi.as_view(),
-        name='dry-cleaning-request-retrieve',
-    ),
-    path(
-        r'dry-cleaning-requests/<int:dry_cleaning_request_id>/approve/',
-        DryCleaningRequestApproveApi.as_view(),
-        name='dry-cleaning-request-approve',
-    ),
-    path(
-        r'dry-cleaning-requests/<int:dry_cleaning_request_id>/reject/',
-        DryCleaningRequestRejectApi.as_view(),
-        name='dry-cleaning-request-reject',
-    ),
     path(
         'v2/',
         ShiftListApiV2.as_view(),

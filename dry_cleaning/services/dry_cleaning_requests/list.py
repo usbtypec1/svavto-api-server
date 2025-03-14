@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 
-from shifts.models.dry_cleaning_requests import (
+from dry_cleaning.models import (
     DryCleaningRequest,
     DryCleaningRequestService,
 )

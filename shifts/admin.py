@@ -13,9 +13,6 @@ from shifts.models import (
     CarToWashAdditionalService,
     Shift,
     ShiftFinishPhoto,
-    DryCleaningRequest,
-    DryCleaningRequestService,
-    DryCleaningRequestPhoto,
 )
 from shifts.services.shifts.validators import ensure_staff_has_no_active_shift
 
@@ -299,44 +296,3 @@ class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
     resource_class = ShiftFinishPhotoResource
     list_display = ('shift', 'file_id')
     list_select_related = ('shift',)
-
-
-class DryCleaningRequestPhotoInline(admin.TabularInline):
-    model = DryCleaningRequestPhoto
-    extra = 0
-
-
-class DryCleaningRequestServiceInline(admin.TabularInline):
-    model = DryCleaningRequestService
-    extra = 0
-
-
-class DryCleaningRequestServiceResource(resources.ModelResource):
-    class Meta:
-        model = DryCleaningRequestService
-
-
-class DryCleaningRequestResource(resources.ModelResource):
-    class Meta:
-        model = DryCleaningRequest
-
-
-class DryCleaningRequestPhotoResource(resources.ModelResource):
-    class Meta:
-        model = DryCleaningRequestPhoto
-
-
-@admin.register(DryCleaningRequest)
-class DryCleaningRequestAdmin(ImportExportModelAdmin):
-    inlines = (DryCleaningRequestPhotoInline, DryCleaningRequestServiceInline)
-    resource_class = DryCleaningRequestResource
-
-
-@admin.register(DryCleaningRequestPhoto)
-class DryCleaningRequestPhotoAdmin(ImportExportModelAdmin):
-    resources_class = DryCleaningRequestPhotoResource
-
-
-@admin.register(DryCleaningRequestService)
-class DryCleaningRequestServiceAdmin(ImportExportModelAdmin):
-    resource_class = DryCleaningRequestServiceResource
