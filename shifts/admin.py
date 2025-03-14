@@ -38,11 +38,11 @@ class CurrentShiftFilter(admin.SimpleListFilter):
 class CarToWashAdditionalServiceResource(resources.ModelResource):
     staff = fields.Field(
         'car__shift__staff__full_name', column_name=_('staff')
-        )
+    )
     shift_date = fields.Field('car__shift__date', column_name=_('shift date'))
     service_name = fields.Field(
         'service__name', column_name=_('car wash service name')
-        )
+    )
     car_number = fields.Field('car__number', column_name=_('car number'))
 
     class Meta:
@@ -311,16 +311,32 @@ class DryCleaningRequestServiceInline(admin.TabularInline):
     extra = 0
 
 
+class DryCleaningRequestServiceResource(resources.ModelResource):
+    class Meta:
+        model = DryCleaningRequestService
+
+
+class DryCleaningRequestResource(resources.ModelResource):
+    class Meta:
+        model = DryCleaningRequest
+
+
+class DryCleaningRequestPhotoResource(resources.ModelResource):
+    class Meta:
+        model = DryCleaningRequestPhoto
+
+
 @admin.register(DryCleaningRequest)
-class DryCleaningRequestAdmin(admin.ModelAdmin):
+class DryCleaningRequestAdmin(ImportExportModelAdmin):
     inlines = (DryCleaningRequestPhotoInline, DryCleaningRequestServiceInline)
+    resource_class = DryCleaningRequestResource
 
 
 @admin.register(DryCleaningRequestPhoto)
-class DryCleaningRequestPhotoAdmin(admin.ModelAdmin):
-    pass
+class DryCleaningRequestPhotoAdmin(ImportExportModelAdmin):
+    resources_class = DryCleaningRequestPhotoResource
 
 
 @admin.register(DryCleaningRequestService)
-class DryCleaningRequestServiceAdmin(admin.ModelAdmin):
-    pass
+class DryCleaningRequestServiceAdmin(ImportExportModelAdmin):
+    resource_class = DryCleaningRequestServiceResource
