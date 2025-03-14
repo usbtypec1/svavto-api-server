@@ -28,13 +28,13 @@ requests_urlpatterns = [
         DryCleaningRequestRejectApi.as_view(),
         name='dry-cleaning-request-reject',
     ),
+]
+
+urlpatterns = [
+    path(r'requests/', include(requests_urlpatterns)),
     path(
         r'admins/',
         DryCleaningAdminListApi.as_view(),
         name='dry-cleaning-admin-list',
     )
-]
-
-urlpatterns = [
-    path(r'requests/', include(requests_urlpatterns)),
 ]
