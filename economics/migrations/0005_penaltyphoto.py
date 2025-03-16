@@ -5,23 +5,36 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('economics', '0004_carwashpenalty_carwashsurcharge'),
+        ("economics", "0004_carwashpenalty_carwashsurcharge"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PenaltyPhoto',
+            name="PenaltyPhoto",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('photo_url', models.URLField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('penalty', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='economics.penalty')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("photo_url", models.URLField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "penalty",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="economics.penalty",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'penalty photo',
-                'verbose_name_plural': 'penalty photos',
+                "verbose_name": "penalty photo",
+                "verbose_name_plural": "penalty photos",
             },
         ),
     ]

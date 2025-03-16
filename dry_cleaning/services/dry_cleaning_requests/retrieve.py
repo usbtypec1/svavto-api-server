@@ -41,23 +41,17 @@ class DryCleaningRequestRetrieveByIdInteractor:
     def execute(self) -> DryCleaningRequestRetrieveResponseDto:
         try:
             dry_cleaning_request = (
-                DryCleaningRequest.objects
-                .prefetch_related('photos')
-                .select_related('shift__staff')
+                DryCleaningRequest.objects.prefetch_related("photos")
+                .select_related("shift__staff")
                 .get(id=self.dry_cleaning_request_id)
             )
         except DryCleaningRequest.DoesNotExist:
             raise DryCleaningRequestNotFoundError
 
-        services = (
-            DryCleaningRequestService.objects
-            .filter(request=dry_cleaning_request)
-            .select_related('service')
-        )
-        photos = (
-            DryCleaningRequestPhoto.objects
-            .filter(request=dry_cleaning_request)
-        )
+        services = DryCleaningRequestService.objects.filter(
+            request=dry_cleaning_request
+        ).select_related("service")
+        photos = DryCleaningRequestPhoto.objects.filter(request=dry_cleaning_request)
         return DryCleaningRequestRetrieveResponseDto(
             id=dry_cleaning_request.id,
             shift_id=dry_cleaning_request.shift_id,

@@ -37,19 +37,18 @@ class TransferredCarRetrieveInteractor:
     def execute(self) -> TransferredCarRetrieveResponseData:
         try:
             transferred_car = (
-                CarToWash.objects
-                .select_related('shift__staff', 'car_wash')
+                CarToWash.objects.select_related("shift__staff", "car_wash")
                 .only(
-                    'id',
-                    'number',
-                    'shift__staff_id',
-                    'car_class',
-                    'wash_type',
-                    'car_wash_id',
-                    'car_wash__name',
-                    'windshield_washer_refilled_bottle_percentage',
-                    'additional_services',
-                    'created_at',
+                    "id",
+                    "number",
+                    "shift__staff_id",
+                    "car_class",
+                    "wash_type",
+                    "car_wash_id",
+                    "car_wash__name",
+                    "windshield_washer_refilled_bottle_percentage",
+                    "additional_services",
+                    "created_at",
                 )
                 .get(id=self.transferred_car_id)
             )
@@ -59,10 +58,9 @@ class TransferredCarRetrieveInteractor:
             )
 
         additional_services = (
-            CarToWashAdditionalService.objects
-            .select_related('service')
+            CarToWashAdditionalService.objects.select_related("service")
             .filter(car=transferred_car)
-            .only('car_id', 'service_id', 'service__name', 'count')
+            .only("car_id", "service_id", "service__name", "count")
         )
 
         return TransferredCarRetrieveResponseData(

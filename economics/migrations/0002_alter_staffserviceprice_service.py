@@ -4,15 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('economics', '0001_initial'),
+        ("economics", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='staffserviceprice',
-            name='service',
-            field=models.CharField(choices=[('comfort_class_car_transfer', 'comfort class car transfer'), ('business_class_car_transfer', 'business class car transfer'), ('van_transfer', 'van transfer'), ('car_transporter_extra_shift', 'car transporter extra shift'), ('urgent_wash', 'urgent wash'), ('item_dry_clean', 'item dry clean'), ('under_plan_planned_car_transfer', 'under plan planned car transfer')], max_length=255, unique=True),
+            model_name="staffserviceprice",
+            name="service",
+            field=models.CharField(
+                choices=[
+                    ("comfort_class_car_transfer", "comfort class car transfer"),
+                    ("business_class_car_transfer", "business class car transfer"),
+                    ("van_transfer", "van transfer"),
+                    ("car_transporter_extra_shift", "car transporter extra shift"),
+                    ("urgent_wash", "urgent wash"),
+                    ("item_dry_clean", "item dry clean"),
+                    (
+                        "under_plan_planned_car_transfer",
+                        "under plan planned car transfer",
+                    ),
+                ],
+                max_length=255,
+                unique=True,
+            ),
         ),
     ]

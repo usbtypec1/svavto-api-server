@@ -4,24 +4,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('texts', '0001_initial'),
+        ("texts", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='text',
-            options={'verbose_name': 'Text', 'verbose_name_plural': 'Texts'},
+            name="text",
+            options={"verbose_name": "Text", "verbose_name_plural": "Texts"},
         ),
         migrations.AlterField(
-            model_name='text',
-            name='key',
-            field=models.CharField(choices=[('transferred_car_number_help_text', 'Transferred car number help text'), ('transferred_car_class_help_text', 'Transferred car class help text')], max_length=255, unique=True, verbose_name='Key'),
+            model_name="text",
+            name="key",
+            field=models.CharField(
+                choices=[
+                    (
+                        "transferred_car_number_help_text",
+                        "Transferred car number help text",
+                    ),
+                    (
+                        "transferred_car_class_help_text",
+                        "Transferred car class help text",
+                    ),
+                ],
+                max_length=255,
+                unique=True,
+                verbose_name="Key",
+            ),
         ),
         migrations.AlterField(
-            model_name='text',
-            name='value',
-            field=models.TextField(max_length=1024, verbose_name='Value'),
+            model_name="text",
+            name="value",
+            field=models.TextField(max_length=1024, verbose_name="Value"),
         ),
     ]

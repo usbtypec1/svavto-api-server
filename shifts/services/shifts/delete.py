@@ -10,14 +10,15 @@ class ShiftsDeleteOnStaffBanInteractor:
     """
     Interactor to delete shifts of staff if he gets banned.
     """
+
     staff_id: int
     from_date: datetime.date
 
     def execute(self) -> None:
         (
-            Shift.objects
-            .filter(staff_id=self.staff_id, date__gte=self.from_date)
-            .delete()
+            Shift.objects.filter(
+                staff_id=self.staff_id, date__gte=self.from_date
+            ).delete()
         )
 
 
@@ -26,6 +27,7 @@ class ShiftDeleteByIdInteractor:
     """
     Delete shift by its ID.
     """
+
     shift_id: int
 
     def execute(self) -> None:

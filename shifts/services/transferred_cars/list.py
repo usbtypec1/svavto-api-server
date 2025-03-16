@@ -44,27 +44,25 @@ class TransferredCarListInteractor:
         shift = get_shift_by_id(self.shift_id)
 
         transferred_cars = (
-            CarToWash.objects
-            .select_related('shift__staff', 'car_wash')
+            CarToWash.objects.select_related("shift__staff", "car_wash")
             .filter(shift_id=self.shift_id)
             .only(
-                'id',
-                'number',
-                'shift__staff_id',
-                'car_class',
-                'wash_type',
-                'car_wash_id',
-                'car_wash__name',
-                'windshield_washer_refilled_bottle_percentage',
-                'additional_services',
-                'created_at',
+                "id",
+                "number",
+                "shift__staff_id",
+                "car_class",
+                "wash_type",
+                "car_wash_id",
+                "car_wash__name",
+                "windshield_washer_refilled_bottle_percentage",
+                "additional_services",
+                "created_at",
             )
         )
         additional_services = (
-            CarToWashAdditionalService.objects
-            .select_related('service')
+            CarToWashAdditionalService.objects.select_related("service")
             .filter(car__shift_id=self.shift_id)
-            .only('car_id', 'service_id', 'service__name', 'count')
+            .only("car_id", "service_id", "service__name", "count")
         )
 
         transferred_car_id_to_services = defaultdict(list)

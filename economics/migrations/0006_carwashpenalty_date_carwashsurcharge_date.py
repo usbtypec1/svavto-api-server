@@ -5,21 +5,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('economics', '0005_penaltyphoto'),
+        ("economics", "0005_penaltyphoto"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='carwashpenalty',
-            name='date',
+            model_name="carwashpenalty",
+            name="date",
             field=models.DateField(default=django.utils.timezone.localdate),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='carwashsurcharge',
-            name='date',
+            model_name="carwashsurcharge",
+            name="date",
             field=models.DateField(default=django.utils.timezone.localdate),
             preserve_default=False,
         ),

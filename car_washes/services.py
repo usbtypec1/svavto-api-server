@@ -7,10 +7,10 @@ from car_washes.exceptions import (
 from car_washes.models import CarWash
 
 __all__ = (
-    'create_car_wash',
-    'update_car_wash',
-    'delete_car_wash',
-    'ensure_car_wash_exists',
+    "create_car_wash",
+    "update_car_wash",
+    "delete_car_wash",
+    "ensure_car_wash_exists",
 )
 
 
@@ -33,7 +33,7 @@ def create_car_wash(
     try:
         car_wash.full_clean()
     except ValidationError as error:
-        if 'Car wash with this Name already exists.' in error.messages:
+        if "Car wash with this Name already exists." in error.messages:
             raise CarWashAlreadyExistsError
         raise
 
@@ -52,29 +52,25 @@ def update_car_wash(
 ) -> CarWash:
     car_wash.name = name
     car_wash.comfort_class_car_washing_price = comfort_class_car_washing_price
-    car_wash.business_class_car_washing_price = (
-        business_class_car_washing_price
-    )
+    car_wash.business_class_car_washing_price = business_class_car_washing_price
     car_wash.van_washing_price = van_washing_price
-    car_wash.windshield_washer_price_per_bottle = (
-        windshield_washer_price_per_bottle
-    )
+    car_wash.windshield_washer_price_per_bottle = windshield_washer_price_per_bottle
 
     try:
         car_wash.full_clean()
     except ValidationError as error:
-        if 'Car wash with this Name already exists.' in error.messages:
+        if "Car wash with this Name already exists." in error.messages:
             raise CarWashAlreadyExistsError
         raise
 
     car_wash.save(
         update_fields=(
-            'name',
-            'comfort_class_car_washing_price',
-            'business_class_car_washing_price',
-            'van_washing_price',
-            'windshield_washer_price_per_bottle',
-            'updated_at',
+            "name",
+            "comfort_class_car_washing_price",
+            "business_class_car_washing_price",
+            "van_washing_price",
+            "windshield_washer_price_per_bottle",
+            "updated_at",
         ),
     )
     return car_wash

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-__all__ = ('StaffReportPeriodsOutputSerializer', 'ReportPeriodSerializer')
+__all__ = ("StaffReportPeriodsOutputSerializer", "ReportPeriodSerializer")
 
 
 class ReportPeriodSerializer(serializers.Serializer):

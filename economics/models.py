@@ -3,16 +3,15 @@ from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash
 from shifts.models import Shift
-from staff.models import Staff
 
 
 __all__ = (
-    'Penalty',
-    'Surcharge',
-    'StaffServicePrice',
-    'CarWashPenalty',
-    'CarWashSurcharge',
-    'PenaltyPhoto',
+    "Penalty",
+    "Surcharge",
+    "StaffServicePrice",
+    "CarWashPenalty",
+    "CarWashSurcharge",
+    "PenaltyPhoto",
 )
 
 
@@ -20,7 +19,7 @@ class CarWashPenalty(models.Model):
     car_wash = models.ForeignKey(
         to=CarWash,
         on_delete=models.CASCADE,
-        related_name='penalties',
+        related_name="penalties",
     )
     reason = models.TextField(max_length=1024)
     amount = models.PositiveIntegerField()
@@ -28,8 +27,8 @@ class CarWashPenalty(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _('car wash penalty')
-        verbose_name_plural = _('car wash penalties')
+        verbose_name = _("car wash penalty")
+        verbose_name_plural = _("car wash penalties")
 
     def __str__(self):
         return self.reason
@@ -39,7 +38,7 @@ class CarWashSurcharge(models.Model):
     car_wash = models.ForeignKey(
         to=CarWash,
         on_delete=models.CASCADE,
-        related_name='surcharges',
+        related_name="surcharges",
     )
     reason = models.TextField(max_length=1024)
     amount = models.PositiveIntegerField()
@@ -47,8 +46,8 @@ class CarWashSurcharge(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _('car wash surcharge')
-        verbose_name_plural = _('car wash surcharges')
+        verbose_name = _("car wash surcharge")
+        verbose_name_plural = _("car wash surcharges")
 
     def __str__(self):
         return self.reason
@@ -56,8 +55,8 @@ class CarWashSurcharge(models.Model):
 
 class Penalty(models.Model):
     class Consequence(models.TextChoices):
-        DISMISSAL = 'dismissal', _('dismissal')
-        WARN = 'warn', _('warn')
+        DISMISSAL = "dismissal", _("dismissal")
+        WARN = "warn", _("warn")
 
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
     reason = models.CharField(max_length=255)
@@ -71,8 +70,8 @@ class Penalty(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _('penalty')
-        verbose_name_plural = _('penalties')
+        verbose_name = _("penalty")
+        verbose_name_plural = _("penalties")
 
     def __str__(self):
         return self.reason
@@ -84,8 +83,8 @@ class PenaltyPhoto(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _('penalty photo')
-        verbose_name_plural = _('penalty photos')
+        verbose_name = _("penalty photo")
+        verbose_name_plural = _("penalty photos")
 
 
 class Surcharge(models.Model):
@@ -95,8 +94,8 @@ class Surcharge(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _('surcharge')
-        verbose_name_plural = _('surcharges')
+        verbose_name = _("surcharge")
+        verbose_name_plural = _("surcharges")
 
     def __str__(self):
         return self.reason
@@ -105,23 +104,23 @@ class Surcharge(models.Model):
 class StaffServicePrice(models.Model):
     class ServiceType(models.TextChoices):
         COMFORT_CLASS_CAR_TRANSFER = (
-            'comfort_class_car_transfer',
-            _('comfort class car transfer'),
+            "comfort_class_car_transfer",
+            _("comfort class car transfer"),
         )
         BUSINESS_CLASS_CAR_TRANSFER = (
-            'business_class_car_transfer',
-            _('business class car transfer'),
+            "business_class_car_transfer",
+            _("business class car transfer"),
         )
-        VAN_TRANSFER = 'van_transfer', _('van transfer')
+        VAN_TRANSFER = "van_transfer", _("van transfer")
         CAR_TRANSPORTER_EXTRA_SHIFT = (
-            'car_transporter_extra_shift',
-            _('car transporter extra shift'),
+            "car_transporter_extra_shift",
+            _("car transporter extra shift"),
         )
-        URGENT_CAR_WASH = 'urgent_wash', _('urgent wash')
-        ITEM_DRY_CLEAN = 'item_dry_clean', _('item dry clean')
+        URGENT_CAR_WASH = "urgent_wash", _("urgent wash")
+        ITEM_DRY_CLEAN = "item_dry_clean", _("item dry clean")
         UNDER_PLAN_PLANNED_CAR_TRANSFER = (
-            'under_plan_planned_car_transfer',
-            _('under plan planned car transfer')
+            "under_plan_planned_car_transfer",
+            _("under plan planned car transfer"),
         )
 
     service = models.CharField(
@@ -134,8 +133,8 @@ class StaffServicePrice(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _('staff service price')
-        verbose_name_plural = _('staff service prices')
+        verbose_name = _("staff service price")
+        verbose_name_plural = _("staff service prices")
 
     def __str__(self):
         return self.get_service_display()

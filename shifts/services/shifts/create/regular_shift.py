@@ -21,9 +21,9 @@ class ShiftsCreateResult:
 
 
 def get_existing_shift_dates(
-        *,
-        staff_id: int,
-        expected_dates: Iterable[datetime.date],
+    *,
+    staff_id: int,
+    expected_dates: Iterable[datetime.date],
 ) -> set[datetime.date]:
     """
     Get existing shift dates from the database.
@@ -36,20 +36,18 @@ def get_existing_shift_dates(
         set[datetime.date]: dates of existing shifts.
     """
     return set(
-        Shift.objects
-        .filter(
+        Shift.objects.filter(
             staff_id=staff_id,
             date__in=expected_dates,
             is_test=False,
-        )
-        .values_list('date', flat=True)
+        ).values_list("date", flat=True)
     )
 
 
 def validate_conflict_shift_dates(
-        *,
-        staff_id: int,
-        expected_dates: Iterable[datetime.date],
+    *,
+    staff_id: int,
+    expected_dates: Iterable[datetime.date],
 ) -> None:
     """
     Check if there are any conflicts with existing shifts.
@@ -80,6 +78,7 @@ class ShiftRegularCreateInteractor:
         staff: staff to create shifts for.
         dates: shift dates to create.
     """
+
     staff: Staff
     dates: Iterable[datetime.date]
 
@@ -96,16 +95,10 @@ class ShiftRegularCreateInteractor:
             expected_dates=self.dates,
         )
 
-        shifts_to_create = [
-            Shift(staff=self.staff, date=date)
-            for date in self.dates
-        ]
+        shifts_to_create = [Shift(staff=self.staff, date=date) for date in self.dates]
         shifts = Shift.objects.bulk_create(shifts_to_create)
 
-        shifts = [
-            ShiftItem(id=shift.id, date=shift.date)
-            for shift in shifts
-        ]
+        shifts = [ShiftItem(id=shift.id, date=shift.date) for shift in shifts]
         return ShiftsCreateResult(
             staff_id=self.staff.id,
             staff_full_name=self.staff.full_name,

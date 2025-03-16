@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from shifts.selectors import get_staff_current_shift
 from shifts.serializers import StaffCurrentShiftRetrieveOutputSerializer
 
-__all__ = ('StaffCurrentShiftRetrieveApi',)
+__all__ = ("StaffCurrentShiftRetrieveApi",)
 
 
 class StaffCurrentShiftRetrieveApi(APIView):

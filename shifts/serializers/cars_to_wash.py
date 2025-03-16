@@ -5,15 +5,15 @@ from shifts.serializers.additional_services import AdditionalServiceSerializer
 
 
 __all__ = (
-    'CarToWashCreateInputSerializer',
-    'CarToWashCreateOutputSerializer',
-    'TransferredCarUpdateInputSerializer',
-    'CarToWashAdditionalServiceSerializer',
-    'TransferredCarListOutputSerializer',
-    'TransferredCarListItemSerializer',
-    'TransferredCarAdditionService',
-    'TransferredCarListInputSerializer',
-    'TransferredCarDetailOutputSerializer',
+    "TransferredCarCreateInputSerializer",
+    "CarToWashCreateOutputSerializer",
+    "TransferredCarUpdateInputSerializer",
+    "CarToWashAdditionalServiceSerializer",
+    "TransferredCarListOutputSerializer",
+    "TransferredCarListItemSerializer",
+    "TransferredCarAdditionService",
+    "TransferredCarListInputSerializer",
+    "TransferredCarDetailOutputSerializer",
 )
 
 
@@ -30,6 +30,9 @@ class TransferredCarListItemSerializer(serializers.Serializer):
     wash_type = serializers.CharField()
     car_wash_id = serializers.IntegerField()
     car_wash_name = serializers.CharField()
+    windshield_washer_type = serializers.ChoiceField(
+        choices=CarToWash.WindshieldWasherType.choices,
+    )
     windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
     additional_services = serializers.ListField(
         child=TransferredCarAdditionService(),
@@ -62,6 +65,9 @@ class TransferredCarDetailOutputSerializer(serializers.Serializer):
     wash_type = serializers.CharField()
     car_wash_id = serializers.IntegerField()
     car_wash_name = serializers.CharField()
+    windshield_washer_type = serializers.ChoiceField(
+        choices=CarToWash.WindshieldWasherType.choices,
+    )
     windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
     additional_services = serializers.ListField(
         child=TransferredCarAdditionService(),
@@ -69,20 +75,16 @@ class TransferredCarDetailOutputSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField()
 
 
-class CarToWashCreateInputSerializer(serializers.ModelSerializer):
+class TransferredCarCreateInputSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
+    number = serializers.CharField()
+    car_class = serializers.ChoiceField(choices=CarToWash.CarType.choices)
+    wash_type = serializers.ChoiceField(choices=CarToWash.WashType.choices)
+    windshield_washer_type = serializers.ChoiceField(
+        choices=CarToWash.WindshieldWasherType.choices,
+    )
+    windshield_washer_refilled_bottle_percentage = serializers.IntegerField()
     additional_services = AdditionalServiceSerializer(many=True, default=list)
-
-    class Meta:
-        model = CarToWash
-        fields = (
-            'staff_id',
-            'number',
-            'car_class',
-            'wash_type',
-            'windshield_washer_refilled_bottle_percentage',
-            'additional_services',
-        )
 
 
 class CarToWashCreateOutputSerializer(serializers.Serializer):
@@ -97,11 +99,11 @@ class CarToWashCreateOutputSerializer(serializers.Serializer):
 
 
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(source='service_id')
+    id = serializers.UUIDField(source="service_id")
 
     class Meta:
         model = CarToWashAdditionalService
-        fields = ('id', 'count')
+        fields = ("id", "count")
 
 
 class TransferredCarUpdateInputSerializer(serializers.Serializer):
@@ -116,6 +118,9 @@ class TransferredCarUpdateInputSerializer(serializers.Serializer):
         choices=CarToWash.WashType.choices,
         allow_null=True,
         default=None,
+    )
+    windshield_washer_type = serializers.ChoiceField(
+        choices=CarToWash.WindshieldWasherType.choices,
     )
     windshield_washer_refilled_bottle_percentage = serializers.CharField(
         allow_null=True,

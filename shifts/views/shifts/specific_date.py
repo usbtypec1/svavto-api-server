@@ -10,7 +10,7 @@ from shifts.serializers import (
     ShiftListForSpecificDateOutputSerializer,
 )
 
-__all__ = ('ShiftListForSpecificDateApi',)
+__all__ = ("ShiftListForSpecificDateApi",)
 
 
 class ShiftListForSpecificDateApi(APIView):
@@ -19,7 +19,7 @@ class ShiftListForSpecificDateApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
 
-        shifts_date: datetime.date = serialized_data['date']
+        shifts_date: datetime.date = serialized_data["date"]
 
         shifts = Shift.objects.filter(
             date=shifts_date,
@@ -28,4 +28,4 @@ class ShiftListForSpecificDateApi(APIView):
         )
 
         serializer = ShiftListForSpecificDateOutputSerializer(shifts, many=True)
-        return Response({'shifts': serializer.data})
+        return Response({"shifts": serializer.data})

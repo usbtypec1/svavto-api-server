@@ -10,10 +10,10 @@ from .surcharges import (
 )
 
 __all__ = (
-    'CarWashPenaltyListCreateOutputSerializer',
-    'CarWashPenaltyCreateInputSerializer',
-    'CarWashPenaltyListInputSerializer',
-    'CarWashSurchargeListInputSerializer',
-    'CarWashSurchargeCreateInputSerializer',
-    'CarWashSurchargeListCreateOutputSerializer',
+    "CarWashPenaltyListCreateOutputSerializer",
+    "CarWashPenaltyCreateInputSerializer",
+    "CarWashPenaltyListInputSerializer",
+    "CarWashSurchargeListInputSerializer",
+    "CarWashSurchargeCreateInputSerializer",
+    "CarWashSurchargeListCreateOutputSerializer",
 )

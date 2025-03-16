@@ -1,40 +1,42 @@
 from django.urls import path, include
 
 from dry_cleaning.views import (
-    DryCleaningRequestApproveApi, DryCleaningRequestListCreateApi,
-    DryCleaningRequestRejectApi, DryCleaningRequestRetrieveApi,
+    DryCleaningRequestApproveApi,
+    DryCleaningRequestListCreateApi,
+    DryCleaningRequestRejectApi,
+    DryCleaningRequestRetrieveApi,
     DryCleaningAdminListApi,
 )
 
 
 requests_urlpatterns = [
     path(
-        r'',
+        r"",
         DryCleaningRequestListCreateApi.as_view(),
-        name='dry-cleaning-request-list-create',
+        name="dry-cleaning-request-list-create",
     ),
     path(
-        r'<int:dry_cleaning_request_id>/',
+        r"<int:dry_cleaning_request_id>/",
         DryCleaningRequestRetrieveApi.as_view(),
-        name='dry-cleaning-request-retrieve',
+        name="dry-cleaning-request-retrieve",
     ),
     path(
-        r'<int:dry_cleaning_request_id>/approve/',
+        r"<int:dry_cleaning_request_id>/approve/",
         DryCleaningRequestApproveApi.as_view(),
-        name='dry-cleaning-request-approve',
+        name="dry-cleaning-request-approve",
     ),
     path(
-        r'<int:dry_cleaning_request_id>/reject/',
+        r"<int:dry_cleaning_request_id>/reject/",
         DryCleaningRequestRejectApi.as_view(),
-        name='dry-cleaning-request-reject',
+        name="dry-cleaning-request-reject",
     ),
 ]
 
 urlpatterns = [
-    path(r'requests/', include(requests_urlpatterns)),
+    path(r"requests/", include(requests_urlpatterns)),
     path(
-        r'admins/',
+        r"admins/",
         DryCleaningAdminListApi.as_view(),
-        name='dry-cleaning-admin-list',
-    )
+        name="dry-cleaning-admin-list",
+    ),
 ]

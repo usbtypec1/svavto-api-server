@@ -7,7 +7,7 @@ from dry_cleaning.models import DryCleaningRequest
 
 
 def validate_car_number(car_number: str) -> None:
-    pattern = r'^[А-Яа-я]\d{3}[А-Яа-я]{2}\d{3}$'
+    pattern = r"^[А-Яа-я]\d{3}[А-Яа-я]{2}\d{3}$"
     if not bool(re.fullmatch(pattern, car_number)):
         raise ValidationError('Expected car number format: "А123БВ456"')
 

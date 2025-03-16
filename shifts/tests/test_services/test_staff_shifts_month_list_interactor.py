@@ -27,7 +27,7 @@ def test_response_staff_id_is_the_same():
 
 
 @pytest.mark.django_db
-@freeze_time('2025-01-01')
+@freeze_time("2025-01-01")
 def test_staff_has_single_shift_month():
     date = datetime.date(2025, 2, 1)
     shift = ShiftFactory(date=date)
@@ -42,7 +42,7 @@ def test_staff_has_single_shift_month():
 
 
 @pytest.mark.django_db
-@freeze_time('2025-01-01')
+@freeze_time("2025-01-01")
 def test_staff_has_no_shift_month():
     staff = StaffFactory()
     staff_shifts_months = StaffShiftsMonthListInteractor(
@@ -53,7 +53,7 @@ def test_staff_has_no_shift_month():
 
 
 @pytest.mark.django_db
-@freeze_time('2025-01-01')
+@freeze_time("2025-01-01")
 def test_staff_has_multiple_shift_months():
     staff = StaffFactory()
     ShiftFactory(staff=staff, date=datetime.date(2025, 2, 1))
@@ -71,7 +71,7 @@ def test_staff_has_multiple_shift_months():
 
 
 @pytest.mark.django_db
-@freeze_time('2025-01-01')
+@freeze_time("2025-01-01")
 def test_staff_has_multiple_shifts_within_same_month():
     staff = StaffFactory()
     ShiftFactory(staff=staff, date=datetime.date(2025, 2, 1))
@@ -87,7 +87,7 @@ def test_staff_has_multiple_shifts_within_same_month():
 
 
 @pytest.mark.django_db
-@freeze_time('2025-02-01')
+@freeze_time("2025-02-01")
 def test_staff_had_shifts_before_but_has_no_shift_now():
     staff = StaffFactory()
     date = datetime.date(2025, 1, 1)
@@ -101,7 +101,7 @@ def test_staff_had_shifts_before_but_has_no_shift_now():
 
 
 @pytest.mark.django_db
-@freeze_time('2025-02-01')
+@freeze_time("2025-02-01")
 def test_staff_had_shifts_before_and_has_shift_now():
     staff = StaffFactory()
     ShiftFactory(staff=staff, date=datetime.date(2025, 1, 31))
@@ -120,7 +120,7 @@ def test_staff_had_shifts_before_and_has_shift_now():
 
 
 @pytest.mark.django_db
-@freeze_time('2025-02-15')
+@freeze_time("2025-02-15")
 def test_shifts_in_current_month_before_current_time():
     staff = StaffFactory()
     ShiftFactory(staff=staff, date=datetime.date(2025, 2, 1))

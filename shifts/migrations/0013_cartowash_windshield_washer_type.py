@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('shifts', '0012_shift_confirmed_at'),
+        ("shifts", "0012_shift_confirmed_at"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cartowash',
-            name='windshield_washer_type',
-            field=models.CharField(choices=[('water', 'Water'), ('antifreeze', 'Antifreeze')], default='antifreeze', max_length=16, verbose_name='Windshield washer type'),
+            model_name="cartowash",
+            name="windshield_washer_type",
+            field=models.CharField(
+                choices=[("water", "Water"), ("antifreeze", "Antifreeze")],
+                default="antifreeze",
+                max_length=16,
+                verbose_name="Windshield washer type",
+            ),
         ),
     ]

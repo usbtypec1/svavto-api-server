@@ -42,29 +42,22 @@ class ExtraShiftsCreateResult:
 
 
 def separate_conflict_non_test_shifts(
-        shifts: Iterable[StaffIdAndDateTypedDict],
+    shifts: Iterable[StaffIdAndDateTypedDict],
 ) -> ConflictAndNonConflictShifts:
     expected_shifts: set[StaffIdAndDate] = {
-        (shift['staff_id'], shift['date'])
-        for shift in shifts
+        (shift["staff_id"], shift["date"]) for shift in shifts
     }
     filters = functools.reduce(
         operator.or_,
-        [
-            Q(staff_id=staff_id, date=date)
-            for staff_id, date in expected_shifts
-        ],
+        [Q(staff_id=staff_id, date=date) for staff_id, date in expected_shifts],
         Q(),
     )
 
-    existing_shifts: QuerySet[Shift | dict] = (
-        Shift.objects
-        .filter(filters, is_test=False)
-        .values('staff_id', 'date')
-    )
+    existing_shifts: QuerySet[Shift | dict] = Shift.objects.filter(
+        filters, is_test=False
+    ).values("staff_id", "date")
     existing_shifts: set[StaffIdAndDate] = {
-        (shift['staff_id'], shift['date'])
-        for shift in existing_shifts
+        (shift["staff_id"], shift["date"]) for shift in existing_shifts
     }
 
     conflict_shifts = expected_shifts.intersection(existing_shifts)
@@ -72,11 +65,10 @@ def separate_conflict_non_test_shifts(
 
     return ConflictAndNonConflictShifts(
         conflict_shifts=[
-            {'staff_id': staff_id, 'date': date}
-            for staff_id, date in conflict_shifts
+            {"staff_id": staff_id, "date": date} for staff_id, date in conflict_shifts
         ],
         non_conflict_shifts=[
-            {'staff_id': staff_id, 'date': date}
+            {"staff_id": staff_id, "date": date}
             for staff_id, date in non_conflict_shifts
         ],
     )
@@ -89,13 +81,11 @@ class MissingAndExistingStaffIds:
 
 
 def separate_staff_by_existence(
-        staff_ids: Iterable[int],
+    staff_ids: Iterable[int],
 ) -> MissingAndExistingStaffIds:
     staff_ids = set(staff_ids)
     existing_staff_ids = set(
-        Staff.objects
-        .filter(id__in=staff_ids)
-        .values_list('id', flat=True)
+        Staff.objects.filter(id__in=staff_ids).values_list("id", flat=True)
     )
     missing_staff_ids = tuple(staff_ids - existing_staff_ids)
     existing_staff_ids = tuple(existing_staff_ids)
@@ -110,17 +100,14 @@ class ShiftExtraCreateInteractor:
     shifts: list[StaffIdAndDateTypedDict]
 
     def get_shifts_of_staff(
-            self,
-            staff_ids: Iterable[int],
+        self,
+        staff_ids: Iterable[int],
     ) -> list[StaffIdAndDateTypedDict]:
         staff_ids = set(staff_ids)
-        return [
-            shift for shift in self.shifts
-            if shift['staff_id'] in staff_ids
-        ]
+        return [shift for shift in self.shifts if shift["staff_id"] in staff_ids]
 
     def execute(self) -> ExtraShiftsCreateResult:
-        staff_ids = [shift['staff_id'] for shift in self.shifts]
+        staff_ids = [shift["staff_id"] for shift in self.shifts]
         separated_staff = separate_staff_by_existence(staff_ids)
         shifts_of_existing_staff = self.get_shifts_of_staff(
             separated_staff.existing_staff_ids,
@@ -130,8 +117,8 @@ class ShiftExtraCreateInteractor:
         )
         shifts_to_create = [
             Shift(
-                staff_id=shift['staff_id'],
-                date=shift['date'],
+                staff_id=shift["staff_id"],
+                date=shift["date"],
                 is_extra=True,
                 confirmed_at=timezone.now(),
             )

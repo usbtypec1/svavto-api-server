@@ -3,6 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class EconomicsConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'economics'
-    verbose_name = _('economics')
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "economics"
+    verbose_name = _("economics")

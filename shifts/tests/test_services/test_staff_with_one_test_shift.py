@@ -67,9 +67,7 @@ def test_separate_staff_has_own_single_test_shifts_within_month():
     assert len(staff_list) == 2
     actual = sorted([(staff.id, staff.full_name) for staff in staff_list])
     expected = sorted(
-        [
-            (staff_1.id, staff_1.full_name), (staff_2.id, staff_2.full_name)
-        ]
+        [(staff_1.id, staff_1.full_name), (staff_2.id, staff_2.full_name)]
     )
     assert actual == expected
 

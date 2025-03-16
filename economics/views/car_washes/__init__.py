@@ -8,8 +8,8 @@ from .penalties import (
 )
 
 __all__ = (
-    'CarWashPenaltyListCreateApi',
-    'CarWashSurchargeListCreateApi',
-    'CarWashPenaltyDeleteApi',
-    'CarWashSurchargeDeleteApi',
+    "CarWashPenaltyListCreateApi",
+    "CarWashSurchargeListCreateApi",
+    "CarWashPenaltyDeleteApi",
+    "CarWashSurchargeDeleteApi",
 )

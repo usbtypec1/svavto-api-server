@@ -9,7 +9,7 @@ from shifts.selectors import get_staff_current_shift
 from shifts.services.cars_to_wash import update_shift_car_wash
 from staff.services import update_last_activity_time
 
-__all__ = ('CurrentShiftCarWashUpdateApi',)
+__all__ = ("CurrentShiftCarWashUpdateApi",)
 
 
 class CurrentShiftCarWashUpdateInputSerializer(serializers.Serializer):
@@ -19,7 +19,7 @@ class CurrentShiftCarWashUpdateInputSerializer(serializers.Serializer):
 class CurrentShiftCarWashUpdateOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWash
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 class CurrentShiftCarWashUpdateApi(APIView):
@@ -27,7 +27,7 @@ class CurrentShiftCarWashUpdateApi(APIView):
         serializer = CurrentShiftCarWashUpdateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
-        car_wash_id: int = serialized_data['car_wash_id']
+        car_wash_id: int = serialized_data["car_wash_id"]
 
         shift = get_staff_current_shift(staff_id)
         car_wash = get_car_wash_by_id(car_wash_id)

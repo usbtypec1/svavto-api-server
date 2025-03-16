@@ -5,52 +5,66 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('car_washes', '0001_initial'),
-        ('shifts', '0005_remove_shift_service_app_photo_file_id_and_more'),
-        ('staff', '0001_initial'),
+        ("car_washes", "0001_initial"),
+        ("shifts", "0005_remove_shift_service_app_photo_file_id_and_more"),
+        ("staff", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='shift',
-            name='is_test',
-            field=models.BooleanField(default=False, verbose_name='is test shift'),
+            model_name="shift",
+            name="is_test",
+            field=models.BooleanField(default=False, verbose_name="is test shift"),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='car_wash',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='car_washes.carwash', verbose_name='car wash'),
+            model_name="shift",
+            name="car_wash",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="car_washes.carwash",
+                verbose_name="car wash",
+            ),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='created_at',
-            field=models.DateTimeField(verbose_name='created at'),
+            model_name="shift",
+            name="created_at",
+            field=models.DateTimeField(verbose_name="created at"),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='date',
-            field=models.DateField(verbose_name='date'),
+            model_name="shift",
+            name="date",
+            field=models.DateField(verbose_name="date"),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='finished_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='finished at'),
+            model_name="shift",
+            name="finished_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="finished at"
+            ),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='is_extra',
-            field=models.BooleanField(default=False, verbose_name='is extra shift'),
+            model_name="shift",
+            name="is_extra",
+            field=models.BooleanField(default=False, verbose_name="is extra shift"),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='staff',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='staff.staff', verbose_name='staff'),
+            model_name="shift",
+            name="staff",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="staff.staff",
+                verbose_name="staff",
+            ),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='started_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='started at'),
+            model_name="shift",
+            name="started_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="started at"
+            ),
         ),
     ]

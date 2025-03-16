@@ -3,6 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class StaffConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'staff'
-    verbose_name = _('staff')
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "staff"
+    verbose_name = _("staff")

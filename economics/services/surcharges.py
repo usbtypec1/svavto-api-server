@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from economics.models import Surcharge
 
-__all__ = ('create_surcharge',)
+__all__ = ("create_surcharge",)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -19,10 +19,10 @@ class SurchargeCreateResult:
 
 
 def create_surcharge(
-        *,
-        shift_id: int,
-        reason: str,
-        amount: int,
+    *,
+    shift_id: int,
+    reason: str,
+    amount: int,
 ) -> SurchargeCreateResult:
     """
     Give surcharge to staff member.

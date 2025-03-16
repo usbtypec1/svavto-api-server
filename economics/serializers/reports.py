@@ -4,15 +4,15 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 __all__ = (
-    'StaffItemSerializer',
-    'ShiftStatisticsSerializer',
-    'StaffShiftsStatisticsSerializer',
-    'StaffShiftsStatisticsReportInputSerializer',
-    'StaffShiftsStatisticsReportOutputSerializer',
-    'CarWashesRevenueReportInputSerializer',
-    'CarWashesRevenueReportOutputSerializer',
-    'CarWashRevenueForShiftSerializer',
-    'CarWashRevenueForShiftAdditionalServiceSerializer',
+    "StaffItemSerializer",
+    "ShiftStatisticsSerializer",
+    "StaffShiftsStatisticsSerializer",
+    "StaffShiftsStatisticsReportInputSerializer",
+    "StaffShiftsStatisticsReportOutputSerializer",
+    "CarWashesRevenueReportInputSerializer",
+    "CarWashesRevenueReportOutputSerializer",
+    "CarWashRevenueForShiftSerializer",
+    "CarWashRevenueForShiftAdditionalServiceSerializer",
 )
 
 
@@ -25,12 +25,12 @@ class CarWashesRevenueReportInputSerializer(serializers.Serializer):
     )
 
     def validate(self, data: dict) -> dict:
-        from_date: datetime.date = data['from_date']
-        to_date: datetime.date = data['to_date']
+        from_date: datetime.date = data["from_date"]
+        to_date: datetime.date = data["to_date"]
 
         if from_date > to_date:
             raise serializers.ValidationError(
-                _('period end can not be before period start'),
+                _("period end can not be before period start"),
             )
 
         period_duration = to_date - from_date
@@ -38,7 +38,7 @@ class CarWashesRevenueReportInputSerializer(serializers.Serializer):
 
         if period_duration > period_duration_threshold:
             raise serializers.ValidationError(
-                _('period duration can not be greater than 60 days'),
+                _("period duration can not be greater than 60 days"),
             )
 
         return data

@@ -10,7 +10,7 @@ from shifts.services.cars_to_wash import (
     get_staff_cars_count_by_date,
 )
 
-__all__ = ('CarsToWashCountByEachStaffApi', 'CarsWithoutWindshieldWasherApi')
+__all__ = ("CarsToWashCountByEachStaffApi", "CarsWithoutWindshieldWasherApi")
 
 
 class DateSerializer(serializers.Serializer):
@@ -23,7 +23,7 @@ class CarsToWashCountByEachStaffApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
-        date: datetime.date = serialized_data['date']
+        date: datetime.date = serialized_data["date"]
 
         staff_cars_count_by_date = get_staff_cars_count_by_date(date)
         return Response(staff_cars_count_by_date)
@@ -35,7 +35,7 @@ class CarsWithoutWindshieldWasherApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
-        date: datetime.date = serialized_data['date']
+        date: datetime.date = serialized_data["date"]
 
         cars = get_cars_without_windshield_washer_by_date(date)
-        return Response({'cars': cars, 'date': date})
+        return Response({"cars": cars, "date": date})

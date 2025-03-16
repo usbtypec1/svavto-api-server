@@ -7,7 +7,6 @@ from shifts.services import DryCleaningRequestRetrieveByIdInteractor
 
 
 class DryCleaningRequestRetrieveApi(APIView):
-
     def get(self, request: Request, dry_cleaning_request_id: int) -> Response:
         dry_cleaning_request = DryCleaningRequestRetrieveByIdInteractor(
             dry_cleaning_request_id=dry_cleaning_request_id,

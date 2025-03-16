@@ -5,25 +5,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('car_washes', '0002_carwashservice_priority'),
+        ("car_washes", "0002_carwashservice_priority"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='carwashserviceprice',
-            name='car_wash',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='prices', to='car_washes.carwash', verbose_name='car wash'),
+            model_name="carwashserviceprice",
+            name="car_wash",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="prices",
+                to="car_washes.carwash",
+                verbose_name="car wash",
+            ),
         ),
         migrations.AlterField(
-            model_name='carwashserviceprice',
-            name='price',
-            field=models.PositiveIntegerField(verbose_name='price'),
+            model_name="carwashserviceprice",
+            name="price",
+            field=models.PositiveIntegerField(verbose_name="price"),
         ),
         migrations.AlterField(
-            model_name='carwashserviceprice',
-            name='service',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='prices', to='car_washes.carwashservice', verbose_name='additional service'),
+            model_name="carwashserviceprice",
+            name="service",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="prices",
+                to="car_washes.carwashservice",
+                verbose_name="additional service",
+            ),
         ),
     ]

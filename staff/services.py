@@ -7,18 +7,19 @@ from django.utils import timezone
 
 from shifts.services import ShiftsDeleteOnStaffBanInteractor
 from staff.exceptions import (
-    StaffRegisterRequestAlreadyExistsError, StaffNotFoundError,
+    StaffRegisterRequestAlreadyExistsError,
+    StaffNotFoundError,
     StaffRegisterRequestNotFoundError,
 )
 from staff.models import Staff, StaffRegisterRequest
 from staff.selectors import ensure_staff_not_exists
 
 __all__ = (
-    'StaffRegisterRequestAcceptInteractor',
-    'update_staff',
-    'update_last_activity_time',
-    'StaffRegisterRequestCreateInteractor',
-    'StaffRegisterRequestRejectInteractor',
+    "StaffRegisterRequestAcceptInteractor",
+    "update_staff",
+    "update_last_activity_time",
+    "StaffRegisterRequestCreateInteractor",
+    "StaffRegisterRequestRejectInteractor",
 )
 
 from telegram.services import get_telegram_bot, try_send_message
@@ -72,9 +73,7 @@ class StaffRegisterRequestCreateInteractor:
             id=staff_register_request.id,
             staff_id=staff_register_request.staff_id,
             full_name=staff_register_request.full_name,
-            car_sharing_phone_number=(
-                staff_register_request.car_sharing_phone_number
-            ),
+            car_sharing_phone_number=(staff_register_request.car_sharing_phone_number),
             console_phone_number=staff_register_request.console_phone_number,
             created_at=staff_register_request.created_at,
         )
@@ -98,12 +97,8 @@ class StaffRegisterRequestAcceptInteractor:
         staff = Staff(
             id=staff_register_request.staff_id,
             full_name=staff_register_request.full_name,
-            car_sharing_phone_number=(
-                staff_register_request.car_sharing_phone_number
-            ),
-            console_phone_number=(
-                staff_register_request.console_phone_number
-            ),
+            car_sharing_phone_number=(staff_register_request.car_sharing_phone_number),
+            console_phone_number=(staff_register_request.console_phone_number),
         )
         staff.full_clean()
         staff.save()
@@ -114,8 +109,8 @@ class StaffRegisterRequestAcceptInteractor:
             bot=bot,
             chat_id=staff.id,
             text=(
-                '✅ Ваша запрос на регистрацию принят!'
-                ' Введите /start для начала работы.'
+                "✅ Ваша запрос на регистрацию принят!"
+                " Введите /start для начала работы."
             ),
         )
 
@@ -146,16 +141,16 @@ class StaffRegisterRequestRejectInteractor:
         try_send_message(
             bot=bot,
             chat_id=staff_register_request.staff_id,
-            text='❌ Ваша заявка на регистрацию отклонена.',
+            text="❌ Ваша заявка на регистрацию отклонена.",
         )
         staff_register_request.delete()
 
 
 @transaction.atomic
 def update_staff(
-        *,
-        staff_id: int,
-        is_banned: bool,
+    *,
+    staff_id: int,
+    is_banned: bool,
 ) -> None:
     banned_at = timezone.now() if is_banned else None
 

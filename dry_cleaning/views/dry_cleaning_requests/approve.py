@@ -9,7 +9,6 @@ from shifts.services import DryCleaningRequestApproveInteractor
 
 
 class DryCleaningRequestApproveApi(APIView):
-
     def post(self, request: Request, dry_cleaning_request_id: int) -> Response:
         serializer = DryCleaningRequestApproveInputSerializer(
             data=request.data,
@@ -17,7 +16,7 @@ class DryCleaningRequestApproveApi(APIView):
         serializer.is_valid(raise_exception=True)
         DryCleaningRequestApproveInteractor(
             dry_cleaning_request_id=dry_cleaning_request_id,
-            response_comment=serializer.validated_data['response_comment'],
-            services=serializer.validated_data['services'],
+            response_comment=serializer.validated_data["response_comment"],
+            services=serializer.validated_data["services"],
         ).execute()
         return Response()

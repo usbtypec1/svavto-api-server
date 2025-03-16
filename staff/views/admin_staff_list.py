@@ -3,7 +3,7 @@ from rest_framework.generics import ListAPIView
 from staff.models import AdminStaff
 from staff.serializers import AdminStaffListSerializer
 
-__all__ = ('AdminStaffListApi',)
+__all__ = ("AdminStaffListApi",)
 
 
 class AdminStaffListApi(ListAPIView):
@@ -12,5 +12,5 @@ class AdminStaffListApi(ListAPIView):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        response.data = {'admin_staff': response.data}
+        response.data = {"admin_staff": response.data}
         return response

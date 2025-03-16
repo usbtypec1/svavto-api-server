@@ -18,25 +18,25 @@ def available_date() -> AvailableDate:
 
 @pytest.mark.django_db
 def test_no_staff(available_date):
-    url = reverse('shifts:dead-souls')
+    url = reverse("shifts:dead-souls")
     client = APIClient()
 
     response = client.get(
         url,
-        data={'month': available_date.month, 'year': available_date.year},
+        data={"month": available_date.month, "year": available_date.year},
     )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        'staff_list': [],
-        'month': available_date.month,
-        'year': available_date.year
+        "staff_list": [],
+        "month": available_date.month,
+        "year": available_date.year,
     }
 
 
 @pytest.mark.django_db
 def test_all_staff_with_shifts(available_date):
-    url = reverse('shifts:dead-souls')
+    url = reverse("shifts:dead-souls")
     client = APIClient()
 
     staff = StaffFactory(banned_at=None)
@@ -47,83 +47,83 @@ def test_all_staff_with_shifts(available_date):
 
     response = client.get(
         url,
-        data={'month': available_date.month, 'year': available_date.year},
+        data={"month": available_date.month, "year": available_date.year},
     )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        'staff_list': [],
-        'month': available_date.month,
-        'year': available_date.year
+        "staff_list": [],
+        "month": available_date.month,
+        "year": available_date.year,
     }
 
 
 @pytest.mark.django_db
 def test_staff_banned(available_date):
-    url = reverse('shifts:dead-souls')
+    url = reverse("shifts:dead-souls")
     client = APIClient()
 
     StaffFactory(banned_at=timezone.now())
 
     response = client.get(
         url,
-        data={'month': available_date.month, 'year': available_date.year},
+        data={"month": available_date.month, "year": available_date.year},
     )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        'staff_list': [],
-        'month': available_date.month,
-        'year': available_date.year
+        "staff_list": [],
+        "month": available_date.month,
+        "year": available_date.year,
     }
 
 
 @pytest.mark.django_db
 def test_staff_without_shifts(available_date):
-    url = reverse('shifts:dead-souls')
+    url = reverse("shifts:dead-souls")
     client = APIClient()
 
     staff = StaffFactory(banned_at=None)
 
     response = client.get(
         url,
-        data={'month': available_date.month, 'year': available_date.year},
+        data={"month": available_date.month, "year": available_date.year},
     )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        'staff_list': [
+        "staff_list": [
             {
-                'id': staff.id,
-                'full_name': staff.full_name,
+                "id": staff.id,
+                "full_name": staff.full_name,
             }
         ],
-        'month': available_date.month,
-        'year': available_date.year
+        "month": available_date.month,
+        "year": available_date.year,
     }
 
 
 @pytest.mark.django_db
 def test_month_not_available():
-    url = reverse('shifts:dead-souls')
+    url = reverse("shifts:dead-souls")
     client = APIClient()
 
     response = client.get(
         url,
-        data={'month': 1, 'year': 2021},
+        data={"month": 1, "year": 2021},
     )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
-        'errors': [
+        "errors": [
             {
-                'code': 'month_not_available',
-                'detail': 'месяц не доступен',
-                'extra': {
-                    'month': 1,
-                    'year': 2021,
-                }
+                "code": "month_not_available",
+                "detail": "месяц не доступен",
+                "extra": {
+                    "month": 1,
+                    "year": 2021,
+                },
             }
         ],
-        'type': 'client_error',
+        "type": "client_error",
     }
