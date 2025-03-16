@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from shifts.selectors import get_staff_current_shift
 from shifts.serializers import (
-    CarToWashCreateInputSerializer,
+    TransferredCarCreateInputSerializer,
     CarToWashCreateOutputSerializer,
     TransferredCarListInputSerializer,
     TransferredCarListOutputSerializer,
@@ -30,7 +30,7 @@ class TransferredCarListCreateApi(APIView):
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
-        serializer = CarToWashCreateInputSerializer(data=request.data)
+        serializer = TransferredCarCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.validated_data
 

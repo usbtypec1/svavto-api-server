@@ -5,7 +5,7 @@ from .available_dates import (
 )
 from .car_washes import CarWashSerializer
 from .cars_to_wash import (
-    CarToWashCreateInputSerializer,
+    TransferredCarCreateInputSerializer,
     CarToWashCreateOutputSerializer,
     TransferredCarUpdateInputSerializer,
     CarToWashAdditionalServiceSerializer,
@@ -90,7 +90,7 @@ __all__ = (
     "DryCleaningRequestListInputSerializer",
     "DryCleaningRequestServiceSerializer",
     "DryCleaningRequestSerializer",
-    "CarToWashCreateInputSerializer",
+    "TransferredCarCreateInputSerializer",
     "CarToWashCreateOutputSerializer",
     "TransferredCarUpdateInputSerializer",
     "CarToWashAdditionalServiceSerializer",
