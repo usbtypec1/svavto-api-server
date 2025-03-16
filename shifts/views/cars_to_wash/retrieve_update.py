@@ -9,8 +9,8 @@ from shifts.serializers import (
     TransferredCarUpdateInputSerializer,
 )
 from shifts.services import TransferredCarRetrieveInteractor
-from shifts.services.cars_to_wash import CarTransferUpdateInteractor
 from staff.services import update_last_activity_time
+from shifts.use_cases.transferred_car_update import CarTransferUpdateUseCase
 
 
 __all__ = ("RetrieveUpdateCarsToWashApi",)
@@ -29,7 +29,7 @@ class RetrieveUpdateCarsToWashApi(APIView):
         serializer.is_valid(raise_exception=True)
 
         staff_id = get_staff_id_by_car_id(car_id)
-        interactor = CarTransferUpdateInteractor(
+        interactor = CarTransferUpdateUseCase(
             car_id=car_id, **serializer.validated_data
         )
         interactor.execute()

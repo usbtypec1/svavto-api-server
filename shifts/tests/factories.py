@@ -2,8 +2,7 @@ import factory
 from django.utils import timezone
 from factory.django import DjangoModelFactory
 
-from shifts.models import AvailableDate
-from shifts.models.shifts import Shift
+from shifts.models import AvailableDate, Shift, CarToWash, CarToWashAdditionalService
 from staff.tests.factories import StaffFactory
 
 __all__ = ("ShiftFactory", "AvailableDateFactory")

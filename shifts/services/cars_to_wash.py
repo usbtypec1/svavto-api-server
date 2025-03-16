@@ -1,40 +1,17 @@
 import datetime
-from collections.abc import Iterable
-from dataclasses import dataclass
 from typing import Final
 from uuid import UUID
+from collections.abc import Iterable
 
-from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.db.models import Count, Sum
-from django.utils import timezone
 
-from car_washes.models import CarWash, CarWashServicePrice
-from economics.selectors import compute_car_transfer_price
 from shifts.exceptions import (
-    AdditionalServiceCouldNotBeProvidedError,
     CarAlreadyWashedOnShiftError,
     CarWashSameAsCurrentError,
 )
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
-
-
-@dataclass(frozen=True, slots=True)
-class CarToWashAdditionalServiceCreateResultDTO:
-    id: UUID
-    count: int
-
-
-@dataclass(frozen=True, slots=True)
-class CarToWashCreateResultDTO:
-    id: int
-    shift_id: int
-    number: str
-    class_type: str
-    wash_type: str
-    windshield_washer_refilled_bottle_percentage: int
-    car_wash_id: int
-    additional_services: list[CarToWashAdditionalServiceCreateResultDTO]
+from car_washes.models import CarWashServicePrice
+from shifts.exceptions import AdditionalServiceCouldNotBeProvidedError
 
 
 error_messages_and_exceptions = (
@@ -43,31 +20,6 @@ error_messages_and_exceptions = (
         CarAlreadyWashedOnShiftError,
     ),
 )
-
-
-def map_create_result_to_dto(
-    car_to_wash: CarToWash,
-    additional_services: Iterable[CarToWashAdditionalService],
-) -> CarToWashCreateResultDTO:
-    additional_services_dto = [
-        CarToWashAdditionalServiceCreateResultDTO(
-            id=service.service_id,
-            count=service.count,
-        )
-        for service in additional_services
-    ]
-    return CarToWashCreateResultDTO(
-        id=car_to_wash.id,
-        shift_id=car_to_wash.shift_id,
-        number=car_to_wash.number,
-        class_type=car_to_wash.car_class,
-        wash_type=car_to_wash.wash_type,
-        windshield_washer_refilled_bottle_percentage=(
-            car_to_wash.windshield_washer_refilled_bottle_percentage
-        ),
-        car_wash_id=car_to_wash.car_wash_id,
-        additional_services=additional_services_dto,
-    )
 
 
 def get_car_wash_service_prices(
@@ -110,124 +62,6 @@ def get_car_wash_service_prices(
         service_price["service_id"]: service_price["price"]
         for service_price in car_wash_service_prices
     }
-
-
-@transaction.atomic
-def create_car_to_wash(
-    *,
-    shift: Shift,
-    number: str,
-    car_class: str,
-    wash_type: str,
-    windshield_washer_refilled_bottle_percentage: int,
-    additional_services: list[dict],
-):
-    transfer_price = compute_car_transfer_price(
-        class_type=car_class,
-        wash_type=wash_type,
-        is_extra_shift=shift.is_extra,
-    )
-    car_wash: CarWash = shift.car_wash
-    car_to_wash = CarToWash(
-        shift_id=shift.id,
-        number=number.lower(),
-        car_class=car_class,
-        wash_type=wash_type,
-        windshield_washer_refilled_bottle_percentage=(
-            windshield_washer_refilled_bottle_percentage
-        ),
-        transfer_price=transfer_price,
-        car_wash=shift.car_wash,
-        comfort_class_car_washing_price=car_wash.comfort_class_car_washing_price,
-        business_class_car_washing_price=car_wash.business_class_car_washing_price,
-        van_washing_price=car_wash.van_washing_price,
-        windshield_washer_price_per_bottle=car_wash.windshield_washer_price_per_bottle,
-        created_at=timezone.now(),
-    )
-    try:
-        car_to_wash.full_clean()
-        car_to_wash.save()
-    except ValidationError as error:
-        if "Добавленное авто с такими значениями полей" in error.messages:
-            raise CarAlreadyWashedOnShiftError
-        raise
-
-    additional_services = CarTransferUpdateInteractor(
-        car_id=car_to_wash.id,
-        windshield_washer_refilled_bottle_percentage=(
-            windshield_washer_refilled_bottle_percentage
-        ),
-        additional_services=additional_services,
-    ).execute()
-
-    return map_create_result_to_dto(car_to_wash, additional_services)
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class CarTransferUpdateInteractor:
-    """
-    Interactor to update all fields of CarToWash model.
-
-    Args:
-        car_id: The ID of the car to wash.
-        number: The car's number.
-        car_wash_id: The ID of the car wash.
-        class_type: The car class.
-        wash_type: The type of wash.
-        windshield_washer_refilled_bottle_percentage: Windshield washer
-        refill percentage.
-        additional_services: List of additional services.
-    """
-
-    car_id: int
-    number: str | None = None
-    car_wash_id: int | None = None
-    class_type: str | None = None
-    wash_type: str | None = None
-    windshield_washer_refilled_bottle_percentage: int | None = None
-    additional_services: list[dict] | None = None
-
-    @transaction.atomic
-    def execute(self):
-        """
-        Update all fields of CarToWash and its additional services.
-        """
-        transferred_car = CarToWash.objects.get(id=self.car_id)
-        old_car_wash_id = transferred_car.car_wash_id
-
-        if self.number is not None:
-            transferred_car.number = self.number.lower()
-        if self.car_wash_id is not None:
-            transferred_car.car_wash_id = self.car_wash_id
-        if self.class_type is not None:
-            transferred_car.car_class = self.class_type
-        if self.wash_type is not None:
-            transferred_car.wash_type = self.wash_type
-        if self.windshield_washer_refilled_bottle_percentage is not None:
-            transferred_car.windshield_washer_refilled_bottle_percentage = (
-                self.windshield_washer_refilled_bottle_percentage
-            )
-        transferred_car.save()
-
-        if self.additional_services is not None:
-            service_ids = [service["id"] for service in self.additional_services]
-            service_id_to_price = get_car_wash_service_prices(
-                car_wash_id=old_car_wash_id,
-                car_wash_service_ids=service_ids,
-            )
-            CarToWashAdditionalService.objects.filter(car_id=self.car_id).delete()
-            if not self.additional_services:
-                return []
-            services = [
-                CarToWashAdditionalService(
-                    car_id=self.car_id,
-                    service_id=service["id"],
-                    count=service["count"],
-                    price=service_id_to_price[service["id"]],
-                )
-                for service in self.additional_services
-            ]
-            return CarToWashAdditionalService.objects.bulk_create(services)
 
 
 def get_staff_cars_count_by_date(date: datetime.date) -> dict:

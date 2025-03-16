@@ -6,7 +6,7 @@ from shifts.serializers.additional_services import AdditionalServiceSerializer
 
 __all__ = (
     "TransferredCarCreateInputSerializer",
-    "CarToWashCreateOutputSerializer",
+    "TransferredCarCreateOutputSerializer",
     "TransferredCarUpdateInputSerializer",
     "CarToWashAdditionalServiceSerializer",
     "TransferredCarListOutputSerializer",
@@ -87,7 +87,7 @@ class TransferredCarCreateInputSerializer(serializers.Serializer):
     additional_services = AdditionalServiceSerializer(many=True, default=list)
 
 
-class CarToWashCreateOutputSerializer(serializers.Serializer):
+class TransferredCarCreateOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     shift_id = serializers.IntegerField()
     number = serializers.CharField()
