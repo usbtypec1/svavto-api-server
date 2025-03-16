@@ -9,12 +9,11 @@ from shifts.services import DryCleaningRequestRejectInteractor
 
 
 class DryCleaningRequestRejectApi(APIView):
-
     def post(self, request: Request, dry_cleaning_request_id: int) -> Response:
         serializer = DryCleaningRequestRejectInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         DryCleaningRequestRejectInteractor(
             dry_cleaning_request_id=dry_cleaning_request_id,
-            response_comment=serializer.validated_data['response_comment'],
+            response_comment=serializer.validated_data["response_comment"],
         ).execute()
         return Response()

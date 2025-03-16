@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('shifts', '0009_alter_shift_unique_together'),
+        ("shifts", "0009_alter_shift_unique_together"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='shift',
-            name='created_at',
-            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name='created at'),
+            model_name="shift",
+            name="created_at",
+            field=models.DateTimeField(
+                default=django.utils.timezone.now, verbose_name="created at"
+            ),
         ),
     ]

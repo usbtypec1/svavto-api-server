@@ -11,15 +11,15 @@ from economics.serializers import (
     CarWashPenaltyListInputSerializer,
 )
 from economics.services.car_washes.penalties import (
-    CarWashPenaltyCreateInteractor, CarWashPenaltyDeleteInteractor,
+    CarWashPenaltyCreateInteractor,
+    CarWashPenaltyDeleteInteractor,
     CarWashPenaltyListInteractor,
 )
 
-__all__ = ('CarWashPenaltyListCreateApi', 'CarWashPenaltyDeleteApi')
+__all__ = ("CarWashPenaltyListCreateApi", "CarWashPenaltyDeleteApi")
 
 
 class CarWashPenaltyDeleteApi(APIView):
-
     def delete(self, request: Request, penalty_id: int) -> Response:
         interactor = CarWashPenaltyDeleteInteractor(penalty_id=penalty_id)
         interactor.execute()
@@ -27,7 +27,6 @@ class CarWashPenaltyDeleteApi(APIView):
 
 
 class CarWashPenaltyListCreateApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = CarWashPenaltyListInputSerializer(
             data=request.query_params,
@@ -35,9 +34,9 @@ class CarWashPenaltyListCreateApi(APIView):
         serializer.is_valid(raise_exception=True)
         data: dict = serializer.validated_data
 
-        from_date: datetime.date | None = data['from_date']
-        to_date: datetime.date | None = data['to_date']
-        car_wash_ids: list[int] | None = data['car_wash_ids']
+        from_date: datetime.date | None = data["from_date"]
+        to_date: datetime.date | None = data["to_date"]
+        car_wash_ids: list[int] | None = data["car_wash_ids"]
 
         interactor = CarWashPenaltyListInteractor(
             from_date=from_date,
@@ -50,17 +49,17 @@ class CarWashPenaltyListCreateApi(APIView):
             penalties,
             many=True,
         )
-        return Response({'penalties': serializer.data})
+        return Response({"penalties": serializer.data})
 
     def post(self, request: Request) -> Response:
         serializer = CarWashPenaltyCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data: dict = serializer.validated_data
 
-        car_wash_id: int = data['car_wash_id']
-        reason: str = data['reason']
-        amount: int = data['amount']
-        date: datetime.date = data['date']
+        car_wash_id: int = data["car_wash_id"]
+        reason: str = data["reason"]
+        amount: int = data["amount"]
+        date: datetime.date = data["date"]
 
         interactor = CarWashPenaltyCreateInteractor(
             car_wash_id=car_wash_id,

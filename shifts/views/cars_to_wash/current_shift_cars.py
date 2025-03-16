@@ -7,11 +7,11 @@ from shifts.selectors import get_staff_current_shift
 
 
 class CarToWashAdditionalServiceSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(source='service_id')
+    id = serializers.UUIDField(source="service_id")
 
     class Meta:
         model = CarToWashAdditionalService
-        fields = ('id', 'count')
+        fields = ("id", "count")
 
 
 class CarToWashSerializer(serializers.ModelSerializer):
@@ -22,13 +22,13 @@ class CarToWashSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarToWash
         fields = [
-            'id',
-            'number',
-            'car_class',
-            'wash_type',
-            'windshield_washer_refilled_bottle_percentage',
-            'created_at',
-            'additional_services',
+            "id",
+            "number",
+            "car_class",
+            "wash_type",
+            "windshield_washer_refilled_bottle_percentage",
+            "created_at",
+            "additional_services",
         ]
 
 
@@ -40,11 +40,11 @@ class CarToWashListApi(views.APIView):
             shift_id=shift.id,
         ).prefetch_related(
             Prefetch(
-                'additional_services',
+                "additional_services",
                 queryset=CarToWashAdditionalService.objects.all(),
-                to_attr='additional_services_prefetched',
+                to_attr="additional_services_prefetched",
             )
         )
 
         serializer = CarToWashSerializer(queryset, many=True)
-        return Response({'cars': serializer.data})
+        return Response({"cars": serializer.data})

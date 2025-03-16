@@ -5,55 +5,132 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('car_washes', '0003_alter_carwashserviceprice_car_wash_and_more'),
-        ('shifts', '0012_shift_confirmed_at'),
+        ("car_washes", "0003_alter_carwashserviceprice_car_wash_and_more"),
+        ("shifts", "0012_shift_confirmed_at"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DryCleaningRequest',
+            name="DryCleaningRequest",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('car_number', models.CharField(max_length=16, verbose_name='Car number')),
-                ('status', models.PositiveSmallIntegerField(choices=[(1, 'Pending'), (2, 'Approved'), (3, 'Rejected')], default=1, verbose_name='Status')),
-                ('response_comment', models.TextField(blank=True, max_length=1024, null=True, verbose_name='Response comment')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('shift', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dry_cleaning_requests', to='shifts.shift', verbose_name='Shift')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "car_number",
+                    models.CharField(max_length=16, verbose_name="Car number"),
+                ),
+                (
+                    "status",
+                    models.PositiveSmallIntegerField(
+                        choices=[(1, "Pending"), (2, "Approved"), (3, "Rejected")],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "response_comment",
+                    models.TextField(
+                        blank=True,
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Response comment",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "shift",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="dry_cleaning_requests",
+                        to="shifts.shift",
+                        verbose_name="Shift",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Dry cleaning request',
-                'verbose_name_plural': 'Dry cleaning requests',
+                "verbose_name": "Dry cleaning request",
+                "verbose_name_plural": "Dry cleaning requests",
             },
         ),
         migrations.CreateModel(
-            name='DryCleaningRequestPhoto',
+            name="DryCleaningRequestPhoto",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('url', models.URLField(max_length=255, verbose_name='url')),
-                ('request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='photos', to='dry_cleaning.drycleaningrequest', verbose_name='Dry cleaning request')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("url", models.URLField(max_length=255, verbose_name="url")),
+                (
+                    "request",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="photos",
+                        to="dry_cleaning.drycleaningrequest",
+                        verbose_name="Dry cleaning request",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Dry cleaning request photo',
-                'verbose_name_plural': 'Dry cleaning request photos',
+                "verbose_name": "Dry cleaning request photo",
+                "verbose_name_plural": "Dry cleaning request photos",
             },
         ),
         migrations.CreateModel(
-            name='DryCleaningRequestService',
+            name="DryCleaningRequestService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('count', models.PositiveSmallIntegerField(verbose_name='Count')),
-                ('request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='services', to='dry_cleaning.drycleaningrequest', verbose_name='Dry cleaning request')),
-                ('service', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='car_washes.carwashservice', verbose_name='Car wash service')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("count", models.PositiveSmallIntegerField(verbose_name="Count")),
+                (
+                    "request",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="services",
+                        to="dry_cleaning.drycleaningrequest",
+                        verbose_name="Dry cleaning request",
+                    ),
+                ),
+                (
+                    "service",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="car_washes.carwashservice",
+                        verbose_name="Car wash service",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Dry cleaning request service',
-                'verbose_name_plural': 'Dry cleaning request services',
-                'constraints': [models.UniqueConstraint(fields=('request', 'service'), name='unique_dry_cleaning_request_service')],
+                "verbose_name": "Dry cleaning request service",
+                "verbose_name_plural": "Dry cleaning request services",
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("request", "service"),
+                        name="unique_dry_cleaning_request_service",
+                    )
+                ],
             },
         ),
     ]

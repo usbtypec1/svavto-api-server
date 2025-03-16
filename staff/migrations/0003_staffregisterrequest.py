@@ -4,25 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('staff', '0002_alter_staff_car_sharing_phone_number_and_more'),
+        ("staff", "0002_alter_staff_car_sharing_phone_number_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='StaffRegisterRequest',
+            name="StaffRegisterRequest",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('staff_id', models.BigIntegerField(db_index=True, unique=True)),
-                ('full_name', models.CharField(max_length=100)),
-                ('car_sharing_phone_number', models.CharField(max_length=32)),
-                ('console_phone_number', models.CharField(max_length=32)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("staff_id", models.BigIntegerField(db_index=True, unique=True)),
+                ("full_name", models.CharField(max_length=100)),
+                ("car_sharing_phone_number", models.CharField(max_length=32)),
+                ("console_phone_number", models.CharField(max_length=32)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'verbose_name': 'staff register request',
-                'verbose_name_plural': 'staff register requests',
+                "verbose_name": "staff register request",
+                "verbose_name_plural": "staff register requests",
             },
         ),
     ]

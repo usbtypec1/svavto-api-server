@@ -26,6 +26,7 @@ dependencies = [
 dev = [
     "factory-boy>=3.3.3",
     "freezegun>=1.5.1",
+    "pre-commit>=4.1.0",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.10.0",
 ]

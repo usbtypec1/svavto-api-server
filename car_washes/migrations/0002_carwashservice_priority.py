@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('car_washes', '0001_initial'),
+        ("car_washes", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='carwashservice',
-            name='priority',
-            field=models.PositiveIntegerField(default=0, help_text='the higher the number, the higher the priority', verbose_name='priority'),
+            model_name="carwashservice",
+            name="priority",
+            field=models.PositiveIntegerField(
+                default=0,
+                help_text="the higher the number, the higher the priority",
+                verbose_name="priority",
+            ),
         ),
     ]

@@ -16,56 +16,54 @@ from economics.views import (
 
 reports_urlpatterns = [
     path(
-        r'service-costs/',
+        r"service-costs/",
         ServiceCostsApi.as_view(),
-        name='service-costs',
+        name="service-costs",
     ),
     path(
-        r'staff-shifts-statistics/',
+        r"staff-shifts-statistics/",
         StaffShiftsStatisticsReportApi.as_view(),
-        name='staff-shifts-statistics',
+        name="staff-shifts-statistics",
     ),
 ]
 
-app_name = 'economics'
+app_name = "economics"
 urlpatterns = [
     path(
-        r'car-washes/penalties/',
+        r"car-washes/penalties/",
         CarWashPenaltyListCreateApi.as_view(),
-        name='car-wash-penalty-list-create',
+        name="car-wash-penalty-list-create",
     ),
     path(
-        r'car-washes/surcharges/',
+        r"car-washes/surcharges/",
         CarWashSurchargeListCreateApi.as_view(),
-        name='car-wash-surcharge-list-create',
+        name="car-wash-surcharge-list-create",
     ),
     path(
-        r'car-washes/surcharges/<int:surcharge_id>/',
+        r"car-washes/surcharges/<int:surcharge_id>/",
         CarWashSurchargeDeleteApi.as_view(),
-        name='car-wash-surcharge-delete',
+        name="car-wash-surcharge-delete",
     ),
     path(
-        r'car-washes/penalties/<int:penalty_id>/',
+        r"car-washes/penalties/<int:penalty_id>/",
         CarWashPenaltyDeleteApi.as_view(),
-        name='car-wash-penalty-delete',
+        name="car-wash-penalty-delete",
     ),
     path(
-        r'penalties/',
+        r"penalties/",
         PenaltyListCreateApi.as_view(),
-        name='penalty-list-create',
+        name="penalty-list-create",
     ),
     path(
-        r'penalties/<int:penalty_id>/',
+        r"penalties/<int:penalty_id>/",
         CarTransporterPenaltyDeleteApi.as_view(),
-        name='car-transporter-penalty-delete',
+        name="car-transporter-penalty-delete",
     ),
+    path(r"surcharges/", SurchargeCreateApi.as_view(), name="surcharge-create"),
     path(
-        r'surcharges/', SurchargeCreateApi.as_view(), name='surcharge-create'
-    ),
-    path(
-        r'surcharges/<int:surcharge_id>/',
+        r"surcharges/<int:surcharge_id>/",
         CarTransporterSurchargeDeleteApi.as_view(),
-        name='car-transporter-surcharge-delete',
+        name="car-transporter-surcharge-delete",
     ),
-    path(r'reports/', include(reports_urlpatterns)),
+    path(r"reports/", include(reports_urlpatterns)),
 ]

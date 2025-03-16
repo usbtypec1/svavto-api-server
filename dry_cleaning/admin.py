@@ -3,7 +3,9 @@ from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
 from dry_cleaning.models import (
-    DryCleaningAdmin, DryCleaningRequest, DryCleaningRequestPhoto,
+    DryCleaningAdmin,
+    DryCleaningRequest,
+    DryCleaningRequestPhoto,
     DryCleaningRequestService,
 )
 

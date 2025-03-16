@@ -8,7 +8,7 @@ from car_washes.serializers import (
     CarWashServiceSerializer,
 )
 
-__all__ = ('CarWashAllServicesApi',)
+__all__ = ("CarWashAllServicesApi",)
 
 
 class CarWashAllServicesApi(APIView):
@@ -19,9 +19,9 @@ class CarWashAllServicesApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
-        car_wash_ids: list[int] | None = serialized_data['car_wash_ids']
+        car_wash_ids: list[int] | None = serialized_data["car_wash_ids"]
 
         car_wash_services = get_all_flatten_car_wash_services(car_wash_ids)
 
         serializer = CarWashServiceSerializer(car_wash_services, many=True)
-        return Response({'services': serializer.data})
+        return Response({"services": serializer.data})

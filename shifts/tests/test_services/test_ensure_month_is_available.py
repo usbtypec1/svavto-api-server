@@ -13,8 +13,8 @@ def test_month_is_not_available():
     with pytest.raises(MonthNotAvailableError) as error:
         ensure_month_is_available(month=month, year=year)
 
-    assert error.value.extra['month'] == month
-    assert error.value.extra['year'] == year
+    assert error.value.extra["month"] == month
+    assert error.value.extra["year"] == year
 
 
 @pytest.mark.django_db

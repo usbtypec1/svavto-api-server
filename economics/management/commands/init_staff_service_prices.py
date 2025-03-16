@@ -16,24 +16,24 @@ SERVICE_TYPE_TO_PRICE: Final[dict[StaffServicePrice.ServiceType, int]] = {
 
 
 class Command(BaseCommand):
-    help = 'Initialize staff service prices'
+    help = "Initialize staff service prices"
 
     def handle(self, *args, **options):
         for service_type in StaffServicePrice.ServiceType:
             if service_type not in SERVICE_TYPE_TO_PRICE:
                 self.stderr.write(
                     self.style.WARNING(
-                        'Service type %s is not in SERVICE_TYPE_TO_PRICE',
+                        "Service type %s is not in SERVICE_TYPE_TO_PRICE",
                     )
                 )
             StaffServicePrice.objects.update_or_create(
                 service=service_type,
                 defaults={
-                    'price': SERVICE_TYPE_TO_PRICE[service_type],
+                    "price": SERVICE_TYPE_TO_PRICE[service_type],
                 },
             )
         self.stdout.write(
             self.style.SUCCESS(
-                'Staff service prices have been initialized',
+                "Staff service prices have been initialized",
             )
         )

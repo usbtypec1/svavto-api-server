@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
 __all__ = (
-    'CarWashSurchargeCreateInputSerializer',
-    'CarWashSurchargeListCreateOutputSerializer',
-    'CarWashSurchargeListInputSerializer',
+    "CarWashSurchargeCreateInputSerializer",
+    "CarWashSurchargeListCreateOutputSerializer",
+    "CarWashSurchargeListInputSerializer",
 )
 
 

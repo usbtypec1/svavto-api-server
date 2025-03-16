@@ -3,17 +3,17 @@ from rest_framework import serializers
 from car_washes.models import CarWash
 
 __all__ = (
-    'CarWashListOutputSerializer',
-    'CarWashRetrieveOutputSerializer',
-    'CarWashCreateOutputSerializer',
-    'CarWashCreateInputSerializer',
-    'CarWashUpdateInputSerializer',
-    'CarWashServicePriceUpsertInputSerializer',
-    'CarWashServicePriceUpsertOutputSerializer',
-    'CarWashUpdateOutputSerializer',
-    'CarWashServiceListInputSerializer',
-    'CarWashServiceSerializer',
-    'CarWashServiceParentSerializer',
+    "CarWashListOutputSerializer",
+    "CarWashRetrieveOutputSerializer",
+    "CarWashCreateOutputSerializer",
+    "CarWashCreateInputSerializer",
+    "CarWashUpdateInputSerializer",
+    "CarWashServicePriceUpsertInputSerializer",
+    "CarWashServicePriceUpsertOutputSerializer",
+    "CarWashUpdateOutputSerializer",
+    "CarWashServiceListInputSerializer",
+    "CarWashServiceSerializer",
+    "CarWashServiceParentSerializer",
 )
 
 
@@ -40,14 +40,14 @@ class CarWashListOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWash
         fields = (
-            'id',
-            'name',
-            'comfort_class_car_washing_price',
-            'business_class_car_washing_price',
-            'van_washing_price',
-            'windshield_washer_price_per_bottle',
-            'created_at',
-            'updated_at',
+            "id",
+            "name",
+            "comfort_class_car_washing_price",
+            "business_class_car_washing_price",
+            "van_washing_price",
+            "windshield_washer_price_per_bottle",
+            "created_at",
+            "updated_at",
         )
 
 
@@ -55,14 +55,14 @@ class CarWashRetrieveOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWash
         fields = (
-            'id',
-            'name',
-            'comfort_class_car_washing_price',
-            'business_class_car_washing_price',
-            'van_washing_price',
-            'windshield_washer_price_per_bottle',
-            'created_at',
-            'updated_at',
+            "id",
+            "name",
+            "comfort_class_car_washing_price",
+            "business_class_car_washing_price",
+            "van_washing_price",
+            "windshield_washer_price_per_bottle",
+            "created_at",
+            "updated_at",
         )
 
 
@@ -97,14 +97,14 @@ class CarWashCreateOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWash
         fields = (
-            'id',
-            'name',
-            'comfort_class_car_washing_price',
-            'business_class_car_washing_price',
-            'van_washing_price',
-            'windshield_washer_price_per_bottle',
-            'created_at',
-            'updated_at',
+            "id",
+            "name",
+            "comfort_class_car_washing_price",
+            "business_class_car_washing_price",
+            "van_washing_price",
+            "windshield_washer_price_per_bottle",
+            "created_at",
+            "updated_at",
         )
 
 

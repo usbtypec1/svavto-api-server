@@ -13,11 +13,10 @@ from shifts.services.cars_to_wash import CarTransferUpdateInteractor
 from staff.services import update_last_activity_time
 
 
-__all__ = ('RetrieveUpdateCarsToWashApi',)
+__all__ = ("RetrieveUpdateCarsToWashApi",)
 
 
 class RetrieveUpdateCarsToWashApi(APIView):
-
     def get(self, request: Request, car_id: int) -> Response:
         transferred_car = TransferredCarRetrieveInteractor(
             transferred_car_id=car_id,
@@ -31,8 +30,7 @@ class RetrieveUpdateCarsToWashApi(APIView):
 
         staff_id = get_staff_id_by_car_id(car_id)
         interactor = CarTransferUpdateInteractor(
-            car_id=car_id,
-            **serializer.validated_data
+            car_id=car_id, **serializer.validated_data
         )
         interactor.execute()
 

@@ -5,39 +5,68 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('car_washes', '0003_alter_carwashserviceprice_car_wash_and_more'),
-        ('economics', '0003_remove_penalty_staff_remove_surcharge_staff'),
+        ("car_washes", "0003_alter_carwashserviceprice_car_wash_and_more"),
+        ("economics", "0003_remove_penalty_staff_remove_surcharge_staff"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CarWashPenalty',
+            name="CarWashPenalty",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('reason', models.TextField(max_length=1024)),
-                ('amount', models.PositiveIntegerField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('car_wash', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='penalties', to='car_washes.carwash')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("reason", models.TextField(max_length=1024)),
+                ("amount", models.PositiveIntegerField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "car_wash",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="penalties",
+                        to="car_washes.carwash",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'car wash penalty',
-                'verbose_name_plural': 'car wash penalties',
+                "verbose_name": "car wash penalty",
+                "verbose_name_plural": "car wash penalties",
             },
         ),
         migrations.CreateModel(
-            name='CarWashSurcharge',
+            name="CarWashSurcharge",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('reason', models.TextField(max_length=1024)),
-                ('amount', models.PositiveIntegerField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('car_wash', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='surcharges', to='car_washes.carwash')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("reason", models.TextField(max_length=1024)),
+                ("amount", models.PositiveIntegerField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "car_wash",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="surcharges",
+                        to="car_washes.carwash",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'car wash surcharge',
-                'verbose_name_plural': 'car wash surcharges',
+                "verbose_name": "car wash surcharge",
+                "verbose_name_plural": "car wash surcharges",
             },
         ),
     ]

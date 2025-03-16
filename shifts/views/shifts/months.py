@@ -7,7 +7,6 @@ from shifts.serializers import StaffShiftsMonthListOutputSerializer
 
 
 class StaffShiftsMonthListApi(APIView):
-
     def get(self, request: Request, staff_id: int) -> Response:
         months = StaffShiftsMonthListInteractor(staff_id=staff_id).execute()
         serializer = StaffShiftsMonthListOutputSerializer(months)

@@ -4,7 +4,7 @@ from .test_shift import ShiftTestCreateInteractor
 
 
 __all__ = (
-    'ShiftExtraCreateInteractor',
-    'ShiftRegularCreateInteractor',
-    'ShiftTestCreateInteractor',
+    "ShiftExtraCreateInteractor",
+    "ShiftRegularCreateInteractor",
+    "ShiftTestCreateInteractor",
 )

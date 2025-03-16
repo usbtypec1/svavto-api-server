@@ -16,10 +16,12 @@ from dry_cleaning.models import (
     DryCleaningRequestService,
 )
 from dry_cleaning.models.dry_cleaning_admins import DryCleaningAdmin
-from photo_upload.services import upload_via_url, upload_via_urls
+from photo_upload.services import upload_via_urls
 from shifts.services.shifts.validators import ensure_shift_exists
 from telegram.services import (
-    get_dry_cleaning_telegram_bot, get_telegram_bot, try_send_message,
+    get_dry_cleaning_telegram_bot,
+    get_telegram_bot,
+    try_send_message,
     try_send_photos_media_group,
 )
 
@@ -76,7 +78,7 @@ class DryCleaningRequestCreateInteractor:
         urls = get_file_urls(bot, self.photo_file_ids)
         urls = [
             uploaded_photo.url
-            for uploaded_photo in upload_via_urls(urls, folder='dry_cleaning')
+            for uploaded_photo in upload_via_urls(urls, folder="dry_cleaning")
         ]
 
         photos = DryCleaningRequestPhoto.objects.bulk_create(
@@ -89,47 +91,46 @@ class DryCleaningRequestCreateInteractor:
         services = DryCleaningRequestService.objects.bulk_create(
             DryCleaningRequestService(
                 request=dry_cleaning_request,
-                service_id=service['id'],
-                count=service['count'],
+                service_id=service["id"],
+                count=service["count"],
             )
             for service in self.services
         )
 
-        callback_data = (f'dry_cleaning_request:{dry_cleaning_request.id}:'
-                         f'{settings.DEPARTMENT_NAME}')
+        callback_data = (
+            f"dry_cleaning_request:{dry_cleaning_request.id}:"
+            f"{settings.DEPARTMENT_NAME}"
+        )
         button = InlineKeyboardButton(
-            text='Проверить',
+            text="Проверить",
             callback_data=callback_data,
         )
         reply_markup = InlineKeyboardMarkup(keyboard=[[button]])
 
         lines: list[str] = [
-            f'<b>Сотрудник {dry_cleaning_request.shift.staff.full_name} '
-            'запрашивает химчистку</b>',
-            f'Гос.номер: {dry_cleaning_request.car_number}',
+            f"<b>Сотрудник {dry_cleaning_request.shift.staff.full_name} "
+            "запрашивает химчистку</b>",
+            f"Гос.номер: {dry_cleaning_request.car_number}",
         ]
         for service in services:
             if service.service.is_countable:
-                lines.append(f'{service.service.name} - {service.count} шт.')
+                lines.append(f"{service.service.name} - {service.count} шт.")
             else:
                 lines.append(service.service.name)
 
         photo_urls = [photo.url for photo in photos]
 
         bot = get_dry_cleaning_telegram_bot()
-        user_ids = DryCleaningAdmin.objects.values_list('id', flat=True)
+        user_ids = DryCleaningAdmin.objects.values_list("id", flat=True)
         for chat_id in user_ids:
             try_send_photos_media_group(
-                bot=bot,
-                file_ids=photo_urls,
-                chat_id=chat_id,
-                caption='\n'.join(lines)
+                bot=bot, file_ids=photo_urls, chat_id=chat_id, caption="\n".join(lines)
             )
 
             try_send_message(
                 bot=bot,
                 reply_markup=reply_markup,
-                text='Новый запрос на химчистку',
+                text="Новый запрос на химчистку",
                 chat_id=chat_id,
             )
 

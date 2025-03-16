@@ -7,10 +7,9 @@ from texts.models import Text
 
 
 class TextRetrieveApi(APIView):
-
     def get(self, request: Request) -> Response:
         try:
-            text = Text.objects.get(key=request.query_params.get('key'))
+            text = Text.objects.get(key=request.query_params.get("key"))
         except Text.DoesNotExist:
             raise TextNotFoundError
-        return Response({'key': text.key, 'value': text.value})
+        return Response({"key": text.key, "value": text.value})

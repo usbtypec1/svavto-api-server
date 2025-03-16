@@ -5,15 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('shifts', '0006_shift_is_test_alter_shift_car_wash_and_more'),
+        ("shifts", "0006_shift_is_test_alter_shift_car_wash_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='shiftfinishphoto',
-            name='shift',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='finish_photos', to='shifts.shift', verbose_name='shift'),
+            model_name="shiftfinishphoto",
+            name="shift",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="finish_photos",
+                to="shifts.shift",
+                verbose_name="shift",
+            ),
         ),
     ]

@@ -6,9 +6,9 @@ from .shifts import Shift
 
 
 __all__ = (
-    'CarToWash',
-    'CarToWashAdditionalService',
-    'AvailableDate',
-    'ShiftFinishPhoto',
-    'Shift',
+    "CarToWash",
+    "CarToWashAdditionalService",
+    "AvailableDate",
+    "ShiftFinishPhoto",
+    "Shift",
 )

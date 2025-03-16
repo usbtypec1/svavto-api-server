@@ -4,19 +4,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Text',
+            name="Text",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('key', models.CharField(choices=[('transferred_car_number_help_text', 'Transferred car number help text'), ('transferred_car_class_help_text', 'Transferred car class help text')], max_length=255, unique=True)),
-                ('value', models.TextField(max_length=1024)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "key",
+                    models.CharField(
+                        choices=[
+                            (
+                                "transferred_car_number_help_text",
+                                "Transferred car number help text",
+                            ),
+                            (
+                                "transferred_car_class_help_text",
+                                "Transferred car class help text",
+                            ),
+                        ],
+                        max_length=255,
+                        unique=True,
+                    ),
+                ),
+                ("value", models.TextField(max_length=1024)),
             ],
         ),
     ]

@@ -3,15 +3,15 @@ from rest_framework import serializers
 from staff.models import AdminStaff, Staff
 
 __all__ = (
-    'StaffListOutputSerializer',
-    'StaffListInputSerializer',
-    'StaffRetrieveOutputSerializer',
-    'AdminStaffListSerializer',
-    'StaffRegisterRequestListCreateOutputSerializer',
-    'StaffRegisterRequestCreateInputSerializer',
-    'StaffRegisterRequestAcceptInputSerializer',
-    'StaffItemSerializer',
-    'StaffRegisterRequestRejectInputSerializer',
+    "StaffListOutputSerializer",
+    "StaffListInputSerializer",
+    "StaffRetrieveOutputSerializer",
+    "AdminStaffListSerializer",
+    "StaffRegisterRequestListCreateOutputSerializer",
+    "StaffRegisterRequestCreateInputSerializer",
+    "StaffRegisterRequestAcceptInputSerializer",
+    "StaffItemSerializer",
+    "StaffRegisterRequestRejectInputSerializer",
 )
 
 
@@ -42,14 +42,14 @@ class StaffRegisterRequestListCreateOutputSerializer(serializers.Serializer):
 class StaffListInputSerializer(serializers.Serializer):
     order_by = serializers.ChoiceField(
         choices=(
-            'full_name',
-            '-full_name',
-            'created_at',
-            '-created_at',
-            'last_activity_at',
-            '-last_activity_at',
+            "full_name",
+            "-full_name",
+            "created_at",
+            "-created_at",
+            "last_activity_at",
+            "-last_activity_at",
         ),
-        default='full_name',
+        default="full_name",
     )
     include_banned = serializers.BooleanField(default=False)
     limit = serializers.IntegerField(min_value=1, max_value=1000, default=100)
@@ -81,17 +81,17 @@ class StaffRetrieveOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
         fields = (
-            'id',
-            'full_name',
-            'car_sharing_phone_number',
-            'console_phone_number',
-            'banned_at',
-            'created_at',
-            'last_activity_at',
+            "id",
+            "full_name",
+            "car_sharing_phone_number",
+            "console_phone_number",
+            "banned_at",
+            "created_at",
+            "last_activity_at",
         )
 
 
 class AdminStaffListSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminStaff
-        fields = ('id', 'name')
+        fields = ("id", "name")

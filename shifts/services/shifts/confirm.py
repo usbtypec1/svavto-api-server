@@ -26,7 +26,7 @@ class ShiftConfirmInteractor:
             raise ShiftAlreadyConfirmedError
 
         shift.confirmed_at = timezone.now()
-        shift.save(update_fields=('confirmed_at',))
+        shift.save(update_fields=("confirmed_at",))
 
         return ShiftConfirmResult(
             shift_id=shift.id,

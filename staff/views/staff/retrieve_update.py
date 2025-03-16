@@ -7,7 +7,7 @@ from staff.selectors import get_staff_by_id
 from staff.serializers import StaffRetrieveOutputSerializer
 from staff.services import update_last_activity_time, update_staff
 
-__all__ = ('StaffRetrieveUpdateApi',)
+__all__ = ("StaffRetrieveUpdateApi",)
 
 
 class StaffRetrieveUpdateApi(APIView):
@@ -32,6 +32,6 @@ class StaffRetrieveUpdateApi(APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
-        is_banned: bool = serialized_data['is_banned']
+        is_banned: bool = serialized_data["is_banned"]
         update_staff(staff_id=staff_id, is_banned=is_banned)
         return Response(status=status.HTTP_204_NO_CONTENT)

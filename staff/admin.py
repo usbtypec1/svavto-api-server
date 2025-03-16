@@ -23,20 +23,20 @@ class ShiftInline(admin.TabularInline):
 
 
 class IsBannedFilter(admin.SimpleListFilter):
-    title = _('banned')
-    parameter_name = 'banned'
+    title = _("banned")
+    parameter_name = "banned"
 
     def lookups(self, request, model_admin):
         return (
-            ('true', _('yes')),
-            ('false', _('no')),
+            ("true", _("yes")),
+            ("false", _("no")),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'true':
+        if self.value() == "true":
             return queryset.filter(banned_at__isnull=False)
 
-        if self.value() == 'false':
+        if self.value() == "false":
             return queryset.filter(banned_at__isnull=True)
 
 
@@ -46,27 +46,27 @@ class StaffAdmin(ImportExportModelAdmin):
     inlines = (ShiftInline,)
     list_filter = (IsBannedFilter,)
     list_display = (
-        'id',
-        'full_name',
-        'car_sharing_phone_number',
-        'console_phone_number',
-        'created_at',
+        "id",
+        "full_name",
+        "car_sharing_phone_number",
+        "console_phone_number",
+        "created_at",
     )
-    search_fields = ('full_name', 'id')
+    search_fields = ("full_name", "id")
 
 
 @admin.register(AdminStaff)
 class AdminStaffAdmin(ImportExportModelAdmin):
     resource_class = AdminStaffResource
-    list_display = ('id', 'name', 'created_at')
+    list_display = ("id", "name", "created_at")
 
 
 @admin.register(StaffRegisterRequest)
 class StaffRegisterRequestAdmin(ImportExportModelAdmin):
     list_display = (
-        'full_name',
-        'car_sharing_phone_number',
-        'console_phone_number',
-        'created_at',
+        "full_name",
+        "car_sharing_phone_number",
+        "console_phone_number",
+        "created_at",
     )
-    search_fields = ('full_name', 'staff_id')
+    search_fields = ("full_name", "staff_id")

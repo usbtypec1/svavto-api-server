@@ -17,19 +17,18 @@ from economics.services.penalties import (
 from shifts.services.shifts.validators import ensure_shift_exists
 
 
-__all__ = ('PenaltyListCreateApi', 'CarTransporterPenaltyDeleteApi')
+__all__ = ("PenaltyListCreateApi", "CarTransporterPenaltyDeleteApi")
 
 
 class PenaltyListCreateApi(APIView):
-
     def get(self, request: Request) -> Response:
         serializer = PenaltyListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.validated_data
 
-        staff_ids: list[int] | None = serialized_data['staff_ids']
-        limit: int = serialized_data['limit']
-        offset: int = serialized_data['offset']
+        staff_ids: list[int] | None = serialized_data["staff_ids"]
+        limit: int = serialized_data["limit"]
+        offset: int = serialized_data["offset"]
 
         penalties_page = get_penalties_page(
             staff_ids=staff_ids,
@@ -45,10 +44,10 @@ class PenaltyListCreateApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.validated_data
 
-        shift_id: int = serialized_data['shift_id']
-        reason: str = serialized_data['reason']
-        amount: int | None = serialized_data['amount']
-        photo_urls: list[str] = serialized_data['photo_urls']
+        shift_id: int = serialized_data["shift_id"]
+        reason: str = serialized_data["reason"]
+        amount: int | None = serialized_data["amount"]
+        photo_urls: list[str] = serialized_data["photo_urls"]
 
         ensure_shift_exists(shift_id)
         penalty = create_penalty(
@@ -63,7 +62,6 @@ class PenaltyListCreateApi(APIView):
 
 
 class CarTransporterPenaltyDeleteApi(APIView):
-
     def delete(self, request: Request, penalty_id: int) -> Response:
         interactor = CarTransporterPenaltyDeleteInteractor(
             penalty_id=penalty_id,

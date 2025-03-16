@@ -4,23 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dry_cleaning', '0001_initial'),
+        ("dry_cleaning", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DryCleaningAdmin',
+            name="DryCleaningAdmin",
             fields=[
-                ('id', models.BigIntegerField(db_index=True, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=255, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        db_index=True, primary_key=True, serialize=False
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'Dry cleaning admin',
-                'verbose_name_plural': 'Dry cleaning admins',
+                "verbose_name": "Dry cleaning admin",
+                "verbose_name_plural": "Dry cleaning admins",
             },
         ),
     ]

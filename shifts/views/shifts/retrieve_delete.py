@@ -8,11 +8,10 @@ from shifts.serializers import ShiftRetrieveOutputSerializer
 from shifts.services import ShiftDeleteByIdInteractor
 
 
-__all__ = ('ShiftRetrieveDeleteApi',)
+__all__ = ("ShiftRetrieveDeleteApi",)
 
 
 class ShiftRetrieveDeleteApi(APIView):
-
     def get(self, request: Request, shift_id: int) -> Response:
         shift = get_shift_by_id(shift_id)
         serializer = ShiftRetrieveOutputSerializer(shift)

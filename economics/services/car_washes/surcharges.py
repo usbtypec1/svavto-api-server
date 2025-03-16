@@ -7,11 +7,11 @@ from car_washes.exceptions import CarWashNotFoundError
 from economics.models import CarWashSurcharge
 
 __all__ = (
-    'CarWashSurchargeCreateInteractor',
-    'CarWashSurchargeCreateResult',
-    'CarWashSurchargeListInteractor',
-    'CarWashSurchargeListItem',
-    'CarWashSurchargeDeleteInteractor',
+    "CarWashSurchargeCreateInteractor",
+    "CarWashSurchargeCreateResult",
+    "CarWashSurchargeListInteractor",
+    "CarWashSurchargeListItem",
+    "CarWashSurchargeDeleteInteractor",
 )
 
 
@@ -52,7 +52,7 @@ class CarWashSurchargeCreateInteractor:
         try:
             surcharge.full_clean()
         except ValidationError as error:
-            if 'car_wash' in error.message_dict:
+            if "car_wash" in error.message_dict:
                 raise CarWashNotFoundError
             raise
 
@@ -75,7 +75,7 @@ class CarWashSurchargeListInteractor:
     car_wash_ids: list[int] | None
 
     def execute(self) -> list[CarWashSurchargeListItem]:
-        surcharges = CarWashSurcharge.objects.order_by('-created_at')
+        surcharges = CarWashSurcharge.objects.order_by("-created_at")
         if self.car_wash_ids is not None:
             surcharges = surcharges.filter(car_wash_id__in=self.car_wash_ids)
         if self.from_date is not None:
@@ -101,10 +101,8 @@ class CarWashSurchargeDeleteInteractor:
     surcharge_id: int
 
     def execute(self) -> None:
-        deleted_count, _ = (
-            CarWashSurcharge.objects
-            .filter(id=self.surcharge_id)
-            .delete()
-        )
+        deleted_count, _ = CarWashSurcharge.objects.filter(
+            id=self.surcharge_id
+        ).delete()
         if deleted_count == 0:
             raise CarWashNotFoundError

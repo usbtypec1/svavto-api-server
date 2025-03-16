@@ -12,5 +12,5 @@ class DryCleaningAdmin(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Dry cleaning admin')
-        verbose_name_plural = _('Dry cleaning admins')
+        verbose_name = _("Dry cleaning admin")
+        verbose_name_plural = _("Dry cleaning admins")

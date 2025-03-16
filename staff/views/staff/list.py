@@ -9,7 +9,7 @@ from staff.serializers import (
     StaffListOutputSerializer,
 )
 
-__all__ = ('StaffListApi',)
+__all__ = ("StaffListApi",)
 
 
 class StaffListApi(APIView):
@@ -18,10 +18,10 @@ class StaffListApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
 
-        order_by: str = serialized_data['order_by']
-        include_banned: bool = serialized_data['include_banned']
-        limit: int = serialized_data['limit']
-        offset: int = serialized_data['offset']
+        order_by: str = serialized_data["order_by"]
+        include_banned: bool = serialized_data["include_banned"]
+        limit: int = serialized_data["limit"]
+        offset: int = serialized_data["offset"]
 
         staff_list_page = get_all_staff(
             order_by=order_by,

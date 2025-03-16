@@ -29,32 +29,32 @@ class CarWashServicePriceResource(ModelResource):
 @admin.register(CarWashService)
 class CarWashServiceAdmin(ImportExportModelAdmin):
     resource_class = CarWashServiceResource
-    list_display = ('name', 'parent', 'priority')
-    list_select_related = ('parent',)
-    search_fields = ('name', 'id')
-    search_help_text = _('search by name or id')
-    readonly_fields = ('id', 'created_at', 'updated_at')
-    list_filter = ('is_dry_cleaning', 'is_countable')
+    list_display = ("name", "parent", "priority")
+    list_select_related = ("parent",)
+    search_fields = ("name", "id")
+    search_help_text = _("search by name or id")
+    readonly_fields = ("id", "created_at", "updated_at")
+    list_filter = ("is_dry_cleaning", "is_countable")
 
 
 @admin.register(CarWash)
 class CarWashAdmin(ImportExportModelAdmin):
     resource_class = CarWashResource
-    list_display = ('name', 'created_at')
-    search_fields = ('name',)
+    list_display = ("name", "created_at")
+    search_fields = ("name",)
     inlines = (CarWashServicePriceInline,)
-    readonly_fields = ('id',)
+    readonly_fields = ("id",)
 
 
 @admin.register(CarWashServicePrice)
 class CarWashServicePriceAdmin(ImportExportModelAdmin):
     resource_class = CarWashServicePriceResource
-    list_display = ('car_wash', 'service', 'price')
-    list_select_related = ('car_wash', 'service')
-    list_filter = ('car_wash', 'service')
-    list_display_links = ('car_wash', 'service', 'price')
-    search_fields = ('service__name', 'service__parent__name', 'service__id')
+    list_display = ("car_wash", "service", "price")
+    list_select_related = ("car_wash", "service")
+    list_filter = ("car_wash", "service")
+    list_display_links = ("car_wash", "service", "price")
+    search_fields = ("service__name", "service__parent__name", "service__id")
     autocomplete_fields = (
-        'car_wash',
-        'service',
+        "car_wash",
+        "service",
     )

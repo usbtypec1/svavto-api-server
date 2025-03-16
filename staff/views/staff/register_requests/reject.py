@@ -6,11 +6,10 @@ from rest_framework.views import APIView
 from staff.serializers import StaffRegisterRequestRejectInputSerializer
 from staff.services import StaffRegisterRequestRejectInteractor
 
-__all__ = ('StaffRegisterRequestRejectApi',)
+__all__ = ("StaffRegisterRequestRejectApi",)
 
 
 class StaffRegisterRequestRejectApi(APIView):
-
     def post(self, request: Request) -> Response:
         serializer = StaffRegisterRequestRejectInputSerializer(
             data=request.data,
@@ -18,7 +17,7 @@ class StaffRegisterRequestRejectApi(APIView):
         serializer.is_valid(raise_exception=True)
         data: dict = serializer.validated_data
 
-        request_id: int = data['staff_register_request_id']
+        request_id: int = data["staff_register_request_id"]
         interactor = StaffRegisterRequestRejectInteractor(request_id=request_id)
         interactor.execute()
 

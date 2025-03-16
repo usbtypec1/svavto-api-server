@@ -32,17 +32,17 @@ class StaffShiftsMonthListInteractor:
                 date__month__gte=now.month,
                 date__year__gte=now.year,
             )
-            .annotate(month_year=TruncMonth('date'))
-            .values('month_year')
+            .annotate(month_year=TruncMonth("date"))
+            .values("month_year")
             .distinct()
-            .order_by('month_year')
+            .order_by("month_year")
         )
         return StaffShiftsMonths(
             staff_id=self.staff_id,
             months=[
                 MonthAndYear(
-                    month=month['month_year'].month,
-                    year=month['month_year'].year,
+                    month=month["month_year"].month,
+                    year=month["month_year"].year,
                 )
                 for month in months
             ],

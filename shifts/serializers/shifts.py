@@ -5,34 +5,34 @@ from shifts.models import Shift
 
 
 __all__ = (
-    'ShiftListForSpecificDateOutputSerializer',
-    'StaffCurrentShiftRetrieveOutputSerializer',
-    'ShiftListInputSerializer',
-    'ShiftCreateInputSerializer',
-    'ShiftRetrieveOutputSerializer',
-    'ShiftListOutputSerializer',
-    'ShiftFinishOutputSerializer',
-    'ShiftFinishInputSerializer',
-    'ShiftCreateOutputSerializer',
-    'ShiftCreateItemSerializer',
-    'CarWashSummarySerializer',
-    'ShiftTestCreateInputSerializer',
-    'ShiftTestCreateOutputSerializer',
-    'ShiftExtraCreateOutputSerializer',
-    'ShiftExtraCreateInputSerializer',
-    'ShiftListV2InputSerializer',
-    'ShiftListV2ItemSerializer',
-    'ShiftListV2OutputSerializer',
-    'ShiftRejectInputSerializer',
-    'ShiftRejectOutputSerializer',
-    'DeadSoulsInputSerializer',
-    'DeadSoulsOutputSerializer',
-    'StaffIdAndFullNameSerializer',
-    'StaffIdAndDateSerializer',
-    'ExtraShiftItemSerializer',
-    'ShiftConfirmInputSerializer',
-    'StaffShiftsMonthListOutputSerializer',
-    'MonthAndYearSerializer',
+    "ShiftListForSpecificDateOutputSerializer",
+    "StaffCurrentShiftRetrieveOutputSerializer",
+    "ShiftListInputSerializer",
+    "ShiftCreateInputSerializer",
+    "ShiftRetrieveOutputSerializer",
+    "ShiftListOutputSerializer",
+    "ShiftFinishOutputSerializer",
+    "ShiftFinishInputSerializer",
+    "ShiftCreateOutputSerializer",
+    "ShiftCreateItemSerializer",
+    "CarWashSummarySerializer",
+    "ShiftTestCreateInputSerializer",
+    "ShiftTestCreateOutputSerializer",
+    "ShiftExtraCreateOutputSerializer",
+    "ShiftExtraCreateInputSerializer",
+    "ShiftListV2InputSerializer",
+    "ShiftListV2ItemSerializer",
+    "ShiftListV2OutputSerializer",
+    "ShiftRejectInputSerializer",
+    "ShiftRejectOutputSerializer",
+    "DeadSoulsInputSerializer",
+    "DeadSoulsOutputSerializer",
+    "StaffIdAndFullNameSerializer",
+    "StaffIdAndDateSerializer",
+    "ExtraShiftItemSerializer",
+    "ShiftConfirmInputSerializer",
+    "StaffShiftsMonthListOutputSerializer",
+    "MonthAndYearSerializer",
 )
 
 
@@ -40,12 +40,12 @@ class ShiftListForSpecificDateOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shift
         fields = (
-            'id',
-            'date',
-            'staff',
-            'is_started',
-            'is_finished',
-            'created_at',
+            "id",
+            "date",
+            "staff",
+            "is_started",
+            "is_finished",
+            "created_at",
         )
         depth = 1
 
@@ -54,13 +54,13 @@ class ShiftRetrieveOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shift
         fields = (
-            'id',
-            'date',
-            'car_wash',
-            'staff',
-            'is_started',
-            'is_finished',
-            'created_at',
+            "id",
+            "date",
+            "car_wash",
+            "staff",
+            "is_started",
+            "is_finished",
+            "created_at",
         )
         depth = 1
 
@@ -69,13 +69,13 @@ class StaffCurrentShiftRetrieveOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shift
         fields = (
-            'id',
-            'date',
-            'car_wash',
-            'staff',
-            'is_started',
-            'is_finished',
-            'created_at',
+            "id",
+            "date",
+            "car_wash",
+            "staff",
+            "is_started",
+            "is_finished",
+            "created_at",
         )
         depth = 1
 
@@ -97,13 +97,13 @@ class ShiftListOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shift
         fields = (
-            'id',
-            'date',
-            'car_wash',
-            'staff',
-            'is_started',
-            'is_finished',
-            'created_at',
+            "id",
+            "date",
+            "car_wash",
+            "staff",
+            "is_started",
+            "is_finished",
+            "created_at",
         )
         depth = 1
 
@@ -191,23 +191,14 @@ class ExtraShiftItemSerializer(serializers.Serializer):
 
 
 class ShiftExtraCreateOutputSerializer(serializers.Serializer):
-    created_shifts = serializers.ListSerializer(
-        child=ExtraShiftItemSerializer()
-    )
-    missing_staff_ids = serializers.ListSerializer(
-        child=serializers.IntegerField()
-    )
-    conflict_shifts = serializers.ListSerializer(
-        child=StaffIdAndDateSerializer()
-    )
+    created_shifts = serializers.ListSerializer(child=ExtraShiftItemSerializer())
+    missing_staff_ids = serializers.ListSerializer(child=serializers.IntegerField())
+    conflict_shifts = serializers.ListSerializer(child=StaffIdAndDateSerializer())
 
 
 class ShiftListV2InputSerializer(serializers.Serializer):
     staff_ids = serializers.ListField(
-        child=serializers.IntegerField(),
-        default=None,
-        max_length=100,
-        min_length=1
+        child=serializers.IntegerField(), default=None, max_length=100, min_length=1
     )
     from_date = serializers.DateField(default=None, allow_null=True)
     to_date = serializers.DateField(default=None, allow_null=True)
@@ -216,10 +207,10 @@ class ShiftListV2InputSerializer(serializers.Serializer):
     types = serializers.MultipleChoiceField(choices=Shift.Type.choices)
 
     def validate(self, attrs):
-        if attrs['from_date'] is not None and attrs['to_date'] is not None:
-            if attrs['from_date'] > attrs['to_date']:
+        if attrs["from_date"] is not None and attrs["to_date"] is not None:
+            if attrs["from_date"] > attrs["to_date"]:
                 raise serializers.ValidationError(
-                    _('from_date should be less than or equal to to_date')
+                    _("from_date should be less than or equal to to_date")
                 )
         return attrs
 

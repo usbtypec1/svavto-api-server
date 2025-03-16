@@ -16,14 +16,12 @@ from economics.services.car_washes.surcharges import (
 from economics.services.car_washes.surcharges import (
     CarWashSurchargeCreateInteractor,
     CarWashSurchargeListInteractor,
-
 )
 
-__all__ = ('CarWashSurchargeListCreateApi', 'CarWashSurchargeDeleteApi')
+__all__ = ("CarWashSurchargeListCreateApi", "CarWashSurchargeDeleteApi")
 
 
 class CarWashSurchargeDeleteApi(APIView):
-
     def delete(self, request: Request, surcharge_id: int) -> Response:
         interactor = CarWashSurchargeDeleteInteractor(surcharge_id=surcharge_id)
         interactor.execute()
@@ -38,9 +36,9 @@ class CarWashSurchargeListCreateApi(APIView):
         serializer.is_valid(raise_exception=True)
         data: dict = serializer.validated_data
 
-        from_date: datetime.date | None = data['from_date']
-        to_date: datetime.date | None = data['to_date']
-        car_wash_ids: list[int] | None = data['car_wash_ids']
+        from_date: datetime.date | None = data["from_date"]
+        to_date: datetime.date | None = data["to_date"]
+        car_wash_ids: list[int] | None = data["car_wash_ids"]
 
         interactor = CarWashSurchargeListInteractor(
             from_date=from_date,
@@ -53,17 +51,17 @@ class CarWashSurchargeListCreateApi(APIView):
             surcharges,
             many=True,
         )
-        return Response({'surcharges': serializer.data})
+        return Response({"surcharges": serializer.data})
 
     def post(self, request: Request) -> Response:
         serializer = CarWashSurchargeCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data: dict = serializer.validated_data
 
-        car_wash_id: int = data['car_wash_id']
-        reason: str = data['reason']
-        amount: int = data['amount']
-        date: datetime.date = data['date']
+        car_wash_id: int = data["car_wash_id"]
+        reason: str = data["reason"]
+        amount: int = data["amount"]
+        date: datetime.date = data["date"]
 
         interactor = CarWashSurchargeCreateInteractor(
             car_wash_id=car_wash_id,

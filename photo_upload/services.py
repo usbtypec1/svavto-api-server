@@ -29,11 +29,11 @@ class UploadedFile:
 
 
 def upload_binary(
-        file_io: BinaryIO,
-        length: int,
-        content_type: str,
-        object_name: str,
-        client: Minio,
+    file_io: BinaryIO,
+    length: int,
+    content_type: str,
+    object_name: str,
+    client: Minio,
 ) -> UploadedFile:
     file_io.seek(0)
     try:
@@ -53,8 +53,8 @@ def upload_binary(
 
 
 def upload_in_memory_file(
-        file: BinaryIO | InMemoryUploadedFile,
-        folder: str | None = None,
+    file: BinaryIO | InMemoryUploadedFile,
+    folder: str | None = None,
 ) -> UploadedFile:
     object_name = build_object_name(file.name, folder)
     return upload_binary(
@@ -75,9 +75,9 @@ def build_object_name(name: str, folder: str | None = None) -> str:
 
 
 def upload_via_url(
-        url: str,
-        folder: str | None = None,
-        client: Minio | None = None,
+    url: str,
+    folder: str | None = None,
+    client: Minio | None = None,
 ) -> UploadedFile:
     if client is None:
         client = get_s3_client()
@@ -97,8 +97,8 @@ def upload_via_url(
 
 
 def upload_via_urls(
-        urls: Iterable[str],
-        folder: str | None = None,
+    urls: Iterable[str],
+    folder: str | None = None,
 ) -> list[UploadedFile]:
     upload = functools.partial(
         upload_via_url,
@@ -110,7 +110,4 @@ def upload_via_urls(
 
 
 def get_public_url(object_name: str) -> str:
-    return (
-        f'https://{settings.S3_ENDPOINT}/{settings.S3_BUCKET_NAME}/'
-        f'{object_name}'
-    )
+    return f"https://{settings.S3_ENDPOINT}/{settings.S3_BUCKET_NAME}/" f"{object_name}"

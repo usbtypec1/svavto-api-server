@@ -11,30 +11,30 @@ from car_washes.serializers import (
 )
 from car_washes.services import create_car_wash
 
-__all__ = ('CarWashListCreateApi',)
+__all__ = ("CarWashListCreateApi",)
 
 
 class CarWashListCreateApi(APIView):
     def get(self, request: Request) -> Response:
         car_washes = get_car_washes()
         serializer = CarWashListOutputSerializer(car_washes, many=True)
-        return Response({'car_washes': serializer.data})
+        return Response({"car_washes": serializer.data})
 
     def post(self, request: Request) -> Response:
         serializer = CarWashCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data: dict = serializer.data
 
-        name: str = serialized_data['name']
+        name: str = serialized_data["name"]
         comfort_class_car_washing_price: int = serialized_data[
-            'comfort_class_car_washing_price'
+            "comfort_class_car_washing_price"
         ]
         business_class_car_washing_price: int = serialized_data[
-            'business_class_car_washing_price'
+            "business_class_car_washing_price"
         ]
-        van_washing_price: int = serialized_data['van_washing_price']
+        van_washing_price: int = serialized_data["van_washing_price"]
         windshield_washer_price_per_bottle: int = serialized_data[
-            'windshield_washer_price_per_bottle'
+            "windshield_washer_price_per_bottle"
         ]
 
         car_wash = create_car_wash(

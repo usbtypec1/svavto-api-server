@@ -22,10 +22,10 @@ class DeadSoulsForMonth:
 
 
 def map_dict_to_staff_id_and_name(
-        staff_list: Iterable[dict],
+    staff_list: Iterable[dict],
 ) -> list[StaffIdAndName]:
     return [
-        StaffIdAndName(id=staff['id'], full_name=staff['full_name'])
+        StaffIdAndName(id=staff["id"], full_name=staff["full_name"])
         for staff in staff_list
     ]
 
@@ -36,44 +36,42 @@ def ensure_month_is_available(*, month: int, year: int) -> None:
 
 
 def get_staff_with_one_test_shift(
-        *,
-        year: int,
-        month: int,
+    *,
+    year: int,
+    month: int,
 ) -> list[StaffIdAndName]:
     staff_list = (
-        Staff.objects
-        .filter(
+        Staff.objects.filter(
             banned_at__isnull=True,
             shift__date__year=year,
             shift__date__month=month,
         )
         .annotate(
-            test_shift_count=Count('shift', filter=Q(shift__is_test=True)),
-            all_shift_count=Count('shift'),
+            test_shift_count=Count("shift", filter=Q(shift__is_test=True)),
+            all_shift_count=Count("shift"),
         )
         .filter(
             test_shift_count=1,
             all_shift_count=1,
         )
-        .values('id', 'full_name')
+        .values("id", "full_name")
     )
     return map_dict_to_staff_id_and_name(staff_list)
 
 
 def get_staff_with_no_shifts(
-        *,
-        year: int,
-        month: int,
+    *,
+    year: int,
+    month: int,
 ) -> list[StaffIdAndName]:
     staff_list = (
-        Staff.objects
-        .filter(banned_at__isnull=True)
+        Staff.objects.filter(banned_at__isnull=True)
         .exclude(
             shift__date__year=year,
             shift__date__month=month,
         )
-        .distinct('id')
-        .values('id', 'full_name')
+        .distinct("id")
+        .values("id", "full_name")
     )
     return map_dict_to_staff_id_and_name(staff_list)
 

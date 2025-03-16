@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from shifts.serializers import StaffReportPeriodsOutputSerializer
 from shifts.services.report_periods import StaffReportPeriodsReadInteractor
 
-__all__ = ('StaffReportPeriodsListApi',)
+__all__ = ("StaffReportPeriodsListApi",)
 
 
 class StaffReportPeriodsListApi(APIView):

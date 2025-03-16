@@ -30,14 +30,8 @@ def test_both_existing_staff_missing_staff(missing_staff_ids):
 
     separated_staff = separate_staff_by_existence(staff_ids)
 
-    assert (
-            sorted(separated_staff.existing_staff_ids)
-            == sorted(existing_staff_ids)
-    )
-    assert (
-            sorted(separated_staff.missing_staff_ids)
-            == sorted(missing_staff_ids)
-    )
+    assert sorted(separated_staff.existing_staff_ids) == sorted(existing_staff_ids)
+    assert sorted(separated_staff.missing_staff_ids) == sorted(missing_staff_ids)
 
 
 @pytest.mark.django_db
@@ -45,7 +39,4 @@ def test_all_staff_missing(missing_staff_ids):
     separated_staff = separate_staff_by_existence(missing_staff_ids)
 
     assert not separated_staff.existing_staff_ids
-    assert (
-            sorted(separated_staff.missing_staff_ids)
-            == sorted(missing_staff_ids)
-    )
+    assert sorted(separated_staff.missing_staff_ids) == sorted(missing_staff_ids)

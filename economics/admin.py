@@ -41,49 +41,49 @@ class PenaltyPhotoAdmin(admin.ModelAdmin):
 class PenaltyAdmin(ImportExportModelAdmin):
     resource_class = PenaltyResource
     list_display = (
-        'shift__staff',
-        'reason',
-        'amount',
-        'consequence',
-        'created_at',
+        "shift__staff",
+        "reason",
+        "amount",
+        "consequence",
+        "created_at",
     )
-    list_select_related = ('shift',)
+    list_select_related = ("shift",)
     list_filter = (
-        'shift__staff',
-        'reason',
-        'consequence',
+        "shift__staff",
+        "reason",
+        "consequence",
     )
-    search_fields = ('shift__staff__full_name', 'shift__staff__id', 'reason')
-    search_help_text = 'Search by staff full name, staff id, reason'
+    search_fields = ("shift__staff__full_name", "shift__staff__id", "reason")
+    search_help_text = "Search by staff full name, staff id, reason"
 
 
 @admin.register(Surcharge)
 class SurchargeAdmin(ImportExportModelAdmin):
     resource_class = SurchargeResource
     list_display = (
-        'shift__staff',
-        'reason',
-        'amount',
-        'created_at',
+        "shift__staff",
+        "reason",
+        "amount",
+        "created_at",
     )
-    list_select_related = ('shift',)
+    list_select_related = ("shift",)
     list_filter = (
-        'shift__staff',
-        'reason',
+        "shift__staff",
+        "reason",
     )
-    search_fields = ('shift__staff__full_name', 'shift__staff__id', 'reason')
-    search_help_text = 'Search by staff full name, staff id, reason'
+    search_fields = ("shift__staff__full_name", "shift__staff__id", "reason")
+    search_help_text = "Search by staff full name, staff id, reason"
 
 
 @admin.register(StaffServicePrice)
 class StaffServicePriceAdmin(admin.ModelAdmin):
     list_display = (
-        'service',
-        'price',
-        'updated_at',
+        "service",
+        "price",
+        "updated_at",
     )
-    ordering = ('service',)
-    readonly_fields = ('service', 'updated_at')
+    ordering = ("service",)
+    readonly_fields = ("service", "updated_at")
 
     def has_add_permission(self, request):
         return False
@@ -96,31 +96,31 @@ class StaffServicePriceAdmin(admin.ModelAdmin):
 class CarWashPenaltyAdmin(ImportExportModelAdmin):
     resource_class = CarWashPenaltyResource
     list_display = (
-        'car_wash',
-        'reason',
-        'amount',
-        'created_at',
+        "car_wash",
+        "reason",
+        "amount",
+        "created_at",
     )
     list_filter = (
-        'car_wash',
-        'reason',
+        "car_wash",
+        "reason",
     )
-    search_fields = ('car_wash__name', 'reason')
-    search_help_text = 'Search by car wash name, reason'
+    search_fields = ("car_wash__name", "reason")
+    search_help_text = "Search by car wash name, reason"
 
 
 @admin.register(CarWashSurcharge)
 class CarWashSurchargeAdmin(ImportExportModelAdmin):
     resource_class = CarWashSurchargeResource
     list_display = (
-        'car_wash',
-        'reason',
-        'amount',
-        'created_at',
+        "car_wash",
+        "reason",
+        "amount",
+        "created_at",
     )
     list_filter = (
-        'car_wash',
-        'reason',
+        "car_wash",
+        "reason",
     )
-    search_fields = ('car_wash__name', 'reason')
-    search_help_text = 'Search by car wash name, reason'
+    search_fields = ("car_wash__name", "reason")
+    search_help_text = "Search by car wash name, reason"

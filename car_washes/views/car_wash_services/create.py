@@ -12,7 +12,7 @@ from car_washes.serializers import (
     CarWashServicePriceUpsertOutputSerializer,
 )
 
-__all__ = ('SpecificCarWashServiceUpdateDeleteApi',)
+__all__ = ("SpecificCarWashServiceUpdateDeleteApi",)
 
 
 class SpecificCarWashServiceUpdateDeleteApi(APIView):
@@ -27,19 +27,17 @@ class SpecificCarWashServiceUpdateDeleteApi(APIView):
         )
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
-        price: int = serialized_data['price']
+        price: int = serialized_data["price"]
 
         ensure_service_exists(service_id)
         ensure_car_wash_exists(car_wash_id)
 
-        service_price, is_created = (
-            CarWashServicePrice.objects.update_or_create(
-                car_wash_id=car_wash_id,
-                service_id=service_id,
-                defaults={
-                    'price': price,
-                },
-            )
+        service_price, is_created = CarWashServicePrice.objects.update_or_create(
+            car_wash_id=car_wash_id,
+            service_id=service_id,
+            defaults={
+                "price": price,
+            },
         )
 
         if is_created:

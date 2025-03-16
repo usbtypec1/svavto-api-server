@@ -4,11 +4,11 @@ from economics.models import Penalty
 
 
 __all__ = (
-    'PenaltyCreateInputSerializer',
-    'PenaltyCreateOutputSerializer',
-    'PenaltyListOutputSerializer',
-    'PenaltyListInputSerializer',
-    'PenaltyListItemSerializer',
+    "PenaltyCreateInputSerializer",
+    "PenaltyCreateOutputSerializer",
+    "PenaltyListOutputSerializer",
+    "PenaltyListInputSerializer",
+    "PenaltyListItemSerializer",
 )
 
 

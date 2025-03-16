@@ -6,59 +6,122 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CarWash',
+            name="CarWash",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('comfort_class_car_washing_price', models.PositiveIntegerField()),
-                ('business_class_car_washing_price', models.PositiveIntegerField()),
-                ('van_washing_price', models.PositiveIntegerField()),
-                ('windshield_washer_price_per_bottle', models.PositiveIntegerField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("comfort_class_car_washing_price", models.PositiveIntegerField()),
+                ("business_class_car_washing_price", models.PositiveIntegerField()),
+                ("van_washing_price", models.PositiveIntegerField()),
+                ("windshield_washer_price_per_bottle", models.PositiveIntegerField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'car wash',
-                'verbose_name_plural': 'car washes',
+                "verbose_name": "car wash",
+                "verbose_name_plural": "car washes",
             },
         ),
         migrations.CreateModel(
-            name='CarWashService',
+            name="CarWashService",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False, verbose_name='car wash service id')),
-                ('name', models.CharField(max_length=64, verbose_name='car wash service name')),
-                ('is_countable', models.BooleanField(default=False, verbose_name='is countable')),
-                ('is_dry_cleaning', models.BooleanField(default=False, verbose_name='is dry cleaning')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='car_washes.carwashservice', verbose_name='parent service')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="car wash service id",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=64, verbose_name="car wash service name"
+                    ),
+                ),
+                (
+                    "is_countable",
+                    models.BooleanField(default=False, verbose_name="is countable"),
+                ),
+                (
+                    "is_dry_cleaning",
+                    models.BooleanField(default=False, verbose_name="is dry cleaning"),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="children",
+                        to="car_washes.carwashservice",
+                        verbose_name="parent service",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'car wash service',
-                'verbose_name_plural': 'car wash services',
+                "verbose_name": "car wash service",
+                "verbose_name_plural": "car wash services",
             },
         ),
         migrations.CreateModel(
-            name='CarWashServicePrice',
+            name="CarWashServicePrice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('price', models.PositiveIntegerField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('car_wash', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='prices', to='car_washes.carwash')),
-                ('service', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='prices', to='car_washes.carwashservice')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("price", models.PositiveIntegerField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "car_wash",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="prices",
+                        to="car_washes.carwash",
+                    ),
+                ),
+                (
+                    "service",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="prices",
+                        to="car_washes.carwashservice",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'car wash service price',
-                'verbose_name_plural': 'car wash service prices',
+                "verbose_name": "car wash service price",
+                "verbose_name_plural": "car wash service prices",
             },
         ),
     ]

@@ -6,85 +6,226 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('car_washes', '0001_initial'),
-        ('staff', '0001_initial'),
+        ("car_washes", "0001_initial"),
+        ("staff", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AvailableDate',
+            name="AvailableDate",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('month', models.PositiveSmallIntegerField(validators=[django.core.validators.MinValueValidator(limit_value=1, message='Month must be at least 1'), django.core.validators.MaxValueValidator(limit_value=12, message='Month cannot be greater than 12')])),
-                ('year', models.PositiveSmallIntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "month",
+                    models.PositiveSmallIntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(
+                                limit_value=1, message="Month must be at least 1"
+                            ),
+                            django.core.validators.MaxValueValidator(
+                                limit_value=12,
+                                message="Month cannot be greater than 12",
+                            ),
+                        ]
+                    ),
+                ),
+                ("year", models.PositiveSmallIntegerField()),
             ],
             options={
-                'verbose_name': 'available date',
-                'verbose_name_plural': 'available dates',
-                'ordering': ('year', 'month'),
-                'unique_together': {('month', 'year')},
+                "verbose_name": "available date",
+                "verbose_name_plural": "available dates",
+                "ordering": ("year", "month"),
+                "unique_together": {("month", "year")},
             },
         ),
         migrations.CreateModel(
-            name='Shift',
+            name="Shift",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField()),
-                ('started_at', models.DateTimeField(blank=True, null=True)),
-                ('finished_at', models.DateTimeField(blank=True, null=True)),
-                ('statement_photo_file_id', models.CharField(blank=True, max_length=255, null=True)),
-                ('service_app_photo_file_id', models.CharField(blank=True, max_length=255, null=True)),
-                ('is_extra', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField()),
-                ('car_wash', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='car_washes.carwash')),
-                ('staff', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='staff.staff')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateField()),
+                ("started_at", models.DateTimeField(blank=True, null=True)),
+                ("finished_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "statement_photo_file_id",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "service_app_photo_file_id",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("is_extra", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField()),
+                (
+                    "car_wash",
+                    models.ForeignKey(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="car_washes.carwash",
+                    ),
+                ),
+                (
+                    "staff",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="staff.staff"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'shift',
-                'verbose_name_plural': 'shifts',
-                'unique_together': {('staff', 'date')},
+                "verbose_name": "shift",
+                "verbose_name_plural": "shifts",
+                "unique_together": {("staff", "date")},
             },
         ),
         migrations.CreateModel(
-            name='CarToWash',
+            name="CarToWash",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.CharField(max_length=20)),
-                ('car_class', models.CharField(choices=[('comfort', 'comfort'), ('business', 'business'), ('van', 'van')], max_length=16, verbose_name='car class')),
-                ('wash_type', models.CharField(choices=[('planned', 'planned'), ('urgent', 'urgent')], max_length=16, verbose_name='wash type')),
-                ('windshield_washer_refilled_bottle_percentage', models.PositiveSmallIntegerField()),
-                ('transfer_price', models.PositiveIntegerField(help_text='price of car transfer at the moment')),
-                ('comfort_class_car_washing_price', models.PositiveIntegerField(help_text='price of comfort class car washing at the moment')),
-                ('business_class_car_washing_price', models.PositiveIntegerField(help_text='price of business class car washing at the moment')),
-                ('van_washing_price', models.PositiveIntegerField(help_text='price of van washing at the moment')),
-                ('windshield_washer_price_per_bottle', models.PositiveIntegerField(help_text='price of windshield washer per bottle at the moment')),
-                ('created_at', models.DateTimeField()),
-                ('car_wash', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='car_washes.carwash')),
-                ('shift', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shifts.shift')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("number", models.CharField(max_length=20)),
+                (
+                    "car_class",
+                    models.CharField(
+                        choices=[
+                            ("comfort", "comfort"),
+                            ("business", "business"),
+                            ("van", "van"),
+                        ],
+                        max_length=16,
+                        verbose_name="car class",
+                    ),
+                ),
+                (
+                    "wash_type",
+                    models.CharField(
+                        choices=[("planned", "planned"), ("urgent", "urgent")],
+                        max_length=16,
+                        verbose_name="wash type",
+                    ),
+                ),
+                (
+                    "windshield_washer_refilled_bottle_percentage",
+                    models.PositiveSmallIntegerField(),
+                ),
+                (
+                    "transfer_price",
+                    models.PositiveIntegerField(
+                        help_text="price of car transfer at the moment"
+                    ),
+                ),
+                (
+                    "comfort_class_car_washing_price",
+                    models.PositiveIntegerField(
+                        help_text="price of comfort class car washing at the moment"
+                    ),
+                ),
+                (
+                    "business_class_car_washing_price",
+                    models.PositiveIntegerField(
+                        help_text="price of business class car washing at the moment"
+                    ),
+                ),
+                (
+                    "van_washing_price",
+                    models.PositiveIntegerField(
+                        help_text="price of van washing at the moment"
+                    ),
+                ),
+                (
+                    "windshield_washer_price_per_bottle",
+                    models.PositiveIntegerField(
+                        help_text="price of windshield washer per bottle at the moment"
+                    ),
+                ),
+                ("created_at", models.DateTimeField()),
+                (
+                    "car_wash",
+                    models.ForeignKey(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="car_washes.carwash",
+                    ),
+                ),
+                (
+                    "shift",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="shifts.shift"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'car to wash',
-                'verbose_name_plural': 'cars to wash',
-                'unique_together': {('number', 'shift')},
+                "verbose_name": "car to wash",
+                "verbose_name_plural": "cars to wash",
+                "unique_together": {("number", "shift")},
             },
         ),
         migrations.CreateModel(
-            name='CarToWashAdditionalService',
+            name="CarToWashAdditionalService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('price', models.PositiveIntegerField(help_text='price of additional service at the moment')),
-                ('count', models.PositiveSmallIntegerField(default=1)),
-                ('car', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shifts.cartowash')),
-                ('service', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='car_washes.carwashservice')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "price",
+                    models.PositiveIntegerField(
+                        help_text="price of additional service at the moment"
+                    ),
+                ),
+                ("count", models.PositiveSmallIntegerField(default=1)),
+                (
+                    "car",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shifts.cartowash",
+                    ),
+                ),
+                (
+                    "service",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="car_washes.carwashservice",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'additional service',
-                'verbose_name_plural': 'additional services',
-                'unique_together': {('car', 'service')},
+                "verbose_name": "additional service",
+                "verbose_name_plural": "additional services",
+                "unique_together": {("car", "service")},
             },
         ),
     ]

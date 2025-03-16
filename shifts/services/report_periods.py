@@ -7,11 +7,11 @@ import pendulum
 from shifts.models import Shift
 
 __all__ = (
-    'Period',
-    'get_report_periods_of_dates',
-    'get_shift_dates_of_staff',
-    'StaffReportPeriods',
-    'StaffReportPeriodsReadInteractor',
+    "Period",
+    "get_report_periods_of_dates",
+    "get_shift_dates_of_staff",
+    "StaffReportPeriods",
+    "StaffReportPeriodsReadInteractor",
 )
 
 from staff.selectors import ensure_staff_exists
@@ -25,7 +25,7 @@ class Period:
     def __contains__(self, date: pendulum.Date) -> bool:
         return self.from_date <= date <= self.to_date
 
-    def __lt__(self, other: 'Period') -> bool:
+    def __lt__(self, other: "Period") -> bool:
         """
         Defines sorting behavior for Period objects.
         Periods are sorted by their start date (from_date).
@@ -62,7 +62,7 @@ def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[Period]:
             )
         else:
             next_month = date.add(months=1)
-            last_day = next_month.start_of('month').subtract(days=1)
+            last_day = next_month.start_of("month").subtract(days=1)
             period = Period(
                 from_date=pendulum.date(date.year, date.month, 16),
                 to_date=last_day,
@@ -74,11 +74,7 @@ def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[Period]:
 
 
 def get_shift_dates_of_staff(staff_id: int) -> tuple[datetime.date, ...]:
-    return tuple(
-        Shift.objects
-        .filter(staff_id=staff_id)
-        .values_list('date', flat=True)
-    )
+    return tuple(Shift.objects.filter(staff_id=staff_id).values_list("date", flat=True))
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

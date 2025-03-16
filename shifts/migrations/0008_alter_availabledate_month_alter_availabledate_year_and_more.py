@@ -6,56 +6,88 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('car_washes', '0003_alter_carwashserviceprice_car_wash_and_more'),
-        ('shifts', '0007_alter_shiftfinishphoto_shift'),
+        ("car_washes", "0003_alter_carwashserviceprice_car_wash_and_more"),
+        ("shifts", "0007_alter_shiftfinishphoto_shift"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='availabledate',
-            name='month',
-            field=models.PositiveSmallIntegerField(validators=[django.core.validators.MinValueValidator(limit_value=1, message='Month must be at least 1'), django.core.validators.MaxValueValidator(limit_value=12, message='Month cannot be greater than 12')], verbose_name='month'),
+            model_name="availabledate",
+            name="month",
+            field=models.PositiveSmallIntegerField(
+                validators=[
+                    django.core.validators.MinValueValidator(
+                        limit_value=1, message="Month must be at least 1"
+                    ),
+                    django.core.validators.MaxValueValidator(
+                        limit_value=12, message="Month cannot be greater than 12"
+                    ),
+                ],
+                verbose_name="month",
+            ),
         ),
         migrations.AlterField(
-            model_name='availabledate',
-            name='year',
-            field=models.PositiveSmallIntegerField(verbose_name='year'),
+            model_name="availabledate",
+            name="year",
+            field=models.PositiveSmallIntegerField(verbose_name="year"),
         ),
         migrations.AlterField(
-            model_name='cartowash',
-            name='car_wash',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='car_washes.carwash', verbose_name='car wash'),
+            model_name="cartowash",
+            name="car_wash",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="car_washes.carwash",
+                verbose_name="car wash",
+            ),
         ),
         migrations.AlterField(
-            model_name='cartowash',
-            name='number',
-            field=models.CharField(max_length=20, verbose_name='car number'),
+            model_name="cartowash",
+            name="number",
+            field=models.CharField(max_length=20, verbose_name="car number"),
         ),
         migrations.AlterField(
-            model_name='cartowash',
-            name='shift',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shifts.shift', verbose_name='shift'),
+            model_name="cartowash",
+            name="shift",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="shifts.shift",
+                verbose_name="shift",
+            ),
         ),
         migrations.AlterField(
-            model_name='cartowashadditionalservice',
-            name='car',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='additional_services', to='shifts.cartowash', verbose_name='car to wash'),
+            model_name="cartowashadditionalservice",
+            name="car",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="additional_services",
+                to="shifts.cartowash",
+                verbose_name="car to wash",
+            ),
         ),
         migrations.AlterField(
-            model_name='cartowashadditionalservice',
-            name='count',
-            field=models.PositiveSmallIntegerField(default=1, verbose_name='count'),
+            model_name="cartowashadditionalservice",
+            name="count",
+            field=models.PositiveSmallIntegerField(default=1, verbose_name="count"),
         ),
         migrations.AlterField(
-            model_name='cartowashadditionalservice',
-            name='price',
-            field=models.PositiveIntegerField(help_text='price of additional service at the moment', verbose_name='price'),
+            model_name="cartowashadditionalservice",
+            name="price",
+            field=models.PositiveIntegerField(
+                help_text="price of additional service at the moment",
+                verbose_name="price",
+            ),
         ),
         migrations.AlterField(
-            model_name='cartowashadditionalservice',
-            name='service',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='car_washes.carwashservice', verbose_name='additional service'),
+            model_name="cartowashadditionalservice",
+            name="service",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="car_washes.carwashservice",
+                verbose_name="additional service",
+            ),
         ),
     ]

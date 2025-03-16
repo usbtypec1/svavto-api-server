@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 
 
-__all__ = ('get_current_shift_date',)
+__all__ = ("get_current_shift_date",)
 
 
 def get_current_shift_date() -> datetime.date:

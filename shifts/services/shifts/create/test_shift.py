@@ -26,6 +26,7 @@ class ShiftTestCreateInteractor:
         date: date of test shift.
 
     """
+
     staff: Staff
     date: datetime.date
 

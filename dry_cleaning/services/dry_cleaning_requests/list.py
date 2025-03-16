@@ -34,12 +34,10 @@ class DryCleaningRequestListItemDto:
 
 
 def get_services_grouped_by_request_id(
-        requests: Iterable[DryCleaningRequest],
+    requests: Iterable[DryCleaningRequest],
 ) -> dict[int, list[DryCleaningRequestService]]:
-    services = (
-        DryCleaningRequestService.objects
-        .select_related('service')
-        .filter(request__in=requests)
+    services = DryCleaningRequestService.objects.select_related("service").filter(
+        request__in=requests
     )
     services_grouped_by_request_id = defaultdict(list)
     for service in services:
@@ -53,10 +51,8 @@ class DryCleaningRequestListInteractor:
     statuses: Iterable[int] | None = None
 
     def execute(self) -> list[DryCleaningRequestListItemDto]:
-        requests = (
-            DryCleaningRequest.objects
-            .prefetch_related('photos')
-            .select_related('shift__staff')
+        requests = DryCleaningRequest.objects.prefetch_related("photos").select_related(
+            "shift__staff"
         )
         request_id_to_services = get_services_grouped_by_request_id(requests)
 
