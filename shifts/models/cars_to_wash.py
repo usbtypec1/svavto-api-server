@@ -19,6 +19,10 @@ class CarToWash(models.Model):
         PLANNED = 'planned', _('planned')
         URGENT = 'urgent', _('urgent')
 
+    class WindshieldWasherType(models.TextChoices):
+        WATER = 'water', _('Water')
+        ANTIFREEZE = 'antifreeze', _('Antifreeze')
+
     number = models.CharField(
         max_length=20,
         verbose_name=_('car number'),
@@ -45,6 +49,12 @@ class CarToWash(models.Model):
         max_length=16,
         choices=WashType.choices,
         verbose_name=_('wash type'),
+    )
+    windshield_washer_type = models.CharField(
+        max_length=16,
+        choices=WindshieldWasherType.choices,
+        default=WindshieldWasherType.ANTIFREEZE,
+        verbose_name=_('Windshield washer type'),
     )
     windshield_washer_refilled_bottle_percentage = (
         models.PositiveSmallIntegerField()
