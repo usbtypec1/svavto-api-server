@@ -25,6 +25,7 @@ class TransferredCarRetrieveResponseData:
     wash_type: str
     car_wash_id: int
     car_wash_name: str
+    windshield_washer_type: str
     windshield_washer_refilled_bottle_percentage: int
     additional_services: list[TransferredCarAdditionService]
     created_at: datetime.datetime
@@ -46,6 +47,7 @@ class TransferredCarRetrieveInteractor:
                     "wash_type",
                     "car_wash_id",
                     "car_wash__name",
+                    "windshield_washer_type",
                     "windshield_washer_refilled_bottle_percentage",
                     "additional_services",
                     "created_at",
@@ -74,6 +76,7 @@ class TransferredCarRetrieveInteractor:
             wash_type=transferred_car.wash_type,
             car_wash_id=transferred_car.car_wash_id,
             car_wash_name=transferred_car.car_wash.name,
+            windshield_washer_type=transferred_car.windshield_washer_type,
             windshield_washer_refilled_bottle_percentage=(
                 transferred_car.windshield_washer_refilled_bottle_percentage
             ),

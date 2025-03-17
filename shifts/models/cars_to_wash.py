@@ -2,6 +2,7 @@ import math
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from car_washes.models import CarWash
 from shifts.models.shifts import Shift
@@ -72,7 +73,7 @@ class CarToWash(models.Model):
     windshield_washer_price_per_bottle = models.PositiveIntegerField(
         help_text=_("price of windshield washer per bottle at the moment")
     )
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         verbose_name = _("car to wash")

@@ -84,7 +84,7 @@ def get_staff_ids_by_shift_ids(
 
 def get_staff_current_shift(staff_id: int) -> Shift:
     try:
-        return Shift.objects.get(
+        return Shift.objects.select_related('car_wash').get(
             staff_id=staff_id,
             started_at__isnull=False,
             finished_at__isnull=True,
