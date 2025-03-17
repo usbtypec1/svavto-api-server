@@ -7,7 +7,7 @@ from shifts.services.cars_to_wash import get_car_wash_service_prices
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class CarTransferUpdateUseCase:
+class TransferredCarUpdateUseCase:
     """
     Use case to update all fields of CarToWash model.
 
@@ -27,11 +27,12 @@ class CarTransferUpdateUseCase:
     car_wash_id: int | None = None
     class_type: str | None = None
     wash_type: str | None = None
+    windshield_washer_type: str | None = None
     windshield_washer_refilled_bottle_percentage: int | None = None
     additional_services: list[dict] | None = None
 
     @transaction.atomic
-    def execute(self):
+    def execute(self) -> list[CarToWashAdditionalService]:
         """
         Update all fields of CarToWash and its additional services.
         """
@@ -50,6 +51,10 @@ class CarTransferUpdateUseCase:
             transferred_car.windshield_washer_refilled_bottle_percentage = (
                 self.windshield_washer_refilled_bottle_percentage
             )
+        if self.windshield_washer_type is not None:
+            transferred_car.windshield_washer_type = self.windshield_washer_type
+            if self.windshield_washer_type == CarToWash.WindshieldWasherType.WATER:
+                transferred_car.windshield_washer_refilled_bottle_percentage = 0
         transferred_car.save()
 
         if self.additional_services is not None:

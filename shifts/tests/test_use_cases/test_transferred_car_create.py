@@ -8,7 +8,6 @@ from shifts.tests.factories import ShiftFactory
 from shifts.models import CarToWash
 from car_washes.tests.factories import (
     CarWashFactory,
-    CarWashServiceFactory,
     CarWashServicePriceFactory,
 )
 
