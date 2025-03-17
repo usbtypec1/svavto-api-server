@@ -2,20 +2,6 @@ from rest_framework import serializers
 
 from car_washes.models import CarWash
 
-__all__ = (
-    "CarWashListOutputSerializer",
-    "CarWashRetrieveOutputSerializer",
-    "CarWashCreateOutputSerializer",
-    "CarWashCreateInputSerializer",
-    "CarWashUpdateInputSerializer",
-    "CarWashServicePriceUpsertInputSerializer",
-    "CarWashServicePriceUpsertOutputSerializer",
-    "CarWashUpdateOutputSerializer",
-    "CarWashServiceListInputSerializer",
-    "CarWashServiceSerializer",
-    "CarWashServiceParentSerializer",
-)
-
 
 class CarWashServiceListInputSerializer(serializers.Serializer):
     car_wash_ids = serializers.ListField(
@@ -118,3 +104,17 @@ class CarWashServicePriceUpsertOutputSerializer(serializers.Serializer):
     price = serializers.IntegerField()
     updated_at = serializers.DateTimeField()
     created_at = serializers.DateTimeField()
+
+
+class CarWashServicePriceListItemSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    price = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+    updated_at = serializers.DateTimeField()
+
+
+class CarWashServicePriceListOutputSerializer(serializers.Serializer):
+    car_wash_id = serializers.IntegerField()
+    car_wash_name = serializers.CharField()
+    services = CarWashServicePriceListItemSerializer(many=True)
