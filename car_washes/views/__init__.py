@@ -4,6 +4,7 @@ from .car_wash_services import (
 )
 from .list_create import CarWashListCreateApi
 from .retrieve_update_delete import CarWashRetrieveUpdateDeleteApi
+from .car_wash_service_prices import CarWashServicePriceListApi
 
 
 __all__ = (
@@ -11,4 +12,5 @@ __all__ = (
     "SpecificCarWashServiceUpdateDeleteApi",
     "CarWashListCreateApi",
     "CarWashRetrieveUpdateDeleteApi",
+    "CarWashServicePriceListApi",
 )
