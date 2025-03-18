@@ -117,4 +117,8 @@ class CarWashServicePriceListItemSerializer(serializers.Serializer):
 class CarWashServicePriceListOutputSerializer(serializers.Serializer):
     car_wash_id = serializers.IntegerField()
     car_wash_name = serializers.CharField()
+    planned_car_transfer_price = serializers.IntegerField()
+    business_car_transfer_price = serializers.IntegerField()
+    van_transfer_price = serializers.IntegerField()
+    windshield_washer_bottle_price = serializers.IntegerField()
     services = CarWashServicePriceListItemSerializer(many=True)

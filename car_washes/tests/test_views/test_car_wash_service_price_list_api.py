@@ -24,6 +24,10 @@ def test_car_wash_without_service_prices(car_wash):
     assert response.json() == {
         "car_wash_id": car_wash.id,
         "car_wash_name": car_wash.name,
+        "planned_car_transfer_price": car_wash.comfort_class_car_washing_price,
+        "business_car_transfer_price": car_wash.business_class_car_washing_price,
+        "van_transfer_price": car_wash.van_washing_price,
+        "windshield_washer_bottle_price": car_wash.windshield_washer_price_per_bottle,
         "services": [],
     }
 
@@ -40,6 +44,10 @@ def test_car_wash_with_service_prices(car_wash):
     assert response.json() == {
         "car_wash_id": car_wash.id,
         "car_wash_name": car_wash.name,
+        "planned_car_transfer_price": car_wash.comfort_class_car_washing_price,
+        "business_car_transfer_price": car_wash.business_class_car_washing_price,
+        "van_transfer_price": car_wash.van_washing_price,
+        "windshield_washer_bottle_price": car_wash.windshield_washer_price_per_bottle,
         "services": [
             {
                 "id": str(service_price.service.id),

@@ -19,6 +19,10 @@ class CarWashServicePriceListItemDto:
 class CarWashServicePriceListDto:
     car_wash_id: int
     car_wash_name: str
+    planned_car_transfer_price: int
+    business_car_transfer_price: int
+    van_transfer_price: int
+    windshield_washer_bottle_price: int
     services: list[CarWashServicePriceListItemDto]
 
 
@@ -28,7 +32,14 @@ class CarWashServicePriceListUseCase:
 
     def execute(self) -> CarWashServicePriceListDto:
         try:
-            car_wash = CarWash.objects.only("id", "name").get(id=self.car_wash_id)
+            car_wash = CarWash.objects.only(
+                "id",
+                "name",
+                "comfort_class_car_washing_price",
+                "business_class_car_washing_price",
+                "van_washing_price",
+                "windshield_washer_price_per_bottle",
+            ).get(id=self.car_wash_id)
         except CarWash.DoesNotExist:
             raise CarWashNotFoundError
 
@@ -51,5 +62,9 @@ class CarWashServicePriceListUseCase:
         return CarWashServicePriceListDto(
             car_wash_id=car_wash.id,
             car_wash_name=car_wash.name,
+            planned_car_transfer_price=car_wash.comfort_class_car_washing_price,
+            business_car_transfer_price=car_wash.business_class_car_washing_price,
+            van_transfer_price=car_wash.van_washing_price,
+            windshield_washer_bottle_price=car_wash.windshield_washer_price_per_bottle,
             services=services,
         )
