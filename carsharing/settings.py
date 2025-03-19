@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "shifts",
     "texts",
     "dry_cleaning",
+    "retentions",
 ]
 
 MIDDLEWARE = [
