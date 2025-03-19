@@ -136,6 +136,7 @@ def get_cars_without_windshield_washer_by_date(
     cars_to_wash = CarToWash.objects.filter(
         shift__date=date,
         windshield_washer_refilled_bottle_percentage=0,
+        windshield_washer_type=CarToWash.WindshieldWasherType.ANTIFREEZE,
     )
     cars_numbers = cars_to_wash.values_list("number", flat=True)
     return list(cars_numbers)
