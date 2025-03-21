@@ -24,6 +24,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "django-silk>=5.3.2",
     "factory-boy>=3.3.3",
     "freezegun>=1.5.1",
     "pre-commit>=4.1.0",
