@@ -48,6 +48,7 @@ class TotalStatistics:
     planned_vans_washed_count: int
     urgent_cars_washed_count: int
     extra_shifts_count: int
+    dry_cleaning_items_count: int
     washed_cars_total_cost: int
     washed_cars_total_count: int
     dirty_revenue: int
@@ -193,6 +194,7 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
     total_washed_cars_total_cost: int = 0
     total_washed_cars_total_count: int = 0
     total_dirty_revenue: int = 0
+    total_dry_cleaning_items_count: int = 0
 
     for shift_statistics in shifts_statistics:
         penalty_amount = shift_date_to_penalty_amount.get(
@@ -230,6 +232,9 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
             shift_statistics.washed_cars_total_count
         )
         total_dirty_revenue += shift_statistics.dirty_revenue
+        total_dry_cleaning_items_count += (
+            shift_statistics.dry_cleaning_items_count
+        )
 
     any_shift = bool(len(shifts_statistics))
     if not any_shift or total_dirty_revenue < 500:
@@ -247,6 +252,7 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         planned_vans_washed_count=total_planned_vans_washed_count,
         urgent_cars_washed_count=total_urgent_cars_washed_count,
         extra_shifts_count=total_extra_shifts_count,
+        dry_cleaning_items_count=total_dry_cleaning_items_count,
         washed_cars_total_cost=total_washed_cars_total_cost,
         washed_cars_total_count=total_washed_cars_total_count,
         dirty_revenue=total_dirty_revenue,
