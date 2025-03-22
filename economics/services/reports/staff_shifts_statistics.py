@@ -13,6 +13,7 @@ from economics.selectors import (
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
 from staff.selectors import StaffItem, get_staff
 
+
 __all__ = (
     "get_staff_shifts_statistics",
     "get_shift_dates",
@@ -36,6 +37,33 @@ HasShiftDateT = TypeVar("HasShiftDateT", bound=HasShiftDate)
 
 def get_shift_dates(items: Iterable[HasShiftDateT]) -> set[datetime.date]:
     return {item.shift_date for item in items}
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class TotalStatistics:
+    penalty_amount: int
+    surcharge_amount: int
+    planned_comfort_cars_washed_count: int
+    planned_business_cars_washed_count: int
+    planned_vans_washed_count: int
+    urgent_cars_washed_count: int
+    extra_shifts_count: int
+    washed_cars_total_cost: int
+    washed_cars_total_count: int
+    dirty_revenue: int
+    fine_deposit_amount: int
+
+    @property
+    def road_accident_deposit_amount(self) -> float:
+        return round(self.dirty_revenue * 0.03, 2)
+
+    @property
+    def net_revenue(self) -> float:
+        return (
+                self.dirty_revenue
+                - self.fine_deposit_amount
+                - self.road_accident_deposit_amount
+        )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -90,6 +118,7 @@ class ShiftStatisticsWithPenaltyAndSurcharge(ShiftStatistics):
 class StaffShiftsStatistics:
     staff: StaffItem
     shifts_statistics: list[ShiftStatisticsWithPenaltyAndSurcharge]
+    total_statistics: TotalStatistics
 
 
 @dataclass(frozen=True, slots=True)
@@ -153,6 +182,18 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
     shifts_statistics = staff_id_to_shifts_statistics.get(staff.id, [])
 
     result: list[ShiftStatisticsWithPenaltyAndSurcharge] = []
+
+    total_penalty_amount: int = 0
+    total_surcharge_amount: int = 0
+    total_planned_comfort_cars_washed_count: int = 0
+    total_planned_business_cars_washed_count: int = 0
+    total_planned_vans_washed_count: int = 0
+    total_urgent_cars_washed_count: int = 0
+    total_extra_shifts_count: int = 0
+    total_washed_cars_total_cost: int = 0
+    total_washed_cars_total_count: int = 0
+    total_dirty_revenue: int = 0
+
     for shift_statistics in shifts_statistics:
         penalty_amount = shift_date_to_penalty_amount.get(
             shift_statistics.shift_date,
@@ -162,15 +203,61 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
             shift_statistics.shift_date,
             0,
         )
-        result.append(
-            map_shift_statistics_with_penalty_and_surcharge(
-                shift_statistics=shift_statistics,
-                surcharge_amount=surcharge_amount,
-                penalty_amount=penalty_amount,
-            )
-        )
 
-    return StaffShiftsStatistics(staff=staff, shifts_statistics=result)
+        shift_statistics = map_shift_statistics_with_penalty_and_surcharge(
+            shift_statistics=shift_statistics,
+            surcharge_amount=surcharge_amount,
+            penalty_amount=penalty_amount,
+        )
+        result.append(shift_statistics)
+        total_penalty_amount += penalty_amount
+        total_surcharge_amount += surcharge_amount
+        total_planned_comfort_cars_washed_count += (
+            shift_statistics.planned_comfort_cars_washed_count
+        )
+        total_planned_business_cars_washed_count += (
+            shift_statistics.planned_business_cars_washed_count
+        )
+        total_planned_vans_washed_count += (
+            shift_statistics.planned_vans_washed_count
+        )
+        total_urgent_cars_washed_count += (
+            shift_statistics.urgent_cars_washed_count
+        )
+        total_extra_shifts_count += shift_statistics.is_extra_shift
+        total_washed_cars_total_cost += shift_statistics.washed_cars_total_cost
+        total_washed_cars_total_count += (
+            shift_statistics.washed_cars_total_count
+        )
+        total_dirty_revenue += shift_statistics.dirty_revenue
+
+    any_shift = bool(len(shifts_statistics))
+    if not any_shift or total_dirty_revenue < 500:
+        fine_deposit_amount = 0
+    else:
+        fine_deposit_amount = 500
+
+    total_statistics = TotalStatistics(
+        penalty_amount=total_penalty_amount,
+        surcharge_amount=total_surcharge_amount,
+        planned_comfort_cars_washed_count
+        =total_planned_comfort_cars_washed_count,
+        planned_business_cars_washed_count
+        =total_planned_business_cars_washed_count,
+        planned_vans_washed_count=total_planned_vans_washed_count,
+        urgent_cars_washed_count=total_urgent_cars_washed_count,
+        extra_shifts_count=total_extra_shifts_count,
+        washed_cars_total_cost=total_washed_cars_total_cost,
+        washed_cars_total_count=total_washed_cars_total_count,
+        dirty_revenue=total_dirty_revenue,
+        fine_deposit_amount=fine_deposit_amount,
+    )
+
+    return StaffShiftsStatistics(
+        staff=staff,
+        shifts_statistics=result,
+        total_statistics=total_statistics,
+    )
 
 
 class StaffServicePricesSet:
@@ -304,10 +391,13 @@ def get_shifts_dry_cleaning_items(
     Returns:
         list of ShiftDryCleaningItems.
     """
-    shifts_dry_cleaning_items = CarToWashAdditionalService.objects.select_related('car__shift').filter(
-        car__shift__date__range=(from_date, to_date),
-        service__is_dry_cleaning=True,
-    )
+    shifts_dry_cleaning_items = (
+        CarToWashAdditionalService.objects.select_related(
+            'car__shift'
+        ).filter(
+            car__shift__date__range=(from_date, to_date),
+            service__is_dry_cleaning=True,
+        ))
     if staff_ids is not None:
         shifts_dry_cleaning_items = shifts_dry_cleaning_items.filter(
             car__shift__staff_id__in=staff_ids
