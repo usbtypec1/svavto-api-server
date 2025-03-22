@@ -227,13 +227,6 @@ def get_cars_to_wash_for_period(
             shift__date__range=(from_date, to_date),
             car_wash_id__in=car_wash_ids,
         )
-        .only(
-            "id",
-            "car_wash_id",
-            "car_class",
-            "shift__date",
-            "windshield_washer_refilled_bottle_percentage",
-        )
     )
 
     additional_services = (

@@ -3,6 +3,7 @@ import datetime
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 
+
 __all__ = (
     "StaffItemSerializer",
     "ShiftStatisticsSerializer",
@@ -44,7 +45,9 @@ class CarWashesRevenueReportInputSerializer(serializers.Serializer):
         return data
 
 
-class CarWashRevenueForShiftAdditionalServiceSerializer(serializers.Serializer):
+class CarWashRevenueForShiftAdditionalServiceSerializer(
+    serializers.Serializer
+    ):
     id = serializers.UUIDField()
     name = serializers.CharField()
     count = serializers.IntegerField()
@@ -88,8 +91,28 @@ class ShiftStatisticsSerializer(serializers.Serializer):
     planned_vans_washed_count = serializers.IntegerField()
     urgent_cars_washed_count = serializers.IntegerField()
     is_extra_shift = serializers.BooleanField()
-    washed_cars_total_cost = serializers.IntegerField()
     dry_cleaning_items_count = serializers.IntegerField()
+    washed_cars_total_cost = serializers.IntegerField()
+    washed_cars_total_count = serializers.IntegerField()
+    dirty_revenue = serializers.IntegerField()
+    road_accident_deposit_amount = serializers.FloatField()
+
+
+class TotalStatisticsSerializer(serializers.Serializer):
+    penalty_amount = serializers.IntegerField()
+    surcharge_amount = serializers.IntegerField()
+    planned_comfort_cars_washed_count = serializers.IntegerField()
+    planned_business_cars_washed_count = serializers.IntegerField()
+    planned_vans_washed_count = serializers.IntegerField()
+    urgent_cars_washed_count = serializers.IntegerField()
+    extra_shifts_count = serializers.IntegerField()
+    dry_cleaning_items_count = serializers.IntegerField()
+    washed_cars_total_cost = serializers.IntegerField()
+    washed_cars_total_count = serializers.IntegerField()
+    dirty_revenue = serializers.IntegerField()
+    road_accident_deposit_amount = serializers.FloatField()
+    fine_deposit_amount = serializers.IntegerField()
+    net_revenue = serializers.FloatField()
 
 
 class StaffShiftsStatisticsSerializer(serializers.Serializer):
@@ -97,6 +120,7 @@ class StaffShiftsStatisticsSerializer(serializers.Serializer):
     shifts_statistics = serializers.ListField(
         child=ShiftStatisticsSerializer(),
     )
+    total_statistics = TotalStatisticsSerializer()
 
 
 class StaffShiftsStatisticsReportInputSerializer(serializers.Serializer):

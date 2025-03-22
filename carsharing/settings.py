@@ -48,6 +48,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+if DEBUG:
+    MIDDLEWARE.append('silk.middleware.SilkyMiddleware')
+    INSTALLED_APPS.append('silk')
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "carsharing.urls"

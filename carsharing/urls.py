@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
@@ -12,3 +13,6 @@ urlpatterns = [
     path("texts/", include("texts.urls")),
     path("dry-cleaning/", include("dry_cleaning.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns.append(path('silk/', include('silk.urls'), name="silk"))
