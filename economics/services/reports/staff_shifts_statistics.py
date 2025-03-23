@@ -7,15 +7,13 @@ from typing import Protocol, TypeVar
 from economics.models import StaffServicePrice
 from economics.selectors import (
     StaffPenaltiesOrSurchargesForSpecificShift,
-    get_penalties_for_period,
-    get_surcharges_for_period,
 )
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
-from staff.selectors import StaffItem, get_staff
+from staff.models import Staff
+from staff.selectors import StaffItem
 
 
 __all__ = (
-    "get_staff_shifts_statistics",
     "get_shift_dates",
     "get_shifts_dry_cleaning_items",
     "group_by_shift_id",
@@ -152,12 +150,30 @@ def map_shift_statistics_with_penalty_and_surcharge(
     )
 
 
+def compute_fine_deposit_amount(
+        staff_id: int,
+        shifts_count: int,
+        total_dirty_revenue: int,
+        fine_deposit_exceptions: Iterable[Staff],
+) -> int:
+    fine_deposit_exceptions_staff_ids = {
+        staff.id for staff in fine_deposit_exceptions
+    }
+    if staff_id in fine_deposit_exceptions_staff_ids:
+        return 0
+    any_shift = bool(shifts_count)
+    if not any_shift or total_dirty_revenue < 500:
+        return 0
+    return 500
+
+
 def merge_shifts_statistics_and_penalties_and_surcharges(
         *,
         staff: StaffItem,
         staff_shifts_statistics: Iterable[ShiftStatisticsGroupedByStaff],
         penalties: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
         surcharges: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
+        fine_deposit_exceptions: Iterable[Staff],
 ) -> StaffShiftsStatistics:
     staff_id_to_penalties = {penalty.staff_id: penalty.items for penalty in
                              penalties}
@@ -235,12 +251,12 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         total_dry_cleaning_items_count += (
             shift_statistics.dry_cleaning_items_count
         )
-
-    any_shift = bool(len(shifts_statistics))
-    if not any_shift or total_dirty_revenue < 500:
-        fine_deposit_amount = 0
-    else:
-        fine_deposit_amount = 500
+    fine_deposit_amount = compute_fine_deposit_amount(
+        shifts_count=len(shifts_statistics),
+        total_dirty_revenue=total_dirty_revenue,
+        fine_deposit_exceptions=fine_deposit_exceptions,
+        staff_id=staff.id,
+    )
 
     total_statistics = TotalStatistics(
         penalty_amount=total_penalty_amount,
@@ -531,40 +547,4 @@ def group_shifts_statistics_by_staff(
         )
         for staff_id, shifts_statistics in
         group_by_staff_id(shifts_statistics).items()
-    ]
-
-
-def get_staff_shifts_statistics(
-        *,
-        staff_ids: Iterable[int],
-        from_date: datetime.date,
-        to_date: datetime.date,
-) -> list[StaffShiftsStatistics]:
-    staff_list = get_staff(staff_ids=staff_ids)
-    penalties = get_penalties_for_period(
-        staff_ids=staff_ids,
-        from_date=from_date,
-        to_date=to_date,
-    )
-    surcharges = get_surcharges_for_period(
-        staff_ids=staff_ids,
-        from_date=from_date,
-        to_date=to_date,
-    )
-    shifts_statistics = get_cars_to_wash_statistics(
-        from_date=from_date,
-        to_date=to_date,
-        staff_ids=staff_ids,
-    )
-    staff_shifts_statistics = group_shifts_statistics_by_staff(
-        shifts_statistics=shifts_statistics,
-    )
-    return [
-        merge_shifts_statistics_and_penalties_and_surcharges(
-            staff=staff,
-            penalties=penalties,
-            surcharges=surcharges,
-            staff_shifts_statistics=staff_shifts_statistics,
-        )
-        for staff in staff_list
     ]

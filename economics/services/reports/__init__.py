@@ -1,6 +1,5 @@
 from .car_washes_revenue import get_car_washes_sales_report
 from .staff_shifts_statistics import (
-    get_staff_shifts_statistics,
     get_shift_dates,
     get_shifts_dry_cleaning_items,
     group_by_shift_id,
@@ -14,7 +13,6 @@ from .staff_shifts_statistics import (
 
 __all__ = (
     "get_car_washes_sales_report",
-    "get_staff_shifts_statistics",
     "get_shift_dates",
     "get_shifts_dry_cleaning_items",
     "group_by_shift_id",

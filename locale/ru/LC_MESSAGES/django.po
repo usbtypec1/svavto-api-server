@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-23 11:33+0300\n"
+"POT-Creation-Date: 2025-03-23 19:21+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgstr "Поиск по названию или ID"
 
 #: car_washes/apps.py:8 car_washes/models.py:24 car_washes/models.py:94
 #: shifts/admin.py:73 shifts/models/cars_to_wash.py:37
-#: shifts/models/shifts.py:51
+#: shifts/models/shifts.py:53
 msgid "car wash"
 msgstr "мойка"
 
@@ -75,7 +75,7 @@ msgid "the higher the number, the higher the priority"
 msgstr "чем выше число тем выше приоритет"
 
 #: car_washes/models.py:68 shifts/admin.py:117
-#: shifts/models/finish_photos.py:22 shifts/models/shifts.py:62
+#: shifts/models/finish_photos.py:22 shifts/models/shifts.py:64
 msgid "created at"
 msgstr "дата создания"
 
@@ -107,6 +107,98 @@ msgstr "услуга мойки"
 #: car_washes/models.py:110
 msgid "car wash service prices"
 msgstr "услуги моек"
+
+#: deposits/apps.py:8
+msgid "Deposits"
+msgstr "Удержания"
+
+#: deposits/models.py:11
+msgid "Report period number must be 1 or 2."
+msgstr "Номер отчетного периода должен быть 1 или 2"
+
+#: deposits/models.py:16
+msgid "Month must be between 1 and 12."
+msgstr "Месяц должен быть между 1 и 12"
+
+#: deposits/models.py:22
+msgid "First half of month"
+msgstr "Первая половина месяца"
+
+#: deposits/models.py:23
+msgid "Second half of month"
+msgstr "Вторая половина месяца"
+
+#: deposits/models.py:26
+msgid "January"
+msgstr "Январь"
+
+#: deposits/models.py:27
+msgid "February"
+msgstr "Февраль"
+
+#: deposits/models.py:28
+msgid "March"
+msgstr "Март"
+
+#: deposits/models.py:29
+msgid "April"
+msgstr "Апрель"
+
+#: deposits/models.py:30
+msgid "May"
+msgstr "Май"
+
+#: deposits/models.py:31
+msgid "June"
+msgstr "Июнь"
+
+#: deposits/models.py:32
+msgid "July"
+msgstr "Июль"
+
+#: deposits/models.py:33
+msgid "August"
+msgstr "Август"
+
+#: deposits/models.py:34
+msgid "September"
+msgstr "Сентябрь"
+
+#: deposits/models.py:35
+msgid "October"
+msgstr "Октябрь"
+
+#: deposits/models.py:36
+msgid "November"
+msgstr "Ноябрь"
+
+#: deposits/models.py:37
+msgid "December"
+msgstr "Декабрь"
+
+#: deposits/models.py:42
+msgid "Staff"
+msgstr "Сотрудник"
+
+#: deposits/models.py:44
+msgid "Year"
+msgstr "Год"
+
+#: deposits/models.py:46
+msgid "Month"
+msgstr "Месяц"
+
+#: deposits/models.py:50
+msgid "Report period"
+msgstr "Отчетный период"
+
+#: deposits/models.py:56
+msgid "Fine deposit exception"
+msgstr "Исключение от удержаний"
+
+#: deposits/models.py:57
+msgid "Fine deposit exceptions"
+msgstr "Исключения от удержаний"
 
 #: dry_cleaning/apps.py:8
 msgid "Dry cleaning"
@@ -324,7 +416,7 @@ msgid "yes"
 msgstr "да"
 
 #: shifts/admin.py:43 shifts/admin.py:81 shifts/admin.py:303
-#: shifts/models/shifts.py:20 staff/apps.py:8 staff/models.py:17
+#: shifts/models/shifts.py:22 staff/apps.py:8 staff/models.py:17
 #: staff/models.py:18
 msgid "staff"
 msgstr "сотрудник"
@@ -399,7 +491,7 @@ msgid "search by shift ID, car number, service name"
 msgstr "поиск по ID смены, гос.номеру, названию услуги"
 
 #: shifts/apps.py:8 shifts/models/cars_to_wash.py:42
-#: shifts/models/finish_photos.py:14 shifts/models/shifts.py:67
+#: shifts/models/finish_photos.py:14 shifts/models/shifts.py:77
 msgid "shift"
 msgstr "смена"
 
@@ -524,7 +616,6 @@ msgid "Antifreeze"
 msgstr "Незамерзайка"
 
 #: shifts/models/cars_to_wash.py:58
-#| msgid "windshield washer refilled bottle percentage"
 msgid "Windshield washer type"
 msgstr "Тип незамерзайки"
 
@@ -557,65 +648,60 @@ msgstr "фото при завершении смены"
 msgid "shift finish photos"
 msgstr "фото при завершении смены"
 
-#: shifts/models/shift_cars_threshold.py:12 texts/models.py:22
-msgid "Value"
-msgstr "Значение"
-
-#: shifts/models/shift_cars_threshold.py:14
-msgid "The minimum number of cars that must be transferred during a shift."
-msgstr "Минимальное количество авто, которое должно быть перегнано за смену."
-
 #: shifts/models/shift_cars_threshold.py:21
 #, python-format
 msgid "Shift cars threshold: %(value)s"
 msgstr "Минимальный план авто на смене: %(value)s"
 
-#: shifts/models/shift_cars_threshold.py:24
-#: shifts/models/shift_cars_threshold.py:25
-msgid "Shift cars threshold"
-msgstr "Минимальный план авто на смене"
-
-#: shifts/models/shifts.py:13
+#: shifts/models/shifts.py:15
 msgid "regular shift"
 msgstr "обычная смена"
 
-#: shifts/models/shifts.py:14
+#: shifts/models/shifts.py:16
 msgid "test shift"
 msgstr "тестовый доступ"
 
-#: shifts/models/shifts.py:15
+#: shifts/models/shifts.py:17
 msgid "extra shift"
 msgstr "доп.смена"
 
-#: shifts/models/shifts.py:23
+#: shifts/models/shifts.py:25
 msgid "date"
 msgstr "дата"
 
-#: shifts/models/shifts.py:28
+#: shifts/models/shifts.py:30
 msgid "started at"
 msgstr "дата начала"
 
-#: shifts/models/shifts.py:33
+#: shifts/models/shifts.py:35
 msgid "finished at"
 msgstr "дата завершения"
 
-#: shifts/models/shifts.py:38
+#: shifts/models/shifts.py:40
 msgid "confirmed at"
 msgstr "дата подтверждения"
 
-#: shifts/models/shifts.py:43
+#: shifts/models/shifts.py:45
 msgid "rejected at"
 msgstr "дата отклонения"
 
-#: shifts/models/shifts.py:55
+#: shifts/models/shifts.py:57
 msgid "is extra shift"
 msgstr "доп.смена"
 
-#: shifts/models/shifts.py:59
+#: shifts/models/shifts.py:61
 msgid "is test shift"
 msgstr "тестовый доступ"
 
-#: shifts/models/shifts.py:68
+#: shifts/models/shifts.py:69
+msgid "Shift cars threshold"
+msgstr "Минимальный план авто на смене"
+
+#: shifts/models/shifts.py:71
+msgid "The minimum number of cars that must be transferred during a shift."
+msgstr "Минимальное количество авто, которое должно быть перегнано за смену."
+
+#: shifts/models/shifts.py:78
 msgid "shifts"
 msgstr "смены"
 
@@ -678,6 +764,10 @@ msgstr "Вспомогательный текст для гос.номера а�
 #: texts/models.py:13
 msgid "Transferred car class help text"
 msgstr "Вспомогательный текст для класса авто"
+
+#: texts/models.py:22
+msgid "Value"
+msgstr "Значение"
 
 #: texts/models.py:28
 msgid "Text"

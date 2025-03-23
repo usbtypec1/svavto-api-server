@@ -6,12 +6,14 @@ import pendulum
 
 from shifts.models import Shift
 
+
 __all__ = (
     "Period",
     "get_report_periods_of_dates",
     "get_shift_dates_of_staff",
     "StaffReportPeriods",
     "StaffReportPeriodsReadInteractor",
+    'get_report_period_by_number',
 )
 
 from staff.selectors import ensure_staff_exists
@@ -39,7 +41,8 @@ class StaffReportPeriods:
     periods: list[Period]
 
 
-def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[Period]:
+def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[
+    Period]:
     """
     Generates an array of unique periods that at least one date belongs to.
 
@@ -74,7 +77,9 @@ def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[Period]:
 
 
 def get_shift_dates_of_staff(staff_id: int) -> tuple[datetime.date, ...]:
-    return tuple(Shift.objects.filter(staff_id=staff_id).values_list("date", flat=True))
+    return tuple(
+        Shift.objects.filter(staff_id=staff_id).values_list("date", flat=True)
+        )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -89,3 +94,34 @@ class StaffReportPeriodsReadInteractor:
             staff_id=self.staff_id,
             periods=report_periods,
         )
+
+
+def get_report_period_by_number(
+        *,
+        year: int,
+        month: int,
+        report_period_number: int,
+) -> Period:
+    """
+
+    Keyword Args:
+        year: year number.
+        month: month number, 1-12.
+        report_period_number: half of month, 1 or 2.
+
+    Returns:
+        Period: Period object.
+    """
+    is_first_half_of_month = report_period_number == 1
+    if is_first_half_of_month:
+        return Period(
+            from_date=pendulum.date(year, month, 1),
+            to_date=pendulum.date(year, month, 15),
+        )
+
+    next_month = pendulum.date(year, month, 1).add(months=1)
+    last_day = next_month.start_of("month").subtract(days=1)
+    return Period(
+        from_date=pendulum.date(year, month, 16),
+        to_date=last_day,
+    )

@@ -124,8 +124,9 @@ class StaffShiftsStatisticsSerializer(serializers.Serializer):
 
 
 class StaffShiftsStatisticsReportInputSerializer(serializers.Serializer):
-    from_date = serializers.DateField()
-    to_date = serializers.DateField()
+    year = serializers.IntegerField(min_value=2000, max_value=3000)
+    month = serializers.IntegerField(min_value=1, max_value=12)
+    report_period_number = serializers.IntegerField(min_value=1, max_value=2)
     staff_ids = serializers.ListField(
         child=serializers.IntegerField(),
         allow_null=True,
