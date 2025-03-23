@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import django
 from environ import Env
 
 
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     "shifts",
     "texts",
     "dry_cleaning",
+    'deposits',
 ]
 
 MIDDLEWARE = [
