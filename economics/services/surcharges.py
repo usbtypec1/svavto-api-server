@@ -1,7 +1,7 @@
 import datetime
 from dataclasses import dataclass
 
-from economics.models import Surcharge
+from economics.models import CarTransporterSurcharge
 
 __all__ = ("create_surcharge",)
 
@@ -33,9 +33,9 @@ def create_surcharge(
         amount: amount of surcharge.
 
     Returns:
-        Surcharge: created surcharge.
+        CarTransporterSurcharge: created surcharge.
     """
-    surcharge = Surcharge(
+    surcharge = CarTransporterSurcharge(
         shift_id=shift_id,
         reason=reason,
         amount=amount,

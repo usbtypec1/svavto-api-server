@@ -3,9 +3,9 @@ from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
 from economics.models import (
-    Penalty,
+    CarTransporterPenalty,
     StaffServicePrice,
-    Surcharge,
+    CarTransporterSurcharge,
     CarWashPenalty,
     CarWashSurcharge,
     PenaltyPhoto,
@@ -24,12 +24,12 @@ class CarWashSurchargeResource(ModelResource):
 
 class PenaltyResource(ModelResource):
     class Meta:
-        model = Penalty
+        model = CarTransporterPenalty
 
 
 class SurchargeResource(ModelResource):
     class Meta:
-        model = Surcharge
+        model = CarTransporterSurcharge
 
 
 @admin.register(PenaltyPhoto)
@@ -37,7 +37,7 @@ class PenaltyPhotoAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Penalty)
+@admin.register(CarTransporterPenalty)
 class PenaltyAdmin(ImportExportModelAdmin):
     resource_class = PenaltyResource
     list_display = (
@@ -57,7 +57,7 @@ class PenaltyAdmin(ImportExportModelAdmin):
     search_help_text = "Search by staff full name, staff id, reason"
 
 
-@admin.register(Surcharge)
+@admin.register(CarTransporterSurcharge)
 class SurchargeAdmin(ImportExportModelAdmin):
     resource_class = SurchargeResource
     list_display = (

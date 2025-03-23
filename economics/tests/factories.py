@@ -6,8 +6,8 @@ from car_washes.tests.factories import CarWashFactory
 from economics.models import (
     CarWashPenalty,
     CarWashSurcharge,
-    Penalty,
-    Surcharge,
+    CarTransporterPenalty,
+    CarTransporterSurcharge,
 )
 from staff.tests.factories import StaffFactory
 
@@ -21,7 +21,7 @@ __all__ = (
 
 class PenaltyFactory(DjangoModelFactory):
     class Meta:
-        model = Penalty
+        model = CarTransporterPenalty
 
     staff = factory.SubFactory(StaffFactory)
     reason = factory.Faker("sentence")
@@ -30,7 +30,7 @@ class PenaltyFactory(DjangoModelFactory):
 
 class SurchargeFactory(DjangoModelFactory):
     class Meta:
-        model = Surcharge
+        model = CarTransporterSurcharge
 
     staff = factory.SubFactory(StaffFactory)
     reason = factory.Faker("sentence")

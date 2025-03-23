@@ -6,8 +6,8 @@ from shifts.models import Shift
 
 
 __all__ = (
-    "Penalty",
-    "Surcharge",
+    "CarTransporterPenalty",
+    "CarTransporterSurcharge",
     "StaffServicePrice",
     "CarWashPenalty",
     "CarWashSurcharge",
@@ -53,7 +53,7 @@ class CarWashSurcharge(models.Model):
         return self.reason
 
 
-class Penalty(models.Model):
+class CarTransporterPenalty(models.Model):
     class Consequence(models.TextChoices):
         DISMISSAL = "dismissal", _("dismissal")
         WARN = "warn", _("warn")
@@ -78,7 +78,7 @@ class Penalty(models.Model):
 
 
 class PenaltyPhoto(models.Model):
-    penalty = models.ForeignKey(Penalty, on_delete=models.CASCADE)
+    penalty = models.ForeignKey(CarTransporterPenalty, on_delete=models.CASCADE)
     photo_url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -87,7 +87,7 @@ class PenaltyPhoto(models.Model):
         verbose_name_plural = _("penalty photos")
 
 
-class Surcharge(models.Model):
+class CarTransporterSurcharge(models.Model):
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()

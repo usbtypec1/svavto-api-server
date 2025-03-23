@@ -8,9 +8,9 @@ from django.db.models import Sum
 from economics.models import (
     CarWashPenalty,
     CarWashSurcharge,
-    Penalty,
+    CarTransporterPenalty,
     PenaltyPhoto,
-    Surcharge,
+    CarTransporterSurcharge,
 )
 
 
@@ -115,7 +115,7 @@ def compute_staff_penalties_count(
     Returns:
         Penalties count.
     """
-    return Penalty.objects.filter(shift__staff_id=staff_id, reason=reason).count()
+    return CarTransporterPenalty.objects.filter(shift__staff_id=staff_id, reason=reason).count()
 
 
 def group_by_staff_id(
@@ -146,7 +146,7 @@ def get_penalties_for_period(
     to_date: datetime.date,
     staff_ids: Iterable[int] | None = None,
 ) -> list[StaffPenaltiesOrSurchargesForSpecificShift]:
-    penalties = Penalty.objects.filter(
+    penalties = CarTransporterPenalty.objects.filter(
         shift__date__gte=from_date,
         shift__date__lte=to_date,
     )
@@ -164,7 +164,7 @@ def get_surcharges_for_period(
     to_date: datetime.date,
     staff_ids: Iterable[int] | None = None,
 ) -> list[StaffPenaltiesOrSurchargesForSpecificShift]:
-    surcharges = Surcharge.objects.filter(
+    surcharges = CarTransporterSurcharge.objects.filter(
         shift__date__gte=from_date,
         shift__date__lte=to_date,
     )
@@ -215,7 +215,7 @@ class PenaltiesPage:
 
 
 def map_surcharges_to_page_items(
-    surcharges: Iterable[Surcharge],
+    surcharges: Iterable[CarTransporterSurcharge],
 ) -> list[SurchargesPageItem]:
     return [
         SurchargesPageItem(
@@ -239,7 +239,7 @@ def get_surcharges_page(
     offset: int,
 ) -> SurchargesPage:
     surcharges = (
-        Surcharge.objects.select_related("shift", "shift__staff")
+        CarTransporterSurcharge.objects.select_related("shift", "shift__staff")
         .order_by("-created_at")
         .only(
             "id",
@@ -266,7 +266,7 @@ def get_surcharges_page(
 
 
 def map_penalties_to_page_items(
-    penalties: Iterable[Penalty],
+    penalties: Iterable[CarTransporterPenalty],
     photos: Iterable[PenaltyPhoto],
 ) -> list[PenaltiesPageItem]:
     penalty_id_photo_urls = defaultdict(list)
@@ -297,7 +297,7 @@ def get_penalties_page(
     offset: int,
 ) -> PenaltiesPage:
     penalties = (
-        Penalty.objects.select_related("shift", "shift__staff")
+        CarTransporterPenalty.objects.select_related("shift", "shift__staff")
         .order_by("-created_at")
         .only(
             "id",

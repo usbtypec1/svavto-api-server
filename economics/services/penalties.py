@@ -11,7 +11,7 @@ from economics.exceptions import (
     CarTransporterSurchargeNotFoundError,
     InvalidPenaltyConsequenceError,
 )
-from economics.models import Penalty, PenaltyPhoto, Surcharge
+from economics.models import CarTransporterPenalty, PenaltyPhoto, CarTransporterSurcharge
 from economics.selectors import compute_staff_penalties_count
 from shifts.selectors import get_shift_by_id
 from telegram.services import (
@@ -36,7 +36,7 @@ class PenaltyAmountAndConsequence:
 class PenaltyConfig(TypedDict):
     threshold: int | float
     amount: int
-    consequence: Penalty.Consequence | None
+    consequence: CarTransporterPenalty.Consequence | None
 
 
 PenaltyConfigs: TypeAlias = tuple[PenaltyConfig, ...]
@@ -47,7 +47,7 @@ PENALTY_CONFIGS: Final[PenaltyReasonToConfigs] = {
         {
             "threshold": 0,
             "amount": 0,
-            "consequence": Penalty.Consequence.WARN,
+            "consequence": CarTransporterPenalty.Consequence.WARN,
         },
         {
             "threshold": 1,
@@ -74,12 +74,12 @@ PENALTY_CONFIGS: Final[PenaltyReasonToConfigs] = {
         {
             "threshold": 2,
             "amount": 1000,
-            "consequence": Penalty.Consequence.DISMISSAL,
+            "consequence": CarTransporterPenalty.Consequence.DISMISSAL,
         },
         {
             "threshold": float("inf"),
             "amount": 0,
-            "consequence": Penalty.Consequence.DISMISSAL,
+            "consequence": CarTransporterPenalty.Consequence.DISMISSAL,
         },
     ),
 }
@@ -179,7 +179,7 @@ def create_penalty(
         amount = penalty_amount_and_consequence.amount
         consequence = penalty_amount_and_consequence.consequence
 
-    penalty = Penalty(
+    penalty = CarTransporterPenalty(
         shift_id=shift_id,
         reason=reason,
         amount=amount,
@@ -231,7 +231,7 @@ class CarTransporterPenaltyDeleteInteractor:
     penalty_id: int
 
     def execute(self) -> None:
-        deleted_count = Penalty.objects.filter(id=self.penalty_id).delete()
+        deleted_count = CarTransporterPenalty.objects.filter(id=self.penalty_id).delete()
         if deleted_count == 0:
             raise CarTransporterPenaltyNotFoundError
 
@@ -241,6 +241,6 @@ class CarTransporterSurchargeDeleteInteractor:
     surcharge_id: int
 
     def execute(self) -> None:
-        deleted_count = Surcharge.objects.filter(id=self.surcharge_id).delete()
+        deleted_count = CarTransporterSurcharge.objects.filter(id=self.surcharge_id).delete()
         if deleted_count == 0:
             raise CarTransporterSurchargeNotFoundError

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from economics.models import Penalty
+from economics.models import CarTransporterPenalty
 
 
 __all__ = (
@@ -35,7 +35,7 @@ class PenaltyCreateOutputSerializer(serializers.Serializer):
     reason = serializers.CharField()
     amount = serializers.IntegerField()
     consequence = serializers.ChoiceField(
-        choices=Penalty.Consequence.choices,
+        choices=CarTransporterPenalty.Consequence.choices,
         allow_null=True,
     )
     created_at = serializers.DateTimeField()
@@ -58,7 +58,7 @@ class PenaltyListItemSerializer(serializers.Serializer):
     shift_date = serializers.DateField()
     reason = serializers.CharField()
     consequence = serializers.ChoiceField(
-        choices=Penalty.Consequence.choices,
+        choices=CarTransporterPenalty.Consequence.choices,
         allow_null=True,
     )
     amount = serializers.IntegerField()
