@@ -33,6 +33,7 @@ class StaffShiftsStatisticsReportApi(APIView):
             report_period_number=report_period_number,
         ).execute()
 
-        response_data = {"staff_list": staff_shifts_statistics}
-        serializer = StaffShiftsStatisticsReportOutputSerializer(response_data)
+        serializer = StaffShiftsStatisticsReportOutputSerializer(
+            staff_shifts_statistics,
+        )
         return Response(serializer.data)

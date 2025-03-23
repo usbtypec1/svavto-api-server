@@ -9,6 +9,7 @@ from economics.selectors import (
     StaffPenaltiesOrSurchargesForSpecificShift,
 )
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
+from shifts.services.report_periods import ReportPeriod
 from staff.models import Staff
 from staff.selectors import StaffItem
 
@@ -118,6 +119,12 @@ class StaffShiftsStatistics:
     staff: StaffItem
     shifts_statistics: list[ShiftStatisticsWithPenaltyAndSurcharge]
     total_statistics: TotalStatistics
+
+
+@dataclass(frozen=True, slots=True)
+class StaffShiftsStatisticsResponse:
+    staff_list: list[StaffShiftsStatistics]
+    report_period: ReportPeriod
 
 
 @dataclass(frozen=True, slots=True)

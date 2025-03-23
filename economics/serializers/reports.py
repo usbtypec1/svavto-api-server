@@ -16,6 +16,8 @@ __all__ = (
     "CarWashRevenueForShiftAdditionalServiceSerializer",
 )
 
+from shifts.serializers import ReportPeriodSerializer
+
 
 class CarWashesRevenueReportInputSerializer(serializers.Serializer):
     from_date = serializers.DateField()
@@ -47,7 +49,7 @@ class CarWashesRevenueReportInputSerializer(serializers.Serializer):
 
 class CarWashRevenueForShiftAdditionalServiceSerializer(
     serializers.Serializer
-    ):
+):
     id = serializers.UUIDField()
     name = serializers.CharField()
     count = serializers.IntegerField()
@@ -138,3 +140,4 @@ class StaffShiftsStatisticsReportOutputSerializer(serializers.Serializer):
     staff_list = serializers.ListField(
         child=StaffShiftsStatisticsSerializer(),
     )
+    report_period = ReportPeriodSerializer()

@@ -9,7 +9,7 @@ from economics.selectors import (
 from economics.services.reports.staff_shifts_statistics import (
     get_cars_to_wash_statistics, group_shifts_statistics_by_staff,
     merge_shifts_statistics_and_penalties_and_surcharges,
-    StaffShiftsStatistics,
+    StaffShiftsStatisticsResponse,
 )
 from shifts.services.report_periods import get_report_period_by_number
 from staff.selectors import get_staff
@@ -22,7 +22,7 @@ class StaffShiftsStatisticsUseCase:
     report_period_number: int
     staff_ids: Iterable[int]
 
-    def execute(self) -> list[StaffShiftsStatistics]:
+    def execute(self) -> StaffShiftsStatisticsResponse:
         period = get_report_period_by_number(
             year=self.year,
             month=self.month,
@@ -54,7 +54,7 @@ class StaffShiftsStatisticsUseCase:
                 report_period_number=self.report_period_number,
             )
         )
-        return [
+        staff_statistics = [
             merge_shifts_statistics_and_penalties_and_surcharges(
                 staff=staff,
                 penalties=penalties,
@@ -64,3 +64,7 @@ class StaffShiftsStatisticsUseCase:
             )
             for staff in staff_list
         ]
+        return StaffShiftsStatisticsResponse(
+            staff_list=staff_statistics,
+            report_period=period,
+        )

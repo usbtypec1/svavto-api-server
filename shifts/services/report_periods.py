@@ -117,7 +117,7 @@ def get_report_period_by_number(
         year: int,
         month: int,
         report_period_number: int,
-) -> Period:
+) -> ReportPeriod:
     """
 
     Keyword Args:
@@ -130,14 +130,17 @@ def get_report_period_by_number(
     """
     is_first_half_of_month = report_period_number == 1
     if is_first_half_of_month:
-        return Period(
-            from_date=pendulum.date(year, month, 1),
-            to_date=pendulum.date(year, month, 15),
-        )
+        from_date = pendulum.date(year, month, 1)
+        to_date = pendulum.date(year, month, 15)
+    else:
+        next_month = pendulum.date(year, month, 1).add(months=1)
+        to_date = next_month.start_of("month").subtract(days=1)
+        from_date = pendulum.date(year, month, 16)
 
-    next_month = pendulum.date(year, month, 1).add(months=1)
-    last_day = next_month.start_of("month").subtract(days=1)
-    return Period(
-        from_date=pendulum.date(year, month, 16),
-        to_date=last_day,
+    return ReportPeriod(
+        from_date=from_date,
+        to_date=to_date,
+        month=month,
+        year=year,
+        number=report_period_number
     )
