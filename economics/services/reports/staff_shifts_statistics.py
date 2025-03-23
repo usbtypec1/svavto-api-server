@@ -309,6 +309,7 @@ def compute_washed_cars_total_cost(
         is_extra_shift: int,
         dry_cleaning_items_count: int,
         prices: StaffServicePricesSet,
+        transferred_cars_threshold: int,
 ) -> int:
     """
     Compute total price of car transfer on the shift.
@@ -321,44 +322,50 @@ def compute_washed_cars_total_cost(
         urgent_cars_count: urgent cars count.
         is_extra_shift: flag of extra shift.
         dry_cleaning_items_count: dry cleaning items count.
+        transferred_cars_threshold: min number of cars that must be
+                                    transferred during the shift.
 
     Returns:
         Total price of car transfer on the shift.
     """
-    planned_cars_count = sum(
-        (
-            comfort_cars_count,
-            business_cars_count,
-            vans_count,
-        )
+    planned_cars_count = (
+            comfort_cars_count
+            + business_cars_count
+            + vans_count
     )
 
-    dry_cleaning_cost = (prices.dry_cleaning_item_price *
-                         dry_cleaning_items_count)
+    dry_cleaning_cost = (
+            prices.dry_cleaning_item_price
+            * dry_cleaning_items_count
+    )
     if is_extra_shift:
         planned_cars_transfer_cost = (
-                prices.extra_shift_planned_car_transfer_price *
-                planned_cars_count
+                prices.extra_shift_planned_car_transfer_price
+                * planned_cars_count
         )
         urgent_cars_transfer_cost = (
-                +prices.urgent_car_transfer_price * urgent_cars_count
+                prices.urgent_car_transfer_price * urgent_cars_count
         )
-        car_transfer_cost = (planned_cars_transfer_cost +
-                             urgent_cars_transfer_cost)
+        car_transfer_cost = (
+                planned_cars_transfer_cost +
+                urgent_cars_transfer_cost
+        )
         return dry_cleaning_cost + car_transfer_cost
 
     total_cars_count = planned_cars_count + urgent_cars_count
 
-    if total_cars_count < 8:
+    if total_cars_count < transferred_cars_threshold:
         planned_cars_transfer_cost = (
-                prices.under_plan_planned_car_transfer_price *
-                planned_cars_count
+                prices.under_plan_planned_car_transfer_price
+                * planned_cars_count
         )
         urgent_cars_transfer_cost = (
-                +prices.urgent_car_transfer_price * urgent_cars_count
+                prices.urgent_car_transfer_price * urgent_cars_count
         )
-        car_transfer_cost = (planned_cars_transfer_cost +
-                             urgent_cars_transfer_cost)
+        car_transfer_cost = (
+                planned_cars_transfer_cost
+                + urgent_cars_transfer_cost
+        )
         return dry_cleaning_cost + car_transfer_cost
 
     return total_cost + dry_cleaning_cost
@@ -495,6 +502,7 @@ def get_cars_to_wash_statistics(
             is_extra_shift=shift.is_extra,
             dry_cleaning_items_count=dry_cleaning_items_count,
             prices=prices,
+            transferred_cars_threshold=shift.transferred_cars_threshold,
         )
 
         shift_statistics = ShiftStatistics(

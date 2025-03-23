@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash
 from staff.models import Staff
+from shifts.models.shift_cars_threshold import DEFAULT_SHIFT_CARS_THRESHOLD
+
 
 __all__ = ("Shift",)
 
@@ -61,6 +63,14 @@ class Shift(models.Model):
     created_at = models.DateTimeField(
         verbose_name=_("created at"),
         default=timezone.now,
+    )
+    transferred_cars_threshold = models.PositiveSmallIntegerField(
+        default=DEFAULT_SHIFT_CARS_THRESHOLD,
+        verbose_name=_("Shift cars threshold"),
+        help_text=_(
+            "The minimum number of cars that must be transferred during a "
+            "shift."
+        ),
     )
 
     class Meta:
