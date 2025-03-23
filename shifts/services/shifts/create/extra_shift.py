@@ -8,7 +8,7 @@ from typing import TypeAlias, TypedDict
 from django.db.models import Q, QuerySet
 from django.utils import timezone
 
-from shifts.models import Shift
+from shifts.models import Shift, ShiftCarsThreshold
 from staff.models import Staff
 
 
@@ -115,12 +115,14 @@ class ShiftExtraCreateInteractor:
         separated_shifts = separate_conflict_non_test_shifts(
             shifts=shifts_of_existing_staff
         )
+        transferred_cars_threshold = ShiftCarsThreshold.get()
         shifts_to_create = [
             Shift(
                 staff_id=shift["staff_id"],
                 date=shift["date"],
                 is_extra=True,
                 confirmed_at=timezone.now(),
+                transferred_cars_threshold=transferred_cars_threshold,
             )
             for shift in separated_shifts.non_conflict_shifts
         ]

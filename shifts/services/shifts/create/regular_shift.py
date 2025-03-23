@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from shifts.exceptions import ShiftAlreadyExistsError
-from shifts.models import Shift
+from shifts.models import Shift, ShiftCarsThreshold
 from staff.models import Staff
 
 
@@ -94,8 +94,13 @@ class ShiftRegularCreateInteractor:
             staff_id=self.staff.id,
             expected_dates=self.dates,
         )
-
-        shifts_to_create = [Shift(staff=self.staff, date=date) for date in self.dates]
+        transferred_cars_threshold = ShiftCarsThreshold.get()
+        shifts_to_create = [
+            Shift(
+                staff=self.staff,
+                date=date,
+                transferred_cars_threshold=transferred_cars_threshold,
+            ) for date in self.dates]
         shifts = Shift.objects.bulk_create(shifts_to_create)
 
         shifts = [ShiftItem(id=shift.id, date=shift.date) for shift in shifts]
