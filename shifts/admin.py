@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.db.models import QuerySet
+from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 from import_export import resources, fields
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
@@ -24,6 +25,12 @@ class ShiftCarsThresholdAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return not ShiftCarsThreshold.objects.exists()
 
+    def save_model(self, request, obj: ShiftCarsThreshold, form, change):
+        Shift.objects.filter(date__gte=timezone.localdate()).update(
+            transferred_cars_threshold=obj.value
+        )
+        super().save_model(request, obj, form, change)
+
 
 class CurrentShiftFilter(admin.SimpleListFilter):
     title = _("current shift")
@@ -41,11 +48,11 @@ class CurrentShiftFilter(admin.SimpleListFilter):
 class CarToWashAdditionalServiceResource(resources.ModelResource):
     staff = fields.Field(
         "car__shift__staff__full_name", column_name=_("staff")
-        )
+    )
     shift_date = fields.Field("car__shift__date", column_name=_("shift date"))
     service_name = fields.Field(
         "service__name", column_name=_("car wash service name")
-        )
+    )
     car_number = fields.Field("car__number", column_name=_("car number"))
 
     class Meta:
@@ -83,7 +90,7 @@ class CarToWashResource(resources.ModelResource):
     number = resources.Field(attribute="number", column_name=_("car number"))
     car_class = resources.Field(
         attribute="car_class", column_name=_("car class")
-        )
+    )
     wash_type = resources.Field(
         attribute="wash_type",
         column_name=_("wash type"),

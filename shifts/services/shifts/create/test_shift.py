@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from django.db import transaction
 from django.utils import timezone
 
-from shifts.models import Shift
+from shifts.models import Shift, ShiftCarsThreshold
 from staff.models import Staff
 
 
@@ -33,11 +33,13 @@ class ShiftTestCreateInteractor:
     @transaction.atomic
     def execute(self) -> ShiftTestCreateResult:
         Shift.objects.filter(staff_id=self.staff.id, is_test=True).delete()
+        transferred_cars_threshold = ShiftCarsThreshold.get()
         shift = Shift(
             staff_id=self.staff.id,
             date=self.date,
             confirmed_at=timezone.now(),
             is_test=True,
+            transferred_cars_threshold=transferred_cars_threshold,
         )
         shift.full_clean()
         shift.save()
