@@ -13,8 +13,16 @@ from shifts.models import (
     CarToWashAdditionalService,
     Shift,
     ShiftFinishPhoto,
+    ShiftCarsThreshold,
 )
 from shifts.services.shifts.validators import ensure_staff_has_no_active_shift
+
+
+@admin.register(ShiftCarsThreshold)
+class ShiftCarsThresholdAdmin(admin.ModelAdmin):
+
+    def has_add_permission(self, request):
+        return not ShiftCarsThreshold.objects.exists()
 
 
 class CurrentShiftFilter(admin.SimpleListFilter):
@@ -31,9 +39,13 @@ class CurrentShiftFilter(admin.SimpleListFilter):
 
 
 class CarToWashAdditionalServiceResource(resources.ModelResource):
-    staff = fields.Field("car__shift__staff__full_name", column_name=_("staff"))
+    staff = fields.Field(
+        "car__shift__staff__full_name", column_name=_("staff")
+        )
     shift_date = fields.Field("car__shift__date", column_name=_("shift date"))
-    service_name = fields.Field("service__name", column_name=_("car wash service name"))
+    service_name = fields.Field(
+        "service__name", column_name=_("car wash service name")
+        )
     car_number = fields.Field("car__number", column_name=_("car number"))
 
     class Meta:
@@ -69,7 +81,9 @@ class CarToWashResource(resources.ModelResource):
         column_name=_("staff"),
     )
     number = resources.Field(attribute="number", column_name=_("car number"))
-    car_class = resources.Field(attribute="car_class", column_name=_("car class"))
+    car_class = resources.Field(
+        attribute="car_class", column_name=_("car class")
+        )
     wash_type = resources.Field(
         attribute="wash_type",
         column_name=_("wash type"),
