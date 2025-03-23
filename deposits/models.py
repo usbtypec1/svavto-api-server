@@ -1,6 +1,6 @@
-from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as __, gettext as _
+from django.db import models
+from django.utils.translation import gettext as _, gettext_lazy as __
 
 from staff.models import Staff
 
@@ -15,7 +15,7 @@ def month_validator(value: int) -> None:
         raise ValidationError(_("Month must be between 1 and 12."))
 
 
-class RetentionExclusion(models.Model):
+class FineDepositException(models.Model):
     staff = models.ForeignKey(
         to=Staff,
         on_delete=models.CASCADE,
