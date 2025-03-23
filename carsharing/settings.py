@@ -88,16 +88,19 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation"
-        ".UserAttributeSimilarityValidator",
+                ".UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation" ".MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation"
+                ".MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation" ".CommonPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation"
+                ".CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation" ".NumericPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation"
+                ".NumericPasswordValidator",
     },
 ]
 
@@ -143,9 +146,15 @@ S3_ACCESS_KEY = env.str("S3_ACCESS_KEY")
 S3_SECRET_KEY = env.str("S3_SECRET_KEY")
 S3_ENDPOINT = env.str("S3_ENDPOINT").rstrip("/")
 
+ROOT_PATH = env.str("ROOT_PATH", default="")
+
+if ROOT_PATH:
+    ROOT_PATH = f"{ROOT_PATH.strip('/')}/"
+
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
