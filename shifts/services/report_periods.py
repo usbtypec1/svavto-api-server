@@ -36,13 +36,21 @@ class Period:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class ReportPeriod(Period):
+    month: int
+    year: int
+    number: int
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class StaffReportPeriods:
     staff_id: int
     periods: list[Period]
 
 
-def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[
-    Period]:
+def get_report_periods_of_dates(
+        dates: Iterable[datetime.date],
+) -> list[ReportPeriod]:
     """
     Generates an array of unique periods that at least one date belongs to.
 
@@ -52,23 +60,29 @@ def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[
     Returns:
         list[Period]: Array of unique periods covering at least one date.
     """
-    periods: set[Period] = set()
+    periods: set[ReportPeriod] = set()
 
     dates = [pendulum.instance(date) for date in dates]
 
     for date in dates:
         is_first_half_of_month = date.day <= 15
         if is_first_half_of_month:
-            period = Period(
+            period = ReportPeriod(
                 from_date=pendulum.date(date.year, date.month, 1),
                 to_date=pendulum.date(date.year, date.month, 15),
+                month=date.month,
+                year=date.year,
+                number=1,
             )
         else:
             next_month = date.add(months=1)
             last_day = next_month.start_of("month").subtract(days=1)
-            period = Period(
+            period = ReportPeriod(
                 from_date=pendulum.date(date.year, date.month, 16),
                 to_date=last_day,
+                month=date.month,
+                year=date.year,
+                number=2,
             )
 
         periods.add(period)
@@ -76,10 +90,12 @@ def get_report_periods_of_dates(dates: Iterable[datetime.date]) -> list[
     return sorted(periods)
 
 
-def get_shift_dates_of_staff(staff_id: int) -> tuple[datetime.date, ...]:
-    return tuple(
-        Shift.objects.filter(staff_id=staff_id).values_list("date", flat=True)
-        )
+def get_shift_dates_of_staff(staff_id: int) -> list[datetime.date]:
+    return list(
+        Shift.objects
+        .filter(staff_id=staff_id)
+        .values_list("date", flat=True)
+    )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
