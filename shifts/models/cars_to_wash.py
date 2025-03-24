@@ -7,6 +7,7 @@ from django.utils import timezone
 from car_washes.models import CarWash
 from shifts.models.shifts import Shift
 
+
 __all__ = ("CarToWash",)
 
 
@@ -57,7 +58,8 @@ class CarToWash(models.Model):
         default=WindshieldWasherType.ANTIFREEZE,
         verbose_name=_("Windshield washer type"),
     )
-    windshield_washer_refilled_bottle_percentage = models.PositiveSmallIntegerField()
+    windshield_washer_refilled_bottle_percentage = (
+        models.PositiveSmallIntegerField())
     transfer_price = models.PositiveIntegerField(
         help_text=_("price of car transfer at the moment")
     )
@@ -109,15 +111,21 @@ class CarToWash(models.Model):
         Returns:
             int: Total number of bottles needed to meet the given percentage.
         """
-        return math.ceil(self.windshield_washer_refilled_bottle_percentage / 100)
+        return math.ceil(
+            self.windshield_washer_refilled_bottle_percentage / 100
+        )
 
     @property
     def windshield_washer_price(self) -> int:
         return (
-            self.windshield_washer_price_per_bottle
-            * self.windshield_washer_refilled_bottle_count
+                self.windshield_washer_price_per_bottle
+                * self.windshield_washer_refilled_bottle_count
         )
 
     @property
     def is_windshield_washer_refilled(self) -> bool:
-        return self.windshield_washer_refilled_bottle_count > 0
+        return (
+                self.windshield_washer_type ==
+                self.WindshieldWasherType.ANTIFREEZE
+                and self.windshield_washer_refilled_bottle_percentage > 0
+        )
