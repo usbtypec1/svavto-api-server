@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 from deposits.services import get_fine_deposit_exceptions_for_report_period
 from economics.selectors import (
-    get_penalties_for_period,
-    get_surcharges_for_period,
+    get_car_transporters_penalties_for_period,
+    get_car_transporters_surcharges_for_period,
 )
 from economics.services.reports.staff_shifts_statistics import (
     get_cars_to_wash_statistics, group_shifts_statistics_by_staff,
@@ -29,12 +29,12 @@ class StaffShiftsStatisticsUseCase:
             report_period_number=self.report_period_number,
         )
         staff_list = get_staff(staff_ids=self.staff_ids)
-        penalties = get_penalties_for_period(
+        penalties = get_car_transporters_penalties_for_period(
             staff_ids=self.staff_ids,
             from_date=period.from_date,
             to_date=period.to_date,
         )
-        surcharges = get_surcharges_for_period(
+        surcharges = get_car_transporters_surcharges_for_period(
             staff_ids=self.staff_ids,
             from_date=period.from_date,
             to_date=period.to_date,

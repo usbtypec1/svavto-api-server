@@ -6,36 +6,47 @@ from car_washes.tests.factories import CarWashFactory
 from economics.models import (
     CarWashPenalty,
     CarWashSurcharge,
-    Penalty,
-    Surcharge,
+    CarTransporterPenalty,
+    CarTransporterSurcharge,
 )
 from staff.tests.factories import StaffFactory
 
+
 __all__ = (
-    "PenaltyFactory",
-    "SurchargeFactory",
+    "CarTransporterPenaltyFactory",
+    "CarTransporterSurchargeFactory",
     "CarWashSurchargeFactory",
     "CarWashPenaltyFactory",
 )
 
 
-class PenaltyFactory(DjangoModelFactory):
+class CarTransporterPenaltyFactory(DjangoModelFactory):
     class Meta:
-        model = Penalty
+        model = CarTransporterPenalty
 
     staff = factory.SubFactory(StaffFactory)
-    reason = factory.Faker("sentence")
-    created_at = factory.Faker("date_time")
-
-
-class SurchargeFactory(DjangoModelFactory):
-    class Meta:
-        model = Surcharge
-
-    staff = factory.SubFactory(StaffFactory)
+    date = factory.Faker("date_object")
     reason = factory.Faker("sentence")
     amount = factory.Faker("random_int", min=100, max=10000)
-    created_at = factory.Faker("date_time")
+    consequence = None
+    created_at = factory.Faker(
+        "date_time",
+        tzinfo=timezone.get_current_timezone(),
+    )
+
+
+class CarTransporterSurchargeFactory(DjangoModelFactory):
+    class Meta:
+        model = CarTransporterSurcharge
+
+    staff = factory.SubFactory(StaffFactory)
+    date = factory.Faker("date_object")
+    reason = factory.Faker("sentence")
+    amount = factory.Faker("random_int", min=100, max=10000)
+    created_at = factory.Faker(
+        "date_time",
+        tzinfo=timezone.get_current_timezone(),
+    )
 
 
 class CarWashPenaltyFactory(DjangoModelFactory):

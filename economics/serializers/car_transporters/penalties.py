@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from economics.models import Penalty
+from economics.models import CarTransporterPenalty
 
 
 __all__ = (
-    "PenaltyCreateInputSerializer",
+    "CarTransporterPenaltyCreateInputSerializer",
     "PenaltyCreateOutputSerializer",
     "PenaltyListOutputSerializer",
     "PenaltyListInputSerializer",
@@ -12,8 +12,9 @@ __all__ = (
 )
 
 
-class PenaltyCreateInputSerializer(serializers.Serializer):
-    shift_id = serializers.IntegerField()
+class CarTransporterPenaltyCreateInputSerializer(serializers.Serializer):
+    staff_id = serializers.IntegerField()
+    date = serializers.DateField()
     reason = serializers.CharField(max_length=255)
     amount = serializers.IntegerField(
         min_value=0,
@@ -30,12 +31,11 @@ class PenaltyCreateOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     staff_id = serializers.IntegerField()
     staff_full_name = serializers.CharField()
-    shift_id = serializers.IntegerField()
-    shift_date = serializers.DateField()
+    date = serializers.DateField()
     reason = serializers.CharField()
     amount = serializers.IntegerField()
     consequence = serializers.ChoiceField(
-        choices=Penalty.Consequence.choices,
+        choices=CarTransporterPenalty.Consequence.choices,
         allow_null=True,
     )
     created_at = serializers.DateTimeField()
@@ -54,11 +54,10 @@ class PenaltyListItemSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     staff_id = serializers.IntegerField()
     staff_full_name = serializers.CharField()
-    shift_id = serializers.IntegerField()
-    shift_date = serializers.DateField()
+    date = serializers.DateField()
     reason = serializers.CharField()
     consequence = serializers.ChoiceField(
-        choices=Penalty.Consequence.choices,
+        choices=CarTransporterPenalty.Consequence.choices,
         allow_null=True,
     )
     amount = serializers.IntegerField()

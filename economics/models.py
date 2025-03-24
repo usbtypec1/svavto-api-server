@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash
@@ -6,13 +7,15 @@ from shifts.models import Shift
 
 
 __all__ = (
-    "Penalty",
-    "Surcharge",
+    "CarTransporterPenalty",
+    "CarTransporterSurcharge",
     "StaffServicePrice",
     "CarWashPenalty",
     "CarWashSurcharge",
     "PenaltyPhoto",
 )
+
+from staff.models import Staff
 
 
 class CarWashPenalty(models.Model):
@@ -53,12 +56,18 @@ class CarWashSurcharge(models.Model):
         return self.reason
 
 
-class Penalty(models.Model):
+class CarTransporterPenalty(models.Model):
     class Consequence(models.TextChoices):
         DISMISSAL = "dismissal", _("dismissal")
         WARN = "warn", _("warn")
 
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
+    staff = models.ForeignKey(
+        to=Staff,
+        on_delete=models.CASCADE,
+        related_name="penalties",
+        verbose_name=_("Staff"),
+    )
+    date = models.DateField(default=timezone.localdate)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
     consequence = models.CharField(
@@ -70,15 +79,17 @@ class Penalty(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _("penalty")
-        verbose_name_plural = _("penalties")
+        verbose_name = _("Car transporter penalty")
+        verbose_name_plural = _("Car transporter penalties")
 
     def __str__(self):
         return self.reason
 
 
 class PenaltyPhoto(models.Model):
-    penalty = models.ForeignKey(Penalty, on_delete=models.CASCADE)
+    penalty = models.ForeignKey(
+        CarTransporterPenalty, on_delete=models.CASCADE
+        )
     photo_url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -87,15 +98,21 @@ class PenaltyPhoto(models.Model):
         verbose_name_plural = _("penalty photos")
 
 
-class Surcharge(models.Model):
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
+class CarTransporterSurcharge(models.Model):
+    staff = models.ForeignKey(
+        to=Staff,
+        on_delete=models.CASCADE,
+        related_name="surcharges",
+        verbose_name=_("Staff"),
+    )
+    date = models.DateField(default=timezone.localdate)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _("surcharge")
-        verbose_name_plural = _("surcharges")
+        verbose_name = _("Car transporter surcharge")
+        verbose_name_plural = _("Car transporter surcharges")
 
     def __str__(self):
         return self.reason
