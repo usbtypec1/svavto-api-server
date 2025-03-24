@@ -6,11 +6,8 @@ from dataclasses import dataclass
 from django.db.models import Sum
 
 from economics.models import (
-    CarWashPenalty,
+    CarTransporterPenalty, CarTransporterSurcharge, CarWashPenalty,
     CarWashSurcharge,
-    CarTransporterPenalty,
-    PenaltyPhoto,
-    CarTransporterSurcharge,
 )
 
 
@@ -18,16 +15,8 @@ __all__ = (
     "compute_staff_penalties_count",
     "StaffPenaltiesOrSurchargesForSpecificShift",
     "PenaltyOrSurchargeAmountAndShiftDate",
-    "get_penalties_for_period",
-    "get_surcharges_for_period",
-    "get_surcharges_page",
-    "SurchargesPage",
-    "SurchargesPageItem",
-    "map_surcharges_to_page_items",
-    "get_penalties_page",
-    "map_penalties_to_page_items",
-    "PenaltiesPage",
-    "PenaltiesPageItem",
+    "get_car_transporters_penalties_for_period",
+    "get_car_transporters_surcharges_for_period",
     "get_car_wash_penalties_and_surcharges_for_period",
     "CarWashPenaltiesAndSurchargesByDate",
 )
@@ -41,10 +30,10 @@ class CarWashPenaltiesAndSurchargesByDate:
 
 
 def get_car_wash_penalties_and_surcharges_for_period(
-    *,
-    car_wash_ids: Iterable[int],
-    from_date: datetime.date,
-    to_date: datetime.date,
+        *,
+        car_wash_ids: Iterable[int],
+        from_date: datetime.date,
+        to_date: datetime.date,
 ) -> list[CarWashPenaltiesAndSurchargesByDate]:
     penalties = (
         CarWashPenalty.objects.filter(
@@ -64,7 +53,8 @@ def get_car_wash_penalties_and_surcharges_for_period(
     )
 
     surcharge_date_to_amount = {
-        surcharge["date"]: surcharge["total_amount"] for surcharge in surcharges
+        surcharge["date"]: surcharge["total_amount"] for surcharge in
+        surcharges
     }
     penalty_date_to_amount = {
         penalty["date"]: penalty["total_amount"] for penalty in penalties
@@ -101,9 +91,9 @@ class StaffPenaltiesOrSurchargesForSpecificShift:
 
 
 def compute_staff_penalties_count(
-    *,
-    staff_id: int,
-    reason: str,
+        *,
+        staff_id: int,
+        reason: str,
 ) -> int:
     """
     Get count of penalties that staff member has with specific reason.
@@ -115,19 +105,23 @@ def compute_staff_penalties_count(
     Returns:
         Penalties count.
     """
-    return CarTransporterPenalty.objects.filter(shift__staff_id=staff_id, reason=reason).count()
+    return (
+        CarTransporterPenalty.objects
+        .filter(staff_id=staff_id, reason=reason)
+        .count()
+    )
 
 
 def group_by_staff_id(
-    grouped_by_staff_id_and_shift_date: Iterable[dict],
+        grouped_by_staff_id_and_shift_date: Iterable[dict],
 ) -> list[StaffPenaltiesOrSurchargesForSpecificShift]:
     staff_id_to_items = defaultdict(list)
     for staff_id_and_date_and_amount in grouped_by_staff_id_and_shift_date:
-        staff_id = staff_id_and_date_and_amount["shift__staff_id"]
+        staff_id = staff_id_and_date_and_amount["staff_id"]
         staff_id_to_items[staff_id].append(
             PenaltyOrSurchargeAmountAndShiftDate(
                 staff_id=staff_id,
-                shift_date=staff_id_and_date_and_amount["shift__date"],
+                shift_date=staff_id_and_date_and_amount["date"],
                 total_amount=staff_id_and_date_and_amount["total_amount"],
             )
         )
@@ -140,191 +134,37 @@ def group_by_staff_id(
     ]
 
 
-def get_penalties_for_period(
-    *,
-    from_date: datetime.date,
-    to_date: datetime.date,
-    staff_ids: Iterable[int] | None = None,
+def get_car_transporters_penalties_for_period(
+        *,
+        from_date: datetime.date,
+        to_date: datetime.date,
+        staff_ids: Iterable[int] | None = None,
 ) -> list[StaffPenaltiesOrSurchargesForSpecificShift]:
     penalties = CarTransporterPenalty.objects.filter(
-        shift__date__gte=from_date,
-        shift__date__lte=to_date,
+        date__gte=from_date,
+        date__lte=to_date,
     )
     if staff_ids is not None:
-        penalties = penalties.filter(shift__staff_id__in=staff_ids)
+        penalties = penalties.filter(staff_id__in=staff_ids)
     penalties_grouped_by_staff_id_and_shift_date = penalties.values(
-        "shift__staff_id", "shift__date"
+        "staff_id", "date"
     ).annotate(total_amount=Sum("amount"))
     return group_by_staff_id(penalties_grouped_by_staff_id_and_shift_date)
 
 
-def get_surcharges_for_period(
-    *,
-    from_date: datetime.date,
-    to_date: datetime.date,
-    staff_ids: Iterable[int] | None = None,
+def get_car_transporters_surcharges_for_period(
+        *,
+        from_date: datetime.date,
+        to_date: datetime.date,
+        staff_ids: Iterable[int] | None = None,
 ) -> list[StaffPenaltiesOrSurchargesForSpecificShift]:
     surcharges = CarTransporterSurcharge.objects.filter(
-        shift__date__gte=from_date,
-        shift__date__lte=to_date,
+        date__gte=from_date,
+        date__lte=to_date,
     )
     if staff_ids is not None:
-        surcharges = surcharges.filter(shift__staff_id__in=staff_ids)
+        surcharges = surcharges.filter(staff_id__in=staff_ids)
     surcharges_grouped_by_staff_id_and_shift_date = surcharges.values(
-        "shift__staff_id", "shift__date"
+        "staff_id", "date"
     ).annotate(total_amount=Sum("amount"))
     return group_by_staff_id(surcharges_grouped_by_staff_id_and_shift_date)
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class SurchargesPageItem:
-    id: int
-    staff_id: int
-    staff_full_name: str
-    shift_id: int
-    shift_date: datetime.date
-    reason: str
-    amount: int
-    created_at: datetime.datetime
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class SurchargesPage:
-    surcharges: list[SurchargesPageItem]
-    is_end_of_list_reached: bool
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PenaltiesPageItem:
-    id: int
-    staff_id: int
-    staff_full_name: str
-    shift_id: int
-    shift_date: datetime.date
-    consequence: str | None
-    reason: str
-    amount: int
-    photo_urls: list[str]
-    created_at: datetime.datetime
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PenaltiesPage:
-    penalties: list[PenaltiesPageItem]
-    is_end_of_list_reached: bool
-
-
-def map_surcharges_to_page_items(
-    surcharges: Iterable[CarTransporterSurcharge],
-) -> list[SurchargesPageItem]:
-    return [
-        SurchargesPageItem(
-            id=surcharge.id,
-            staff_id=surcharge.shift.staff.id,
-            staff_full_name=surcharge.shift.staff.full_name,
-            shift_id=surcharge.shift_id,
-            shift_date=surcharge.shift.date,
-            reason=surcharge.reason,
-            amount=surcharge.amount,
-            created_at=surcharge.created_at,
-        )
-        for surcharge in surcharges
-    ]
-
-
-def get_surcharges_page(
-    *,
-    staff_ids: Iterable[int] | None = None,
-    limit: int,
-    offset: int,
-) -> SurchargesPage:
-    surcharges = (
-        CarTransporterSurcharge.objects.select_related("shift", "shift__staff")
-        .order_by("-created_at")
-        .only(
-            "id",
-            "shift__staff__id",
-            "shift__staff__full_name",
-            "shift_id",
-            "shift__date",
-            "reason",
-            "amount",
-            "created_at",
-        )
-    )
-    if staff_ids is not None:
-        surcharges = surcharges.filter(shift__staff_id__in=staff_ids)
-    surcharges = surcharges[offset : offset + limit + 1]
-
-    is_end_of_list_reached = len(surcharges) <= limit
-    surcharges = surcharges[:limit]
-
-    return SurchargesPage(
-        surcharges=map_surcharges_to_page_items(surcharges),
-        is_end_of_list_reached=is_end_of_list_reached,
-    )
-
-
-def map_penalties_to_page_items(
-    penalties: Iterable[CarTransporterPenalty],
-    photos: Iterable[PenaltyPhoto],
-) -> list[PenaltiesPageItem]:
-    penalty_id_photo_urls = defaultdict(list)
-    for photo in photos:
-        penalty_id_photo_urls[photo.penalty_id].append(photo.photo_url)
-
-    return [
-        PenaltiesPageItem(
-            id=penalty.id,
-            staff_id=penalty.shift.staff.id,
-            staff_full_name=penalty.shift.staff.full_name,
-            shift_id=penalty.shift_id,
-            shift_date=penalty.shift.date,
-            consequence=penalty.consequence,
-            reason=penalty.reason,
-            amount=penalty.amount,
-            photo_urls=penalty_id_photo_urls[penalty.id],
-            created_at=penalty.created_at,
-        )
-        for penalty in penalties
-    ]
-
-
-def get_penalties_page(
-    *,
-    staff_ids: Iterable[int] | None = None,
-    limit: int,
-    offset: int,
-) -> PenaltiesPage:
-    penalties = (
-        CarTransporterPenalty.objects.select_related("shift", "shift__staff")
-        .order_by("-created_at")
-        .only(
-            "id",
-            "shift__staff__id",
-            "shift__staff__full_name",
-            "shift_id",
-            "shift__date",
-            "consequence",
-            "reason",
-            "amount",
-            "created_at",
-        )
-    )
-    if staff_ids is not None:
-        penalties = penalties.filter(shift__staff_id__in=staff_ids)
-    penalties = penalties[offset : offset + limit + 1]
-
-    is_end_of_list_reached = len(penalties) <= limit
-    penalties = penalties[:limit]
-
-    penalty_ids = [penalty.id for penalty in penalties]
-    photos = PenaltyPhoto.objects.filter(penalty_id__in=penalty_ids)
-
-    return PenaltiesPage(
-        penalties=map_penalties_to_page_items(
-            penalties=penalties,
-            photos=photos,
-        ),
-        is_end_of_list_reached=is_end_of_list_reached,
-    )

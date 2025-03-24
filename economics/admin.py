@@ -22,12 +22,12 @@ class CarWashSurchargeResource(ModelResource):
         model = CarWashSurcharge
 
 
-class PenaltyResource(ModelResource):
+class CarTransporterPenaltyResource(ModelResource):
     class Meta:
         model = CarTransporterPenalty
 
 
-class SurchargeResource(ModelResource):
+class CarTransporterSurchargeResource(ModelResource):
     class Meta:
         model = CarTransporterSurcharge
 
@@ -38,40 +38,42 @@ class PenaltyPhotoAdmin(admin.ModelAdmin):
 
 
 @admin.register(CarTransporterPenalty)
-class PenaltyAdmin(ImportExportModelAdmin):
-    resource_class = PenaltyResource
+class CarTransporterPenaltyAdmin(ImportExportModelAdmin):
+    resource_class = CarTransporterPenaltyResource
     list_display = (
-        "shift__staff",
+        "staff",
         "reason",
         "amount",
         "consequence",
         "created_at",
     )
-    list_select_related = ("shift",)
+    autocomplete_fields = ("staff",)
+    list_select_related = ("staff",)
     list_filter = (
-        "shift__staff",
+        "staff",
         "reason",
         "consequence",
     )
-    search_fields = ("shift__staff__full_name", "shift__staff__id", "reason")
+    search_fields = ("staff__full_name", "staff__id", "reason")
     search_help_text = "Search by staff full name, staff id, reason"
 
 
 @admin.register(CarTransporterSurcharge)
-class SurchargeAdmin(ImportExportModelAdmin):
-    resource_class = SurchargeResource
+class CarTransporterSurchargeAdmin(ImportExportModelAdmin):
+    resource_class = CarTransporterSurchargeResource
     list_display = (
-        "shift__staff",
+        "staff",
         "reason",
         "amount",
         "created_at",
     )
-    list_select_related = ("shift",)
+    autocomplete_fields = ("staff",)
+    list_select_related = ("staff",)
     list_filter = (
-        "shift__staff",
+        "staff",
         "reason",
     )
-    search_fields = ("shift__staff__full_name", "shift__staff__id", "reason")
+    search_fields = ("staff__full_name", "staff__id", "reason")
     search_help_text = "Search by staff full name, staff id, reason"
 
 
@@ -101,6 +103,7 @@ class CarWashPenaltyAdmin(ImportExportModelAdmin):
         "amount",
         "created_at",
     )
+    autocomplete_fields = ("car_wash",)
     list_filter = (
         "car_wash",
         "reason",
@@ -118,6 +121,7 @@ class CarWashSurchargeAdmin(ImportExportModelAdmin):
         "amount",
         "created_at",
     )
+    autocomplete_fields = ("car_wash",)
     list_filter = (
         "car_wash",
         "reason",

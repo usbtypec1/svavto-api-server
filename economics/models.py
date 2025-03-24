@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash
@@ -13,6 +14,8 @@ __all__ = (
     "CarWashSurcharge",
     "PenaltyPhoto",
 )
+
+from staff.models import Staff
 
 
 class CarWashPenalty(models.Model):
@@ -58,7 +61,13 @@ class CarTransporterPenalty(models.Model):
         DISMISSAL = "dismissal", _("dismissal")
         WARN = "warn", _("warn")
 
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
+    staff = models.ForeignKey(
+        to=Staff,
+        on_delete=models.CASCADE,
+        related_name="penalties",
+        verbose_name=_("Staff"),
+    )
+    date = models.DateField(default=timezone.localdate)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
     consequence = models.CharField(
@@ -70,15 +79,17 @@ class CarTransporterPenalty(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _("penalty")
-        verbose_name_plural = _("penalties")
+        verbose_name = _("Car transporter penalty")
+        verbose_name_plural = _("Car transporter penalties")
 
     def __str__(self):
         return self.reason
 
 
 class PenaltyPhoto(models.Model):
-    penalty = models.ForeignKey(CarTransporterPenalty, on_delete=models.CASCADE)
+    penalty = models.ForeignKey(
+        CarTransporterPenalty, on_delete=models.CASCADE
+        )
     photo_url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -88,14 +99,20 @@ class PenaltyPhoto(models.Model):
 
 
 class CarTransporterSurcharge(models.Model):
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
+    staff = models.ForeignKey(
+        to=Staff,
+        on_delete=models.CASCADE,
+        related_name="surcharges",
+        verbose_name=_("Staff"),
+    )
+    date = models.DateField(default=timezone.localdate)
     reason = models.CharField(max_length=255)
     amount = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _("surcharge")
-        verbose_name_plural = _("surcharges")
+        verbose_name = _("Car transporter surcharge")
+        verbose_name_plural = _("Car transporter surcharges")
 
     def __str__(self):
         return self.reason

@@ -1,26 +1,25 @@
+import datetime
+
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from economics.selectors import get_penalties_page
 from economics.serializers import (
-    PenaltyCreateInputSerializer,
+    CarTransporterPenaltyCreateInputSerializer,
     PenaltyCreateOutputSerializer,
     PenaltyListInputSerializer,
     PenaltyListOutputSerializer,
 )
-from economics.services.penalties import (
-    CarTransporterPenaltyDeleteInteractor,
-    create_penalty,
+from economics.use_cases import (
+    CarTransporterPenaltyCreateUseCase,
+    CarTransporterPenaltyDeleteUseCase,
+    CarTransporterPenaltyListUseCase,
 )
-from shifts.services.shifts.validators import ensure_shift_exists
 
 
-__all__ = ("PenaltyListCreateApi", "CarTransporterPenaltyDeleteApi")
+class CarTransporterPenaltyListCreateApi(APIView):
 
-
-class PenaltyListCreateApi(APIView):
     def get(self, request: Request) -> Response:
         serializer = PenaltyListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -30,41 +29,40 @@ class PenaltyListCreateApi(APIView):
         limit: int = serialized_data["limit"]
         offset: int = serialized_data["offset"]
 
-        penalties_page = get_penalties_page(
+        penalties_page = CarTransporterPenaltyListUseCase(
             staff_ids=staff_ids,
             limit=limit,
             offset=offset,
-        )
+        ).execute()
 
         serializer = PenaltyListOutputSerializer(penalties_page)
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
-        serializer = PenaltyCreateInputSerializer(data=request.data)
+        serializer = CarTransporterPenaltyCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.validated_data
 
-        shift_id: int = serialized_data["shift_id"]
+        staff_id: int = serialized_data["staff_id"]
+        date: datetime.date = serialized_data["date"]
         reason: str = serialized_data["reason"]
         amount: int | None = serialized_data["amount"]
         photo_urls: list[str] = serialized_data["photo_urls"]
 
-        ensure_shift_exists(shift_id)
-        penalty = create_penalty(
-            shift_id=shift_id,
+        penalty = CarTransporterPenaltyCreateUseCase(
+            staff_id=staff_id,
+            date=date,
             reason=reason,
             amount=amount,
             photo_urls=photo_urls,
-        )
+        ).execute()
 
         serializer = PenaltyCreateOutputSerializer(penalty)
         return Response(serializer.data, status.HTTP_201_CREATED)
 
 
 class CarTransporterPenaltyDeleteApi(APIView):
+
     def delete(self, request: Request, penalty_id: int) -> Response:
-        interactor = CarTransporterPenaltyDeleteInteractor(
-            penalty_id=penalty_id,
-        )
-        interactor.execute()
+        CarTransporterPenaltyDeleteUseCase(penalty_id=penalty_id).execute()
         return Response(status=status.HTTP_204_NO_CONTENT)

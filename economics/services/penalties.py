@@ -1,24 +1,11 @@
 import datetime
-from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import auto, StrEnum
 from typing import Final, TypeAlias, TypedDict
 
-from django.db import transaction
-
-from economics.exceptions import (
-    CarTransporterPenaltyNotFoundError,
-    CarTransporterSurchargeNotFoundError,
-    InvalidPenaltyConsequenceError,
-)
-from economics.models import CarTransporterPenalty, PenaltyPhoto, CarTransporterSurcharge
+from economics.exceptions import InvalidPenaltyConsequenceError
+from economics.models import CarTransporterPenalty
 from economics.selectors import compute_staff_penalties_count
-from shifts.selectors import get_shift_by_id
-from telegram.services import (
-    get_telegram_bot,
-    try_send_message,
-    try_send_photos_media_group,
-)
 
 
 class PenaltyReason(StrEnum):
@@ -86,9 +73,9 @@ PENALTY_CONFIGS: Final[PenaltyReasonToConfigs] = {
 
 
 def compute_penalty_amount_and_consequence(
-    *,
-    staff_id: int,
-    reason: PenaltyReason | str,
+        *,
+        staff_id: int,
+        reason: PenaltyReason | str,
 ) -> PenaltyAmountAndConsequence:
     """
     Compute penalty amount and consequence based on staff violation reason
@@ -122,7 +109,9 @@ def compute_penalty_amount_and_consequence(
         consequence = config["consequence"]
 
         if penalties_count <= threshold:
-            return PenaltyAmountAndConsequence(amount=amount, consequence=consequence)
+            return PenaltyAmountAndConsequence(
+                amount=amount, consequence=consequence
+            )
 
     raise InvalidPenaltyConsequenceError(
         staff_id=staff_id,
@@ -136,111 +125,9 @@ class PenaltyCreateResult:
     id: int
     staff_id: int
     staff_full_name: str
-    shift_id: int
-    shift_date: datetime.date
+    date: datetime.date
     reason: str
     consequence: str | None
     amount: int
     photo_urls: list[str]
     created_at: datetime.datetime
-
-
-@transaction.atomic
-def create_penalty(
-    *,
-    shift_id: int,
-    reason: str,
-    amount: int | None,
-    photo_urls: Iterable[str],
-) -> PenaltyCreateResult:
-    """
-    Give penalty for staff member.
-    If penalty amount is not provided,
-    it will be automatically computed from penalty reason.
-
-    Keyword Args:
-        shift_id: shift penalty related to.
-        reason: reason for penalty.
-        amount: penalty amount.
-        photo_urls: penalty photo urls.
-
-    Returns:
-        Created penalty.
-    """
-    shift = get_shift_by_id(shift_id)
-    photo_urls = list(photo_urls)
-
-    consequence: str | None = None
-    if amount is None:
-        penalty_amount_and_consequence = compute_penalty_amount_and_consequence(
-            staff_id=shift.staff_id,
-            reason=reason,
-        )
-        amount = penalty_amount_and_consequence.amount
-        consequence = penalty_amount_and_consequence.consequence
-
-    penalty = CarTransporterPenalty(
-        shift_id=shift_id,
-        reason=reason,
-        amount=amount,
-        consequence=consequence,
-    )
-    penalty.save()
-
-    photos = [
-        PenaltyPhoto(penalty=penalty, photo_url=photo_url) for photo_url in photo_urls
-    ]
-    PenaltyPhoto.objects.bulk_create(photos)
-
-    bot = get_telegram_bot()
-    penalty_notification_text = (
-        "<b>❗️ Вы получили новый штраф:</b>"
-        f"\nСумма: {amount} рублей"
-        f"\nПричина: {reason}"
-    )
-    if photo_urls:
-        try_send_photos_media_group(
-            bot=bot,
-            chat_id=shift.staff_id,
-            file_ids=photo_urls,
-            caption=penalty_notification_text,
-        )
-    else:
-        try_send_message(
-            bot=bot,
-            chat_id=shift.staff_id,
-            text=penalty_notification_text,
-        )
-
-    return PenaltyCreateResult(
-        id=penalty.id,
-        staff_id=shift.staff_id,
-        staff_full_name=shift.staff.full_name,
-        shift_id=shift_id,
-        shift_date=shift.date,
-        reason=reason,
-        consequence=consequence,
-        amount=amount,
-        photo_urls=photo_urls,
-        created_at=penalty.created_at,
-    )
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class CarTransporterPenaltyDeleteInteractor:
-    penalty_id: int
-
-    def execute(self) -> None:
-        deleted_count = CarTransporterPenalty.objects.filter(id=self.penalty_id).delete()
-        if deleted_count == 0:
-            raise CarTransporterPenaltyNotFoundError
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class CarTransporterSurchargeDeleteInteractor:
-    surcharge_id: int
-
-    def execute(self) -> None:
-        deleted_count = CarTransporterSurcharge.objects.filter(id=self.surcharge_id).delete()
-        if deleted_count == 0:
-            raise CarTransporterSurchargeNotFoundError

@@ -1,10 +1,10 @@
 from django.urls import include, path
 
 from economics.views import (
-    PenaltyListCreateApi,
+    CarTransporterPenaltyListCreateApi,
     ServiceCostsApi,
     StaffShiftsStatisticsReportApi,
-    SurchargeCreateApi,
+    CarTransporterSurchargeListCreateApi,
     CarWashPenaltyListCreateApi,
     CarWashSurchargeListCreateApi,
     CarWashSurchargeDeleteApi,
@@ -50,18 +50,22 @@ urlpatterns = [
         name="car-wash-penalty-delete",
     ),
     path(
-        r"penalties/",
-        PenaltyListCreateApi.as_view(),
-        name="penalty-list-create",
+        r"car-transporters/penalties/",
+        CarTransporterPenaltyListCreateApi.as_view(),
+        name="car-transporter-penalty-list-create",
     ),
     path(
-        r"penalties/<int:penalty_id>/",
+        r"car-transporters/penalties/<int:penalty_id>/",
         CarTransporterPenaltyDeleteApi.as_view(),
         name="car-transporter-penalty-delete",
     ),
-    path(r"surcharges/", SurchargeCreateApi.as_view(), name="surcharge-create"),
     path(
-        r"surcharges/<int:surcharge_id>/",
+        r"car-transporters/surcharges/",
+        CarTransporterSurchargeListCreateApi.as_view(),
+        name="car-transporter-surcharge-list-create",
+    ),
+    path(
+        r"car-transporters/surcharges/<int:surcharge_id>/",
         CarTransporterSurchargeDeleteApi.as_view(),
         name="car-transporter-surcharge-delete",
     ),
