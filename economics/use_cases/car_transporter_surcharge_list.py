@@ -60,7 +60,7 @@ class CarTransporterSurchargeListUseCase:
             )
         )
         if self.staff_ids is not None:
-            surcharges = surcharges.filter(shift__staff_id__in=self.staff_ids)
+            surcharges = surcharges.filter(staff_id__in=self.staff_ids)
         surcharges = surcharges[self.offset: self.offset + self.limit + 1]
 
         is_end_of_list_reached = len(surcharges) <= self.limit

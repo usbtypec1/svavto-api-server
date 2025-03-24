@@ -71,7 +71,7 @@ class CarTransporterPenaltyListUseCase:
             )
         )
         if self.staff_ids is not None:
-            penalties = penalties.filter(shift__staff_id__in=self.staff_ids)
+            penalties = penalties.filter(staff_id__in=self.staff_ids)
         penalties = penalties[self.offset: self.offset + self.limit + 1]
 
         is_end_of_list_reached = len(penalties) <= self.limit
