@@ -32,13 +32,13 @@ class StaffItemSerializer(serializers.Serializer):
     banned_at = serializers.DateField(allow_null=True)
     return_deposit_at = serializers.DateField(allow_null=True)
     total_fine_deposit_amount = serializers.IntegerField()
-    total_road_accident_deposit_amount = serializers.IntegerField()
+    total_road_accident_deposit_amount = serializers.FloatField()
 
 
 class StaffDepositBreakdownItemSerializer(serializers.Serializer):
     staff_id = serializers.IntegerField()
     fine_deposit_amount = serializers.IntegerField()
-    road_accident_deposit_amount = serializers.IntegerField()
+    road_accident_deposit_amount = serializers.FloatField()
 
 
 class DepositListItemSerializer(serializers.Serializer):
