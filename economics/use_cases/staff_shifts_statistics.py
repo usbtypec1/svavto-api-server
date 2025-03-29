@@ -20,7 +20,7 @@ class StaffShiftsStatisticsUseCase:
     year: int
     month: int
     report_period_number: int
-    staff_ids: Iterable[int]
+    staff_ids: Iterable[int] | None = None
 
     def execute(self) -> StaffShiftsStatisticsResponse:
         period = get_report_period_by_number(

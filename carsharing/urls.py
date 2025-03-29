@@ -12,6 +12,7 @@ urlpatterns = [
     path(f"{settings.ROOT_PATH}photo-upload/", include("photo_upload.urls")),
     path(f"{settings.ROOT_PATH}texts/", include("texts.urls")),
     path(f"{settings.ROOT_PATH}dry-cleaning/", include("dry_cleaning.urls")),
+    path(f"{settings.ROOT_PATH}deposits/", include("deposits.urls")),
 ]
 
 if settings.DEBUG:

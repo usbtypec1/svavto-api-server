@@ -1,10 +1,12 @@
 import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Self
 
 import pendulum
 
 from shifts.models import Shift
+from staff.selectors import ensure_staff_exists
 
 
 __all__ = (
@@ -14,9 +16,8 @@ __all__ = (
     "StaffReportPeriods",
     "StaffReportPeriodsReadInteractor",
     'get_report_period_by_number',
+    "ReportPeriod",
 )
-
-from staff.selectors import ensure_staff_exists
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -40,6 +41,41 @@ class ReportPeriod(Period):
     month: int
     year: int
     number: int
+
+    @classmethod
+    def from_number(cls, year: int, month: int, number: int) -> Self:
+        """
+        Creates a ReportPeriod instance from year, month, and period number.
+        """
+        return get_report_period_by_number(
+            year=year,
+            month=month,
+            report_period_number=number,
+        )
+
+    def next(self) -> Self:
+        """
+        Returns the next ReportPeriod instance.
+        """
+        if self.number == 1:
+            return ReportPeriod.from_number(
+                year=self.year,
+                month=self.month,
+                number=2,
+            )
+        next_month = pendulum.date(self.year, self.month, 1).add(months=1)
+        return ReportPeriod.from_number(
+            year=next_month.year,
+            month=next_month.month,
+            number=1,
+        )
+
+    def __le__(self, other: Self) -> bool:
+        """
+        Defines less than or equal to behavior for ReportPeriod objects.
+        """
+        return self.from_date <= other.from_date
+
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
