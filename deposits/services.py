@@ -1,3 +1,5 @@
+import datetime
+
 from deposits.models import FineDepositException
 from staff.models import Staff
 
@@ -22,3 +24,11 @@ def get_fine_deposit_exceptions_for_report_period(
         exception.staff
         for exception in exceptions
     ]
+
+
+def compute_staff_deposit_return_date(
+        banned_at: datetime.datetime | None,
+) -> datetime.datetime:
+    if banned_at is None:
+        return datetime.datetime.now()
+    return banned_at + datetime.timedelta(days=60)
