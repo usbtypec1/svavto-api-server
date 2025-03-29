@@ -1,6 +1,7 @@
 import datetime
 from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Self
 
 import pendulum
 
@@ -40,6 +41,17 @@ class ReportPeriod(Period):
     month: int
     year: int
     number: int
+
+    @classmethod
+    def from_number(cls, year: int, month: int, number: int) -> Self:
+        """
+        Creates a ReportPeriod instance from year, month, and period number.
+        """
+        return get_report_period_by_number(
+            year=year,
+            month=month,
+            report_period_number=number,
+        )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
