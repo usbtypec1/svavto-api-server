@@ -30,7 +30,7 @@ class StaffItemSerializer(serializers.Serializer):
     console_phone_number = serializers.CharField()
     car_sharing_phone_number = serializers.CharField()
     banned_at = serializers.DateField(allow_null=True)
-    return_deposit_at = serializers.DateField(allow_null=True)
+    deposit_return_at = serializers.DateField(allow_null=True)
     total_fine_deposit_amount = serializers.IntegerField()
     total_road_accident_deposit_amount = serializers.FloatField()
 
