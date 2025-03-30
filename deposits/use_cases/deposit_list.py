@@ -32,6 +32,7 @@ class StaffListItem:
     deposit_return_at: datetime.datetime | None
     total_fine_deposit_amount: int
     total_road_accident_deposit_amount: int
+    created_at: datetime.datetime
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -65,6 +66,7 @@ def merge_staff_list(
                     staff_item.id, 0
                 )
             ),
+            created_at=staff_item.created_at,
         )
         for staff_item in staff
     ]
