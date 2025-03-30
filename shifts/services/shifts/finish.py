@@ -128,16 +128,16 @@ class ShiftSummaryInteractor:
         for car_wash_id, cars in car_wash_id_to_cars.items():
             wash_type_to_count = collections.defaultdict(int)
             car_class_to_count = collections.defaultdict(int)
-            refilled_cars_count = 0
+            not_refilled_cars_count = 0
 
             for car in cars:
                 wash_type_to_count[car.wash_type] += 1
                 car_class_to_count[car.car_class] += 1
-                refilled_cars_count += int(car.is_windshield_washer_refilled)
+                not_refilled_cars_count += car.is_windshield_washer_not_refilled
 
             car_wash_name = car_wash_id_to_name.get(car_wash_id, "не выбрано")
             total_cars_count = len(cars)
-            not_refilled_cars_count = total_cars_count - refilled_cars_count
+            refilled_cars_count = total_cars_count - not_refilled_cars_count
 
             dry_cleaning_items_count = compute_dry_cleaning_items_count(
                 car_wash_id=car_wash_id,
