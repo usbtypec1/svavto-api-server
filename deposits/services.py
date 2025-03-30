@@ -28,7 +28,7 @@ def get_fine_deposit_exceptions_for_report_period(
 
 def compute_staff_deposit_return_date(
         banned_at: datetime.datetime | None,
-) -> datetime.datetime:
+) -> datetime.datetime | None:
     if banned_at is None:
-        return datetime.datetime.now()
+        return None
     return banned_at + datetime.timedelta(days=60)
