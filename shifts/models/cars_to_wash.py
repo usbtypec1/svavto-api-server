@@ -123,9 +123,13 @@ class CarToWash(models.Model):
         )
 
     @property
-    def is_windshield_washer_refilled(self) -> bool:
+    def is_windshield_washer_not_refilled(self) -> bool:
+        """
+        Check if the windshield washer is not refilled.
+        Water is not considered as a windshield washer.
+        """
         return (
                 self.windshield_washer_type ==
                 self.WindshieldWasherType.ANTIFREEZE
-                and self.windshield_washer_refilled_bottle_percentage > 0
+                and self.windshield_washer_refilled_bottle_percentage == 0
         )
