@@ -15,8 +15,16 @@ from shifts.models import (
     Shift,
     ShiftFinishPhoto,
     ShiftCarsThreshold,
+    WindshieldWasherHidden,
 )
 from shifts.services.shifts.validators import ensure_staff_has_no_active_shift
+
+
+@admin.register(WindshieldWasherHidden)
+class WindshieldWasherHideAdmin(admin.ModelAdmin):
+
+    def has_add_permission(self, request):
+        return not ShiftCarsThreshold.objects.exists()
 
 
 @admin.register(ShiftCarsThreshold)

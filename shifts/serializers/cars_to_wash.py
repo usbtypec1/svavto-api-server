@@ -72,6 +72,7 @@ class TransferredCarDetailOutputSerializer(serializers.Serializer):
     additional_services = serializers.ListField(
         child=TransferredCarAdditionService(),
     )
+    is_windshield_washer_hidden = serializers.BooleanField()
     created_at = serializers.DateTimeField()
 
 
