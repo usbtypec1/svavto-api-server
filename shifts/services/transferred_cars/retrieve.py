@@ -3,7 +3,10 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from shifts.exceptions import CarToWashNotFoundError
-from shifts.models import CarToWash, CarToWashAdditionalService
+from shifts.models import (
+    CarToWash, CarToWashAdditionalService,
+    WindshieldWasherHidden,
+)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -28,6 +31,7 @@ class TransferredCarRetrieveResponseData:
     windshield_washer_type: str
     windshield_washer_refilled_bottle_percentage: int
     additional_services: list[TransferredCarAdditionService]
+    is_windshield_washer_hidden: bool
     created_at: datetime.datetime
 
 
@@ -36,6 +40,7 @@ class TransferredCarRetrieveInteractor:
     transferred_car_id: int
 
     def execute(self) -> TransferredCarRetrieveResponseData:
+        is_windshield_washer_hidden = WindshieldWasherHidden.get()
         try:
             transferred_car = (
                 CarToWash.objects.select_related("shift__staff", "car_wash")
@@ -88,5 +93,6 @@ class TransferredCarRetrieveInteractor:
                 )
                 for service in additional_services
             ],
+            is_windshield_washer_hidden=is_windshield_washer_hidden,
             created_at=transferred_car.created_at,
         )
