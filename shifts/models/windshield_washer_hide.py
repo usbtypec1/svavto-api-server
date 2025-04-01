@@ -17,8 +17,8 @@ class WindshieldWasherHidden(models.Model):
         return gettext("Windshield washer is visible")
 
     class Meta:
-        verbose_name = _("Windshield washer hidden")
-        verbose_name_plural = _("Windshield washer hidden")
+        verbose_name = _("Windshield washer is hidden")
+        verbose_name_plural = _("Windshield washer is hidden")
 
     @classmethod
     def get(cls) -> bool:
