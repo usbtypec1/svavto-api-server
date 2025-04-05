@@ -1,4 +1,2 @@
+from .car_wash_service_list import CarWashServiceListUseCase
 from .car_wash_service_price_list import CarWashServicePriceListUseCase
-
-
-__all__ = ("CarWashServicePriceListUseCase",)
