@@ -127,6 +127,7 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             "is_countable",
             "parent__id",
             "parent__name",
+            "max_count",
         )
         .order_by("parent", "-priority")
     )
@@ -139,6 +140,7 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
             "name": service["name"],
             "is_countable": service["is_countable"],
             "price": service_id_to_price[service["id"]],
+            "max_count": service["max_count"],
             "parent": {
                 "id": str(service["parent__id"]),
                 "name": service["parent__name"],
