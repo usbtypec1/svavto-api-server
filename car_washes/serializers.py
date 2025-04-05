@@ -20,6 +20,7 @@ class CarWashServiceSerializer(serializers.Serializer):
     name = serializers.CharField()
     is_countable = serializers.BooleanField()
     parent = CarWashServiceParentSerializer()
+    max_count = serializers.IntegerField()
 
 
 class CarWashListOutputSerializer(serializers.ModelSerializer):

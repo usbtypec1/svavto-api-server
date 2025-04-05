@@ -3,6 +3,7 @@ from uuid import uuid4
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+
 __all__ = ("CarWash", "CarWashService", "CarWashServicePrice")
 
 
@@ -62,6 +63,10 @@ class CarWashService(models.Model):
         default=0,
         verbose_name=_("priority"),
         help_text=_("the higher the number, the higher the priority"),
+    )
+    max_count = models.PositiveIntegerField(
+        default=1_000_000,
+        verbose_name=_("Max count"),
     )
     created_at = models.DateTimeField(
         auto_now_add=True,

@@ -72,6 +72,7 @@ class CarWashServiceDTO:
     id: UUID
     name: str
     is_countable: bool
+    max_count: int
     parent: CarWashServiceParentDTO | None
 
 
@@ -89,6 +90,7 @@ def get_all_flatten_car_wash_services(
                 "service__parent__id",
                 "service__parent__name",
                 "service__priority",
+                "service__max_count",
             )
         )
         car_wash_services = sorted(
@@ -105,6 +107,7 @@ def get_all_flatten_car_wash_services(
                 "is_countable",
                 "parent__id",
                 "parent__name",
+                "max_count",
             )
             .order_by("-priority")
         )
@@ -133,6 +136,7 @@ def get_all_flatten_car_wash_services(
                 id=service.id,
                 name=service.name,
                 is_countable=service.is_countable,
+                max_count=service.max_count,
                 parent=parent,
             ),
         )
