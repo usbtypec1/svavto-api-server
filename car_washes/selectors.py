@@ -1,6 +1,5 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime
 from uuid import UUID
 
 from django.db.models import QuerySet
@@ -10,44 +9,6 @@ from car_washes.exceptions import (
     CarWashServiceNotFoundError,
 )
 from car_washes.models import CarWash, CarWashService, CarWashServicePrice
-
-__all__ = (
-    "CarWashDetailDTO",
-    "CarWashServiceDTO",
-    "CarWashListItemDTO",
-    "get_car_washes",
-    "get_car_wash_by_id",
-    "ensure_service_exists",
-    "ensure_car_wash_exists",
-    "get_all_flatten_car_wash_services",
-    "get_flatten_specific_car_wash_services",
-)
-
-
-@dataclass(frozen=True, slots=True)
-class CarWashListItemDTO:
-    id: int
-    name: str
-    created_at: datetime
-    updated_at: datetime
-
-
-@dataclass(frozen=True, slots=True)
-class CarWashServiceDTO:
-    id: int
-    name: str
-    price: int
-    created_at: datetime
-    updated_at: datetime
-
-
-@dataclass(frozen=True, slots=True)
-class CarWashDetailDTO:
-    id: int
-    name: str
-    created_at: datetime
-    updated_at: datetime
-    services: list[CarWashServiceDTO]
 
 
 def get_car_washes() -> QuerySet[CarWash]:
@@ -62,69 +23,74 @@ def get_car_wash_by_id(car_wash_id: int) -> CarWash:
 
 
 @dataclass(frozen=True, slots=True)
-class CarWashServiceParentDTO:
+class CarWashServiceParentDto:
     id: UUID
     name: str
 
 
 @dataclass(frozen=True, slots=True)
-class CarWashServiceDTO:
+class CarWashServiceListItemDto:
     id: UUID
     name: str
     is_countable: bool
     max_count: int
-    parent: CarWashServiceParentDTO | None
+    parent: CarWashServiceParentDto | None
 
 
-def get_all_flatten_car_wash_services(
-    car_wash_ids: Iterable[int] | None = None,
-) -> list[CarWashServiceDTO]:
-    if car_wash_ids is not None:
-        service_prices = (
-            CarWashServicePrice.objects.filter(car_wash_id__in=car_wash_ids)
-            .select_related("service", "service__parent")
-            .only(
-                "service__id",
-                "service__name",
-                "service__is_countable",
-                "service__parent__id",
-                "service__parent__name",
-                "service__priority",
-                "service__max_count",
-            )
+def get_services_of_car_washes(
+        car_wash_ids: Iterable[int],
+) -> list[CarWashService]:
+    service_prices = (
+        CarWashServicePrice.objects.filter(car_wash_id__in=car_wash_ids)
+        .select_related("service", "service__parent")
+        .only(
+            "service__id",
+            "service__name",
+            "service__is_countable",
+            "service__parent__id",
+            "service__parent__name",
+            "service__priority",
+            "service__max_count",
         )
-        car_wash_services = sorted(
-            {service_price.service for service_price in service_prices},
-            key=lambda service: service.priority,
-            reverse=True,
-        )
-    else:
-        car_wash_services = (
-            CarWashService.objects.select_related("parent")
-            .only(
-                "id",
-                "name",
-                "is_countable",
-                "parent__id",
-                "parent__name",
-                "max_count",
-            )
-            .order_by("-priority")
-        )
+    )
+    return sorted(
+        {service_price.service for service_price in service_prices},
+        key=lambda service: service.priority,
+        reverse=True,
+    )
 
+
+def get_all_car_wash_services() -> list[CarWashService]:
+    return list(
+        CarWashService.objects.select_related("parent")
+        .only(
+            "id",
+            "name",
+            "is_countable",
+            "parent__id",
+            "parent__name",
+            "max_count",
+        )
+        .order_by("-priority")
+    )
+
+
+def flatten_car_wash_services(
+        car_wash_services: Iterable[CarWashService],
+) -> list[CarWashServiceListItemDto]:
     parent_ids: set[UUID] = {
         service.parent_id
         for service in car_wash_services
         if service.parent_id is not None
     }
-    result: list[CarWashServiceDTO] = []
+    result: list[CarWashServiceListItemDto] = []
 
     for service in car_wash_services:
         if service.id in parent_ids:
             continue
 
         if service.parent is not None:
-            parent = CarWashServiceParentDTO(
+            parent = CarWashServiceParentDto(
                 id=service.parent.id,
                 name=service.parent.name,
             )
@@ -132,7 +98,7 @@ def get_all_flatten_car_wash_services(
             parent = None
 
         result.append(
-            CarWashServiceDTO(
+            CarWashServiceListItemDto(
                 id=service.id,
                 name=service.name,
                 is_countable=service.is_countable,
@@ -164,7 +130,9 @@ def get_flatten_specific_car_wash_services(car_wash_id: int) -> list[dict]:
         )
         .order_by("parent", "-priority")
     )
-    parent_ids = set(CarWashService.objects.values_list("parent_id", flat=True))
+    parent_ids = set(
+        CarWashService.objects.values_list("parent_id", flat=True)
+    )
     return [
         {
             "id": str(service["id"]),
