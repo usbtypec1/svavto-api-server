@@ -49,6 +49,7 @@ class CarWashServiceFactory(DjangoModelFactory):
     name = factory.Faker("name")
     is_countable = factory.Faker("boolean")
     parent = None
+    max_count = 1_000_000
     is_dry_cleaning = factory.Faker("boolean")
     priority = factory.Faker("random_int", min=1, max=1000)
     created_at = factory.Faker(
