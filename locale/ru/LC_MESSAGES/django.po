@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-01 11:43+0300\n"
+"POT-Creation-Date: 2025-04-05 13:33+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,7 @@ msgstr ""
 msgid "search by name or id"
 msgstr "Поиск по названию или ID"
 
-#: car_washes/apps.py:8 car_washes/models.py:24 car_washes/models.py:94
+#: car_washes/apps.py:8 car_washes/models.py:25 car_washes/models.py:99
 #: shifts/admin.py:88 shifts/models/cars_to_wash.py:38
 #: shifts/models/shifts.py:53
 msgid "car wash"
@@ -42,69 +42,73 @@ msgstr "мойка не найдена"
 msgid "car wash service was not found"
 msgstr "доступная услуга мойки не найдена"
 
-#: car_washes/models.py:25
+#: car_washes/models.py:26
 msgid "car washes"
 msgstr "мойки"
 
-#: car_washes/models.py:39
+#: car_washes/models.py:40
 msgid "car wash service id"
 msgstr "ID услуги"
 
-#: car_washes/models.py:43 shifts/admin.py:62
+#: car_washes/models.py:44 shifts/admin.py:62
 msgid "car wash service name"
 msgstr "название услуги"
 
-#: car_washes/models.py:47
+#: car_washes/models.py:48
 msgid "is countable"
 msgstr "исчисляемая услуга"
 
-#: car_washes/models.py:55
+#: car_washes/models.py:56
 msgid "parent service"
 msgstr "родительская категория"
 
-#: car_washes/models.py:59
+#: car_washes/models.py:60
 msgid "is dry cleaning"
 msgstr "химчистка"
 
-#: car_washes/models.py:63
+#: car_washes/models.py:64
 msgid "priority"
 msgstr "приоритет"
 
-#: car_washes/models.py:64
+#: car_washes/models.py:65
 msgid "the higher the number, the higher the priority"
 msgstr "чем выше число тем выше приоритет"
 
-#: car_washes/models.py:68 shifts/admin.py:132
+#: car_washes/models.py:69
+msgid "Max count"
+msgstr "Максимальное количество"
+
+#: car_washes/models.py:73 shifts/admin.py:132
 #: shifts/models/finish_photos.py:22 shifts/models/shifts.py:64
 msgid "created at"
 msgstr "дата создания"
 
-#: car_washes/models.py:72
+#: car_washes/models.py:77
 msgid "updated at"
 msgstr "дата изменения"
 
-#: car_washes/models.py:76
+#: car_washes/models.py:81
 msgid "car wash service"
 msgstr "доступная услуга мойки"
 
-#: car_washes/models.py:77
+#: car_washes/models.py:82
 msgid "car wash services"
 msgstr "доступные услуги моек"
 
-#: car_washes/models.py:100 shifts/models/additional_services.py:20
+#: car_washes/models.py:105 shifts/models/additional_services.py:20
 #: shifts/models/additional_services.py:32
 msgid "additional service"
 msgstr "доп.услуга"
 
-#: car_washes/models.py:103 shifts/models/additional_services.py:23
+#: car_washes/models.py:108 shifts/models/additional_services.py:23
 msgid "price"
 msgstr "цена"
 
-#: car_washes/models.py:109
+#: car_washes/models.py:114
 msgid "car wash service price"
 msgstr "услуга мойки"
 
-#: car_washes/models.py:110
+#: car_washes/models.py:115
 msgid "car wash service prices"
 msgstr "услуги моек"
 
