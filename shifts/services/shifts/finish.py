@@ -7,7 +7,10 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from bonuses.services import get_bonus_amount
 from car_washes.models import CarWash
+from economics.models import CarTransporterSurcharge
+from economics.use_cases import CarTransporterSurchargeCreateUseCase
 from shifts.models import CarToWash, Shift, ShiftFinishPhoto
 from shifts.selectors import has_any_finished_shift
 from shifts.services.cars_to_wash import (
@@ -43,6 +46,7 @@ class ShiftSummary:
 @dataclass(frozen=True, slots=True)
 class ShiftFinishResult(ShiftSummary):
     is_first_shift: bool
+    bonus_amount: int
     finish_photo_file_ids: list[str]
 
 
@@ -78,6 +82,7 @@ class ShiftFinishInteractor:
     def create_result(
         self,
         is_first_shift: bool,
+        bonus_amount: int,
     ) -> ShiftFinishResult:
         return ShiftFinishResult(
             is_first_shift=is_first_shift,
@@ -86,6 +91,7 @@ class ShiftFinishInteractor:
             staff_full_name=self.__shift.staff.full_name,
             car_washes=self.__shift_summary.car_washes,
             finish_photo_file_ids=self.__photo_file_ids,
+            bonus_amount=bonus_amount,
         )
 
     @transaction.atomic
@@ -94,7 +100,18 @@ class ShiftFinishInteractor:
         self.save_shift_finish_date()
         self.delete_shift_finish_photos()
         self.create_shift_finish_photos()
-        return self.create_result(is_first_shift=is_first_shift)
+        bonus_amount = get_bonus_amount(self.__shift)
+        if bonus_amount:
+            CarTransporterSurchargeCreateUseCase(
+                staff_id=self.__shift_summary.staff_id,
+                date=self.__shift.date,
+                reason="Премия за выход на смену в выходные дни",
+                amount=bonus_amount,
+            ).execute()
+        return self.create_result(
+            is_first_shift=is_first_shift,
+            bonus_amount=bonus_amount,
+        )
 
 
 class ShiftSummaryInteractor:
