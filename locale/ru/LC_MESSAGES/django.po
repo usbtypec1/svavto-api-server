@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-05 13:33+0300\n"
+"POT-Creation-Date: 2025-04-09 10:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,45 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: bonuses/admin.py:25
+msgid "Bonus enabled"
+msgstr "Функционал премий включен"
+
+#: bonuses/apps.py:8
+msgid "Bonuses"
+msgstr "Премии"
+
+#: bonuses/models.py:11
+msgid "Minimum cars count"
+msgstr "Минимальное количество авто"
+
+#: bonuses/models.py:13
+msgid ""
+"Minimum number of cars required to apply the bonus. Set to 0 to disable "
+"bonus."
+msgstr "Минимальное количество авто для применения премии. Установите 0, чтобы отключить функционал премий."
+
+#: bonuses/models.py:19
+msgid "Bonus amount"
+msgstr "Сумма премии"
+
+#: bonuses/models.py:21
+msgid "Amount of bonus to be applied. Set to 0 to disable bonus."
+msgstr "Сумма премии. Установите 0, чтобы отключить функционал премий."
+
+#: bonuses/models.py:27
+msgid "Excluded from bonuses staff"
+msgstr "Исключения премий"
+
+#: bonuses/models.py:31
+#| msgid "updated at"
+msgid "Updated at"
+msgstr "Дата обновления"
+
+#: bonuses/models.py:35 bonuses/models.py:36 bonuses/models.py:39
+msgid "Bonus settings"
+msgstr "Настройки премий"
 
 #: car_washes/admin.py:35
 msgid "search by name or id"
