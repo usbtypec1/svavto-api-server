@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "texts",
     "dry_cleaning",
     'deposits',
+    "bonuses",
 ]
 
 MIDDLEWARE = [
