@@ -27,6 +27,7 @@ from shifts.views import (
     DeadSoulsApi,
     StaffShiftsMonthListApi,
 )
+from shifts.views.batch_edit import BatchEditApi
 
 
 router = DefaultRouter()
@@ -38,6 +39,7 @@ router.register(
 
 app_name = "shifts"
 urlpatterns = [
+    path('batch-edit/', BatchEditApi.as_view(), name='batch-edit'),
     path(
         "v2/",
         ShiftListApiV2.as_view(),
