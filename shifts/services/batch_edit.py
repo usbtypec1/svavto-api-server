@@ -139,48 +139,50 @@ class BatchEditService:
 
     def update_cars(self):
         for car in self.get_cars_to_update():
-            item = self.__shift_id_and_number_to_item[car]
-            transferred_car = CarToWash.objects.get(
-                shift_id=item['shift_id'],
-                number=item['car_number'],
-            )
-            transferred_car.car_wash_id = item['car_wash_id']
-            transferred_car.car_class = item['class_type']
-            transferred_car.wash_type = item['wash_type']
-            transferred_car.windshield_washer_type = item[
-                'windshield_washer_type']
-            transferred_car.windshield_washer_refilled_bottle_percentage = (
-                item['windshield_washer_refilled_bottle_percentage']
-            )
-            CarToWashAdditionalService.objects.filter(
-                car=transferred_car
-                ).delete()
-            service_ids = [
-                service['id'] for service in item['additional_services']
-            ]
-            service_prices = CarWashServicePrice.objects.filter(
-                service_id__in=service_ids,
-            )
-            service_id_to_price = {
-                service_price.service_id: service_price.price
-                for service_price in service_prices
-            }
-            additional_services = []
-            for service in item['additional_services']:
-                if service['id'] not in service_id_to_price:
-                    continue
-                price = service_id_to_price[service['id']]
-                additional_services.append(
-                    CarToWashAdditionalService(
-                        car_id=transferred_car.id,
-                        service_id=service['id'],
-                        count=service['count'],
-                        price=price,
-                    )
+            with transaction.atomic():
+                item = self.__shift_id_and_number_to_item[car]
+                transferred_car = CarToWash.objects.get(
+                    shift_id=item['shift_id'],
+                    number=item['car_number'],
                 )
-            CarToWashAdditionalService.objects.bulk_create(
-                additional_services
-            )
+                transferred_car.car_wash_id = item['car_wash_id']
+                transferred_car.car_class = item['class_type']
+                transferred_car.wash_type = item['wash_type']
+                transferred_car.windshield_washer_type = item[
+                    'windshield_washer_type']
+                transferred_car.windshield_washer_refilled_bottle_percentage = (
+                    item['windshield_washer_refilled_bottle_percentage']
+                )
+                transferred_car.save()
+                CarToWashAdditionalService.objects.filter(
+                    car=transferred_car
+                    ).delete()
+                service_ids = [
+                    service['id'] for service in item['additional_services']
+                ]
+                service_prices = CarWashServicePrice.objects.filter(
+                    service_id__in=service_ids,
+                )
+                service_id_to_price = {
+                    service_price.service_id: service_price.price
+                    for service_price in service_prices
+                }
+                additional_services = []
+                for service in item['additional_services']:
+                    if service['id'] not in service_id_to_price:
+                        continue
+                    price = service_id_to_price[service['id']]
+                    additional_services.append(
+                        CarToWashAdditionalService(
+                            car_id=transferred_car.id,
+                            service_id=service['id'],
+                            count=service['count'],
+                            price=price,
+                        )
+                    )
+                CarToWashAdditionalService.objects.bulk_create(
+                    additional_services
+                )
 
     @lru_cache(maxsize=100)
     def get_car_wash_by_id(self, car_wash_id: int) -> CarWash | None:
