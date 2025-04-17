@@ -55,7 +55,7 @@ def get_cars(items: Iterable[Item]) -> list[CarDto]:
 
     cars: QuerySet[CarToWash] = (
         CarToWash.objects.select_related('car_wash', 'shift')
-        .prefetch_related('additional_services')
+        .prefetch_related('additional_services__service')
         .filter(shift_id__in=shift_ids)
     )
 
