@@ -15,7 +15,6 @@ class AdditionalServiceSerializer(serializers.Serializer):
 
 
 class CarSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
     number = serializers.CharField()
     car_wash_id = serializers.IntegerField(allow_null=True)
     car_wash_name = serializers.CharField()

@@ -16,7 +16,7 @@ from shifts.serializers.batch_edit import (
     BatchEditShiftListOutputSerializer,
     BatchEditShiftUpdateInputSerializer,
 )
-from shifts.services.batch_edit import get_cars
+from shifts.services.batch_edit import BatchEditService, get_cars
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -63,6 +63,7 @@ class BatchEditApi(APIView):
         cars = (
             CarToWash.objects
             .filter(shift__date=date)
+            .select_related('shift__staff')
             .select_related('car_wash', 'shift')
         )
         if staff_id is not None:
@@ -126,17 +127,9 @@ class BatchEditApi(APIView):
         serializer.is_valid(raise_exception=True)
         items: list[dict] = serializer.validated_data
 
-
-        for item in items:
-            shift_id: int = item['shift_id']
-            car_wash_id: int = item['car_wash_id']
-            car_number: str = item['car_number']
-            class_type: str = item['class_type']
-            wash_type: str = item['wash_type']
-            windshield_washer_type: str = item['windshield_washer_type']
-            windshield_washer_refilled_bottle_percentage: int = (
-                item['windshield_washer_refilled_bottle_percentage']
-            )
-            additional_services: list[dict] = item['additional_services']
+        service = BatchEditService(items=items)
+        service.delete_cars()
+        service.update_cars()
+        service.create_cars()
 
         return Response()
