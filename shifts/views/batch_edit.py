@@ -1,15 +1,22 @@
 import datetime
+import functools
+import operator
 from collections import defaultdict
 from dataclasses import dataclass
 from uuid import UUID
 
+from django.db.models import Q, QuerySet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shifts.models import CarToWash, CarToWashAdditionalService, Shift
-from shifts.serializers import BatchEditInputSerializer
-from shifts.serializers.batch_edit import BatchEditOutputSerializer
+from shifts.serializers import BatchEditShiftListInputSerializer
+from shifts.serializers.batch_edit import (
+    BatchEditShiftListOutputSerializer,
+    BatchEditShiftUpdateInputSerializer,
+)
+from shifts.services.batch_edit import get_cars
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -44,7 +51,9 @@ class ShiftDto:
 class BatchEditApi(APIView):
 
     def get(self, request: Request) -> Response:
-        serializer = BatchEditInputSerializer(data=request.query_params)
+        serializer = BatchEditShiftListInputSerializer(
+            data=request.query_params
+        )
         serializer.is_valid(raise_exception=True)
         data: dict = serializer.validated_data
 
@@ -104,11 +113,30 @@ class BatchEditApi(APIView):
                 )
             )
 
-        serializer = BatchEditOutputSerializer(
+        serializer = BatchEditShiftListOutputSerializer(
             shift_id_to_shift.values(),
             many=True,
         )
         return Response({'shifts': serializer.data})
 
     def post(self, request: Request) -> Response:
+        serializer = BatchEditShiftUpdateInputSerializer(
+            data=request.data, many=True
+        )
+        serializer.is_valid(raise_exception=True)
+        items: list[dict] = serializer.validated_data
+
+
+        for item in items:
+            shift_id: int = item['shift_id']
+            car_wash_id: int = item['car_wash_id']
+            car_number: str = item['car_number']
+            class_type: str = item['class_type']
+            wash_type: str = item['wash_type']
+            windshield_washer_type: str = item['windshield_washer_type']
+            windshield_washer_refilled_bottle_percentage: int = (
+                item['windshield_washer_refilled_bottle_percentage']
+            )
+            additional_services: list[dict] = item['additional_services']
+
         return Response()

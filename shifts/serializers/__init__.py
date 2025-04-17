@@ -3,7 +3,7 @@ from .available_dates import (
     AvailableDateSerializer,
     DateSerializer,
 )
-from .batch_edit import BatchEditInputSerializer
+from .batch_edit import BatchEditShiftListInputSerializer
 from .car_washes import CarWashSerializer
 from .cars_to_wash import (
     CarToWashAdditionalServiceSerializer, TransferredCarAdditionService,
@@ -86,5 +86,5 @@ __all__ = (
     "AvailableDateSerializer",
     "DateSerializer",
     "CarWashSerializer",
-    'BatchEditInputSerializer',
+    'BatchEditShiftListInputSerializer',
 )
