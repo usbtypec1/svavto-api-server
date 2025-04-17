@@ -110,6 +110,22 @@ class BatchEditService:
         self.__new_cars = set(self.__shift_id_and_number_to_item)
         self.__existing_cars = self.get_existing_cars()
 
+    def get_all_service_ids(self) -> set[UUID]:
+        return {
+            service['id']
+            for item in self.__items
+            for service in item['additional_services']
+        }
+
+    def get_service_id_to_price(self) -> dict[UUID, int]:
+        service_prices = CarWashServicePrice.objects.filter(
+            service_id__in=self.get_all_service_ids(),
+        ).values('price', 'service_id')
+        return {
+            service_price['service_id']: service_price['price']
+            for service_price in service_prices
+        }
+
     def get_shift_id_and_number_to_item(self) -> dict[
         ShiftIdAndCarNumber, Item]:
         return {
@@ -147,6 +163,8 @@ class BatchEditService:
         if not transferred_cars_query:
             return
 
+        service_id_to_price = self.get_service_id_to_price()
+
         transferred_cars = CarToWash.objects.filter(transferred_cars_query)
 
         for transferred_car in transferred_cars:
@@ -162,20 +180,25 @@ class BatchEditService:
                 item['windshield_washer_refilled_bottle_percentage']
             )
 
+        CarToWash.objects.bulk_update(
+            transferred_cars,
+            fields=(
+                'car_wash_id',
+                'car_class',
+                'wash_type',
+                'windshield_washer_type',
+                'windshield_washer_refilled_bottle_percentage',
+            ),
+        )
+
+        additional_services = []
+        for transferred_car in transferred_cars:
             CarToWashAdditionalService.objects.filter(
                 car=transferred_car
             ).delete()
-            service_ids = [
-                service['id'] for service in item['additional_services']
+            item = self.__shift_id_and_number_to_item[
+                (transferred_car.shift_id, transferred_car.number)
             ]
-            service_prices = CarWashServicePrice.objects.filter(
-                service_id__in=service_ids,
-            )
-            service_id_to_price = {
-                service_price.service_id: service_price.price
-                for service_price in service_prices
-            }
-            additional_services = []
             for service in item['additional_services']:
                 if service['id'] not in service_id_to_price:
                     continue
@@ -190,25 +213,21 @@ class BatchEditService:
                         price=price,
                     )
                 )
+        if additional_services:
             CarToWashAdditionalService.objects.bulk_create(
                 additional_services
             )
-        CarToWash.objects.bulk_update(
-            transferred_cars,
-            fields=(
-                'car_wash_id',
-                'car_class',
-                'wash_type',
-                'windshield_washer_type',
-                'windshield_washer_refilled_bottle_percentage',
-            ),
-        )
 
     @lru_cache(maxsize=100)
     def get_car_wash_by_id(self, car_wash_id: int) -> CarWash | None:
         return CarWash.objects.filter(id=car_wash_id).first()
 
+    @transaction.atomic
     def create_cars(self):
+        service_id_to_price = self.get_service_id_to_price()
+
+        transferred_cars = []
+
         for car in self.get_cars_to_create():
             item = self.__shift_id_and_number_to_item[car]
             car_wash = self.get_car_wash_by_id(item['car_wash_id'])
@@ -219,54 +238,49 @@ class BatchEditService:
                 wash_type=item['wash_type'],
                 is_extra_shift=item['shift_id'] in self.__extra_shift_ids,
             )
-            with transaction.atomic():
-                transferred_car = CarToWash(
-                    shift_id=item['shift_id'],
-                    car_wash_id=item['car_wash_id'],
-                    number=item['car_number'],
-                    car_class=item['class_type'],
-                    wash_type=item['wash_type'],
-                    windshield_washer_type=item['windshield_washer_type'],
-                    windshield_washer_refilled_bottle_percentage=(
-                        item['windshield_washer_refilled_bottle_percentage']
-                    ),
-                    transfer_price=transfer_price,
-                    comfort_class_car_washing_price=car_wash
-                    .comfort_class_car_washing_price,
-                    business_class_car_washing_price=car_wash
-                    .business_class_car_washing_price,
-                    van_washing_price=car_wash.van_washing_price,
-                    windshield_washer_price_per_bottle=car_wash
-                    .windshield_washer_price_per_bottle,
-                )
-                transferred_car.full_clean()
-                transferred_car.save()
+            transferred_car = CarToWash(
+                shift_id=item['shift_id'],
+                car_wash_id=item['car_wash_id'],
+                number=item['car_number'],
+                car_class=item['class_type'],
+                wash_type=item['wash_type'],
+                windshield_washer_type=item['windshield_washer_type'],
+                windshield_washer_refilled_bottle_percentage=(
+                    item['windshield_washer_refilled_bottle_percentage']
+                ),
+                transfer_price=transfer_price,
+                comfort_class_car_washing_price=car_wash
+                .comfort_class_car_washing_price,
+                business_class_car_washing_price=car_wash
+                .business_class_car_washing_price,
+                van_washing_price=car_wash.van_washing_price,
+                windshield_washer_price_per_bottle=car_wash
+                .windshield_washer_price_per_bottle,
+            )
+            transferred_cars.append(transferred_car)
 
-                service_ids = [
-                    service['id'] for service in item['additional_services']
-                ]
+        CarToWash.objects.bulk_create(transferred_cars)
 
-                service_prices = CarWashServicePrice.objects.filter(
-                    service_id__in=service_ids,
-                )
-                service_id_to_price = {
-                    service_price.service_id: service_price.price
-                    for service_price in service_prices
-                }
-
-                additional_services = []
-                for service in item['additional_services']:
-                    if service['id'] not in service_id_to_price:
-                        continue
-                    price = service_id_to_price[service['id']]
-                    additional_services.append(
-                        CarToWashAdditionalService(
-                            car_id=transferred_car.id,
-                            service_id=service['id'],
-                            count=service['count'],
-                            price=price,
-                        )
+        additional_services = []
+        for transferred_car in transferred_cars:
+            item = self.__shift_id_and_number_to_item[
+                (transferred_car.shift_id, transferred_car.number)
+            ]
+            for service in item['additional_services']:
+                if service['id'] not in service_id_to_price:
+                    continue
+                if service['count'] < 1:
+                    continue
+                price = service_id_to_price[service['id']]
+                additional_services.append(
+                    CarToWashAdditionalService(
+                        car_id=transferred_car.id,
+                        service_id=service['id'],
+                        count=service['count'],
+                        price=price,
                     )
-                CarToWashAdditionalService.objects.bulk_create(
-                    additional_services
                 )
+        if additional_services:
+            CarToWashAdditionalService.objects.bulk_create(
+                additional_services
+            )
