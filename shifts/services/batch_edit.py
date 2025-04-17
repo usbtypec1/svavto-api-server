@@ -191,11 +191,17 @@ class BatchEditService:
             ),
         )
 
+        delete_q = Q()
+        for transferred_car in transferred_cars:
+            delete_q |= Q(
+                car_id=transferred_car.id,
+            )
+        if delete_q:
+            CarToWashAdditionalService.objects.filter(delete_q).delete()
+            
+
         additional_services = []
         for transferred_car in transferred_cars:
-            CarToWashAdditionalService.objects.filter(
-                car=transferred_car
-            ).delete()
             item = self.__shift_id_and_number_to_item[
                 (transferred_car.shift_id, transferred_car.number)
             ]
