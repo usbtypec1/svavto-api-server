@@ -153,7 +153,7 @@ class BatchEditService:
                 item['windshield_washer_refilled_bottle_percentage']
             )
             CarToWashAdditionalService.objects.filter(
-                сфк=transferred_car
+                car=transferred_car
                 ).delete()
             service_ids = [
                 service['id'] for service in item['additional_services']
