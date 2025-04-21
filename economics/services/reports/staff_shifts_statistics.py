@@ -114,16 +114,44 @@ class ShiftStatisticsWithPenaltyAndSurcharge(ShiftStatistics):
         return round(self.dirty_revenue * 0.03, 2)
 
 
+@dataclass(frozen=True, slots=True, kw_only=True)
+class DailyShiftStatistics:
+    staff_id: int
+    date: datetime.date
+    washed_cars_total_cost: int
+    planned_comfort_cars_washed_count: int
+    planned_business_cars_washed_count: int
+    planned_vans_washed_count: int
+    urgent_cars_washed_count: int
+    dry_cleaning_items_count: int
+    washed_cars_total_count: int
+    is_extra_shift: bool
+    penalty_amount: int
+    surcharge_amount: int
+
+    @property
+    def dirty_revenue(self) -> int:
+        return (
+                self.washed_cars_total_cost
+                + self.surcharge_amount
+                - self.penalty_amount
+        )
+
+    @property
+    def road_accident_deposit_amount(self) -> float:
+        return round(self.dirty_revenue * 0.03, 2)
+
+
 @dataclass(frozen=True, slots=True)
 class StaffShiftsStatistics:
     staff: StaffItem
-    shifts_statistics: list[ShiftStatisticsWithPenaltyAndSurcharge]
+    shifts_statistics: list[DailyShiftStatistics]
     total_statistics: TotalStatistics
 
 
 @dataclass(frozen=True, slots=True)
 class StaffShiftsStatisticsResponse:
-    staff_list: list[StaffShiftsStatistics]
+    staff_list: list[DailyShiftStatistics]
     report_period: ReportPeriod
 
 
@@ -138,11 +166,10 @@ def map_shift_statistics_with_penalty_and_surcharge(
         shift_statistics: ShiftStatistics,
         penalty_amount: int,
         surcharge_amount: int,
-) -> ShiftStatisticsWithPenaltyAndSurcharge:
-    return ShiftStatisticsWithPenaltyAndSurcharge(
+) -> DailyShiftStatistics:
+    return DailyShiftStatistics(
         staff_id=shift_statistics.staff_id,
-        shift_id=shift_statistics.shift_id,
-        shift_date=shift_statistics.shift_date,
+        date=shift_statistics.shift_date,
         washed_cars_total_cost=shift_statistics.washed_cars_total_cost,
         planned_comfort_cars_washed_count=shift_statistics
         .planned_comfort_cars_washed_count,
@@ -154,6 +181,7 @@ def map_shift_statistics_with_penalty_and_surcharge(
         is_extra_shift=shift_statistics.is_extra_shift,
         penalty_amount=penalty_amount,
         surcharge_amount=surcharge_amount,
+        washed_cars_total_count=shift_statistics.washed_cars_total_count,
     )
 
 
@@ -181,31 +209,37 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         penalties: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
         surcharges: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
         fine_deposit_exceptions: Iterable[Staff],
-) -> StaffShiftsStatistics:
-    staff_id_to_penalties = {penalty.staff_id: penalty.items for penalty in
-                             penalties}
-    staff_id_to_surcharges = {
-        surcharge.staff_id: surcharge.items for surcharge in surcharges
-    }
-    staff_id_to_shifts_statistics = {
-        item.staff_id: item.shifts_statistics for item in
-        staff_shifts_statistics
-    }
+) -> DailyShiftStatistics:
+    date_to_penalty_amount = defaultdict(int)
+    for penalty in penalties:
+        if penalty.staff_id != staff.id:
+            continue
+        for item in penalty.items:
+            date_to_penalty_amount[item.shift_date] += item.total_amount
 
-    penalties = staff_id_to_penalties.get(staff.id, [])
-    surcharges = staff_id_to_surcharges.get(staff.id, [])
+    date_to_surcharge_amount = defaultdict(int)
+    for surcharge in surcharges:
+        if surcharge.staff_id != staff.id:
+            continue
+        for item in surcharge.items:
+            date_to_surcharge_amount[item.shift_date] += item.total_amount
 
-    shift_date_to_penalty_amount = {
-        penalty.shift_date: penalty.total_amount for penalty in penalties
-    }
-    shift_date_to_surcharge_amount = {
-        surcharge.shift_date: surcharge.total_amount for surcharge in
-        surcharges
-    }
+    date_to_shift_statistics = {}
+    for staff_shift_statistics in staff_shifts_statistics:
+        if staff_shift_statistics.staff_id != staff.id:
+            continue
+        for shift_statistics in staff_shift_statistics.shifts_statistics:
+            date_to_shift_statistics[shift_statistics.shift_date] = (
+                shift_statistics
+            )
 
-    shifts_statistics = staff_id_to_shifts_statistics.get(staff.id, [])
+    dates = (
+            set(date_to_penalty_amount)
+            | set(date_to_surcharge_amount)
+            | set(date_to_shift_statistics)
+    )
 
-    result: list[ShiftStatisticsWithPenaltyAndSurcharge] = []
+    result: list[DailyShiftStatistics] = []
 
     total_penalty_amount: int = 0
     total_surcharge_amount: int = 0
@@ -219,15 +253,24 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
     total_dirty_revenue: int = 0
     total_dry_cleaning_items_count: int = 0
 
-    for shift_statistics in shifts_statistics:
-        penalty_amount = shift_date_to_penalty_amount.get(
-            shift_statistics.shift_date,
-            0,
-        )
-        surcharge_amount = shift_date_to_surcharge_amount.get(
-            shift_statistics.shift_date,
-            0,
-        )
+    for date in dates:
+        penalty_amount = date_to_penalty_amount.get(date, 0)
+        surcharge_amount = date_to_surcharge_amount.get(date, 0)
+        shift_statistics = date_to_shift_statistics.get(date)
+
+        if shift_statistics is None:
+            shift_statistics = ShiftStatistics(
+                staff_id=staff.id,
+                shift_id=0,
+                shift_date=date,
+                washed_cars_total_cost=0,
+                planned_comfort_cars_washed_count=0,
+                planned_business_cars_washed_count=0,
+                planned_vans_washed_count=0,
+                urgent_cars_washed_count=0,
+                dry_cleaning_items_count=0,
+                is_extra_shift=False,
+            )
 
         shift_statistics = map_shift_statistics_with_penalty_and_surcharge(
             shift_statistics=shift_statistics,
@@ -258,8 +301,10 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         total_dry_cleaning_items_count += (
             shift_statistics.dry_cleaning_items_count
         )
+
+    shifts_count = len(date_to_shift_statistics)
     fine_deposit_amount = compute_fine_deposit_amount(
-        shifts_count=len(shifts_statistics),
+        shifts_count=shifts_count,
         total_dirty_revenue=total_dirty_revenue,
         fine_deposit_exceptions=fine_deposit_exceptions,
         staff_id=staff.id,
