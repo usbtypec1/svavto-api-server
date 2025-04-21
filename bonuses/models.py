@@ -1,3 +1,5 @@
+from typing import Self
+
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _, gettext
@@ -41,3 +43,15 @@ class BonusSettings(models.Model):
     @property
     def is_bonus_enabled(self):
         return self.min_cars_count > 0 and self.bonus_amount > 0
+
+    @classmethod
+    def get_or_create(cls) -> Self:
+        settings = cls.objects.prefetch_related('excluded_staff').first()
+        if settings is None:
+            settings = BonusSettings(
+                min_cars_count=4,
+                bonus_amount=300,
+            )
+            settings.full_clean()
+            settings.save()
+        return settings
