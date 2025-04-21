@@ -13,7 +13,6 @@ urlpatterns = [
     path(f"{settings.ROOT_PATH}texts/", include("texts.urls")),
     path(f"{settings.ROOT_PATH}dry-cleaning/", include("dry_cleaning.urls")),
     path(f"{settings.ROOT_PATH}deposits/", include("deposits.urls")),
-    path(f'{settings.ROOT_PATH}bonuses/', include('bonuses.urls')),
 ]
 
 if settings.DEBUG:
