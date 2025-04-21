@@ -44,7 +44,7 @@ class BatchEditItemListUseCase:
         shifts = (
             Shift.objects
             .select_related('staff')
-            .filter(date=self.date)
+            .filter(date=self.date, staff__banned_at__isnull=True)
             .only('id', 'date', 'staff_id', 'staff__full_name')
         )
         if self.staff_id is not None:
