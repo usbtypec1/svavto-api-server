@@ -53,8 +53,18 @@ class BatchEditItemListUseCase:
         cars = (
             CarToWash.objects
             .filter(shift__in=shifts)
-            .select_related('car_wash', 'shift')
+            .select_related('car_wash')
             .order_by('shift_id', 'shift__date', 'shift__staff_id')
+            .only(
+                'id',
+                'number',
+                'car_wash_id',
+                'car_wash__name',
+                'car_class',
+                'wash_type',
+                'windshield_washer_type',
+                'windshield_washer_refilled_bottle_percentage',
+            )
         )
         if self.staff_id is not None:
             cars = cars.filter(shift__staff_id=self.staff_id)
@@ -63,6 +73,7 @@ class BatchEditItemListUseCase:
             CarToWashAdditionalService.objects
             .filter(car__in=cars)
             .select_related('service')
+            .only('car_id', 'service__id', 'service__name', 'count')
         )
 
         car_id_to_services: dict[int, list[AdditionalServiceDto]] = (
