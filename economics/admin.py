@@ -25,11 +25,31 @@ class CarWashSurchargeResource(ModelResource):
 class CarTransporterPenaltyResource(ModelResource):
     class Meta:
         model = CarTransporterPenalty
+        fields = (
+            "id",
+            "staff__id",
+            "staff__full_name",
+            "date",
+            "reason",
+            "amount",
+            "consequence",
+            "created_at",
+        )
 
 
 class CarTransporterSurchargeResource(ModelResource):
     class Meta:
         model = CarTransporterSurcharge
+        fields = (
+            "id",
+            "staff__id",
+            "staff__full_name",
+            "date",
+            "reason",
+            "amount",
+            "created_at",
+        )
+
 
 
 @admin.register(PenaltyPhoto)
