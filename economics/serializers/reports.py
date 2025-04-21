@@ -85,7 +85,7 @@ class StaffItemSerializer(serializers.Serializer):
 
 
 class ShiftStatisticsSerializer(serializers.Serializer):
-    shift_date = serializers.DateField()
+    date = serializers.DateField()
     penalty_amount = serializers.IntegerField()
     surcharge_amount = serializers.IntegerField()
     planned_comfort_cars_washed_count = serializers.IntegerField()
