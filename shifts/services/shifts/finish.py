@@ -7,7 +7,9 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from bonuses.services import BonusAmountComputeInteractor
 from car_washes.models import CarWash
+from economics.use_cases import CarTransporterSurchargeCreateUseCase
 from shifts.models import CarToWash, Shift, ShiftFinishPhoto
 from shifts.selectors import has_any_finished_shift
 from shifts.services.cars_to_wash import (
@@ -43,16 +45,18 @@ class ShiftSummary:
 @dataclass(frozen=True, slots=True)
 class ShiftFinishResult(ShiftSummary):
     is_first_shift: bool
+    bonus_amount: int
     finish_photo_file_ids: list[str]
 
 
 class ShiftFinishInteractor:
+
     def __init__(
-        self,
-        *,
-        shift: Shift,
-        shift_summary: ShiftSummary,
-        photo_file_ids: Iterable[str],
+            self,
+            *,
+            shift: Shift,
+            shift_summary: ShiftSummary,
+            photo_file_ids: Iterable[str],
     ):
         self.__shift = shift
         self.__shift_summary = shift_summary
@@ -76,8 +80,9 @@ class ShiftFinishInteractor:
         return ShiftFinishPhoto.objects.bulk_create(finish_photos)
 
     def create_result(
-        self,
-        is_first_shift: bool,
+            self,
+            is_first_shift: bool,
+            bonus_amount: int,
     ) -> ShiftFinishResult:
         return ShiftFinishResult(
             is_first_shift=is_first_shift,
@@ -86,6 +91,7 @@ class ShiftFinishInteractor:
             staff_full_name=self.__shift.staff.full_name,
             car_washes=self.__shift_summary.car_washes,
             finish_photo_file_ids=self.__photo_file_ids,
+            bonus_amount=bonus_amount,
         )
 
     @transaction.atomic
@@ -94,16 +100,33 @@ class ShiftFinishInteractor:
         self.save_shift_finish_date()
         self.delete_shift_finish_photos()
         self.create_shift_finish_photos()
-        return self.create_result(is_first_shift=is_first_shift)
+
+        bonus_amount = BonusAmountComputeInteractor(
+            shift=self.__shift,
+        ).execute()
+        if bonus_amount:
+            CarTransporterSurchargeCreateUseCase(
+                staff_id=self.__shift_summary.staff_id,
+                date=self.__shift.date,
+                reason="Премия за выход на смену в выходные дни",
+                amount=bonus_amount,
+            ).execute()
+        return self.create_result(
+            is_first_shift=is_first_shift,
+            bonus_amount=bonus_amount,
+        )
 
 
 class ShiftSummaryInteractor:
+
     def __init__(self, shift_id: int):
         self.__shift_id = shift_id
 
     @lru_cache
     def get_shift(self) -> Shift:
-        return Shift.objects.select_related("staff", "car_wash").get(id=self.__shift_id)
+        return Shift.objects.select_related("staff", "car_wash").get(
+            id=self.__shift_id
+        )
 
     def get_cars_to_wash(self) -> QuerySet[CarToWash]:
         return CarToWash.objects.select_related("car_wash").filter(
@@ -133,7 +156,8 @@ class ShiftSummaryInteractor:
             for car in cars:
                 wash_type_to_count[car.wash_type] += 1
                 car_class_to_count[car.car_class] += 1
-                not_refilled_cars_count += car.is_windshield_washer_not_refilled
+                not_refilled_cars_count += (
+                    car.is_windshield_washer_not_refilled)
 
             car_wash_name = car_wash_id_to_name.get(car_wash_id, "не выбрано")
             total_cars_count = len(cars)
@@ -151,11 +175,15 @@ class ShiftSummaryInteractor:
             car_wash_transferred_cars_summary = CarWashTransferredCarsSummary(
                 car_wash_id=car_wash_id,
                 car_wash_name=car_wash_name,
-                comfort_cars_count=car_class_to_count[CarToWash.CarType.COMFORT],
-                business_cars_count=car_class_to_count[CarToWash.CarType.BUSINESS],
+                comfort_cars_count=car_class_to_count[
+                    CarToWash.CarType.COMFORT],
+                business_cars_count=car_class_to_count[
+                    CarToWash.CarType.BUSINESS],
                 vans_count=car_class_to_count[CarToWash.CarType.VAN],
-                planned_cars_count=wash_type_to_count[CarToWash.WashType.PLANNED],
-                urgent_cars_count=wash_type_to_count[CarToWash.WashType.URGENT],
+                planned_cars_count=wash_type_to_count[
+                    CarToWash.WashType.PLANNED],
+                urgent_cars_count=wash_type_to_count[
+                    CarToWash.WashType.URGENT],
                 dry_cleaning_count=dry_cleaning_items_count,
                 total_cars_count=total_cars_count,
                 refilled_cars_count=refilled_cars_count,
