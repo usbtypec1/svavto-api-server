@@ -37,7 +37,7 @@ class BonusAmountComputeInteractor:
         return self.get_bonus_settings() is not None
 
     def execute(self) -> int:
-        if self.shift.is_test or self.shift.is_extra or self.is_weekend():
+        if self.shift.is_test or self.shift.is_extra or not self.is_weekend():
             return 0
 
         bonus_settings = self.get_bonus_settings()

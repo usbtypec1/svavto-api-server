@@ -117,7 +117,7 @@ def test_staff_not_excluded():
 @pytest.mark.django_db
 def test_bonus_amount_is_not_zero():
     BonusSettingsFactory(min_cars_count=2, bonus_amount=100)
-    weekday = datetime.date(2025, 4, 9)
+    weekday = datetime.date(2025, 4, 5)
     shift = ShiftFactory(is_test=False, is_extra=False, date=weekday)
     TransferredCarFactory(shift=shift)
     TransferredCarFactory(shift=shift)
