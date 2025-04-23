@@ -65,8 +65,9 @@ class CarTransporterPenaltyAdmin(ImportExportModelAdmin):
         "reason",
         "amount",
         "consequence",
-        "created_at",
+        "date",
     )
+    date_hierarchy = "date"
     autocomplete_fields = ("staff",)
     list_select_related = ("staff",)
     list_filter = (
@@ -85,8 +86,9 @@ class CarTransporterSurchargeAdmin(ImportExportModelAdmin):
         "staff",
         "reason",
         "amount",
-        "created_at",
+        "date",
     )
+    date_hierarchy = "date"
     autocomplete_fields = ("staff",)
     list_select_related = ("staff",)
     list_filter = (
