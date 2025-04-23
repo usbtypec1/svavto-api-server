@@ -3,6 +3,7 @@ import datetime
 from django.core.management import BaseCommand
 from django.db.models import Count
 
+from economics.models import CarTransporterSurcharge
 from shifts.models import Shift
 
 
@@ -24,4 +25,10 @@ class Command(BaseCommand):
             .values('cars_count', 'staff_id')
         )
         for value in values:
-            self.stdout.write(f"{value['staff_id']}, {value['cars_count']}")
+            CarTransporterSurcharge.objects.create(
+                staff_id=value['staff_id'],
+                date=date,
+                reason='Премия за выход на смену в выходные дни',
+                amount=300,
+            )
+
