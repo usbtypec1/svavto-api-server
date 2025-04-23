@@ -19,7 +19,7 @@ class Command(BaseCommand):
         values = (
             Shift.objects
             .filter(date=date, is_test=False, is_extra=False)
-            .annotate(cars_count=Count('cars'))
+            .annotate(cars_count=Count('cartowash'))
             .filter(cars_count__gte=4)
             .values('cars_count', 'staff_id')
         )
