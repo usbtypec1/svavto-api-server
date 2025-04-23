@@ -174,6 +174,7 @@ class ShiftFinishOutputSerializer(serializers.Serializer):
     finish_photo_file_ids = serializers.ListField(
         child=serializers.CharField(),
     )
+    bonus_amount = serializers.IntegerField()
 
 
 class ShiftTestCreateOutputSerializer(serializers.Serializer):
