@@ -24,4 +24,4 @@ class Command(BaseCommand):
             .values('cars_count', 'staff_id')
         )
         for value in values:
-            self.stdout.write(value['staff_id'], value['cars_count'])
+            self.stdout.write(f"{value['staff_id']}, {value['cars_count']}")
