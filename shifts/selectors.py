@@ -223,7 +223,6 @@ def get_cars_to_wash_for_period(
     cars_to_wash = (
         CarToWash.objects.select_related("shift")
         .filter(
-            shift__is_test=False,
             shift__date__range=(from_date, to_date),
             car_wash_id__in=car_wash_ids,
         )
@@ -232,7 +231,6 @@ def get_cars_to_wash_for_period(
     additional_services = (
         CarToWashAdditionalService.objects.select_related("service")
         .filter(
-            car__shift__is_test=False,
             car__shift__date__range=(from_date, to_date),
             car__car_wash_id__in=car_wash_ids,
         )
