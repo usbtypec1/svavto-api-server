@@ -43,6 +43,7 @@ class StaffRegisterRequestCreateResult:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    staff_type: int
     created_at: datetime.datetime
 
 
@@ -52,6 +53,7 @@ class StaffRegisterRequestCreateInteractor:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    staff_type: int
 
     def execute(self):
         ensure_staff_not_exists(self.staff_id)
@@ -61,6 +63,7 @@ class StaffRegisterRequestCreateInteractor:
             full_name=self.full_name,
             car_sharing_phone_number=self.car_sharing_phone_number,
             console_phone_number=self.console_phone_number,
+            staff_type=self.staff_type,
         )
 
         try:
@@ -73,8 +76,11 @@ class StaffRegisterRequestCreateInteractor:
             id=staff_register_request.id,
             staff_id=staff_register_request.staff_id,
             full_name=staff_register_request.full_name,
-            car_sharing_phone_number=(staff_register_request.car_sharing_phone_number),
+            car_sharing_phone_number=(
+                staff_register_request.car_sharing_phone_number
+            ),
             console_phone_number=staff_register_request.console_phone_number,
+            staff_type=staff_register_request.staff_type,
             created_at=staff_register_request.created_at,
         )
 

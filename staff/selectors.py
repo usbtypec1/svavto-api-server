@@ -158,6 +158,7 @@ class StaffRegisterRequestDTO:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    staff_type: int
     created_at: datetime.datetime
 
 
@@ -168,6 +169,7 @@ def get_staff_register_requests() -> list[StaffRegisterRequestDTO]:
         "full_name",
         "car_sharing_phone_number",
         "console_phone_number",
+        'staff_type',
         "created_at",
     ).order_by("created_at")
 
@@ -178,6 +180,7 @@ def get_staff_register_requests() -> list[StaffRegisterRequestDTO]:
             full_name=request.full_name,
             car_sharing_phone_number=request.car_sharing_phone_number,
             console_phone_number=request.console_phone_number,
+            staff_type=request.staff_type,
             created_at=request.created_at,
         )
         for request in requests
