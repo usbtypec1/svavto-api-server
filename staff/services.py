@@ -31,6 +31,7 @@ class StaffCreateResult:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    type: int
     created_at: datetime.datetime
     banned_at: datetime.datetime | None
     last_activity_at: datetime.datetime
@@ -105,6 +106,7 @@ class StaffRegisterRequestAcceptInteractor:
             full_name=staff_register_request.full_name,
             car_sharing_phone_number=(staff_register_request.car_sharing_phone_number),
             console_phone_number=(staff_register_request.console_phone_number),
+            type=staff_register_request.staff_type,
         )
         staff.full_clean()
         staff.save()
@@ -125,6 +127,7 @@ class StaffRegisterRequestAcceptInteractor:
             full_name=staff.full_name,
             car_sharing_phone_number=staff.car_sharing_phone_number,
             console_phone_number=staff.console_phone_number,
+            type=staff.type,
             created_at=staff.created_at,
             banned_at=staff.banned_at,
             last_activity_at=staff.last_activity_at,
