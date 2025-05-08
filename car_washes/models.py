@@ -145,6 +145,12 @@ class CarWashServicePrice(models.Model):
     price = models.PositiveIntegerField(
         verbose_name=_("price"),
     )
+    price_for_car_transporter_and_washer = (
+        models.PositiveIntegerField(
+            default=0,
+            verbose_name=_("Price per transporter and washer"),
+        )
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
