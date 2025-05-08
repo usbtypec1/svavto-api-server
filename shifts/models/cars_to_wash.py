@@ -10,6 +10,8 @@ from shifts.models.shifts import Shift
 
 __all__ = ("CarToWash",)
 
+from staff.models import StaffType
+
 
 class CarToWash(models.Model):
     class CarType(models.TextChoices):
