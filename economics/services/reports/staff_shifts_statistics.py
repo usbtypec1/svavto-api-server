@@ -341,7 +341,7 @@ class HasItemDryCleaningPrice(Protocol):
     item_dry_cleaning: int
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(kw_only=True)
 class ShiftTransferredCarsTotalCostCalculator(ABC):
     cars: Iterable[TransferredCar]
     dry_cleaning_items_count: int
@@ -399,7 +399,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
         pass
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(kw_only=True)
 class CarTransporterAndWasherTransferredCarsTotalCostCalculator(
     ShiftTransferredCarsTotalCostCalculator
 ):
@@ -413,7 +413,7 @@ class CarTransporterAndWasherTransferredCarsTotalCostCalculator(
         )
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(kw_only=True)
 class CarTransporterTransferredCarsTotalCostCalculator(
     ShiftTransferredCarsTotalCostCalculator
 ):
@@ -465,37 +465,6 @@ class CarTransporterTransferredCarsTotalCostCalculator(
         if not self.is_min_plan_completed:
             return self.calculate_min_plan_not_completed()
         return self.calculate_regular_shift()
-
-
-def compute_washed_cars_total_cost(
-        *,
-        staff_type: int,
-        total_cost: int,
-        comfort_cars_count: int,
-        business_cars_count: int,
-        vans_count: int,
-        urgent_cars_count: int,
-        is_extra_shift: int,
-        dry_cleaning_items_count: int,
-        transferred_cars_threshold: int,
-) -> int:
-    """
-    Compute total price of car transfer on the shift.
-
-    Keyword Args:
-        total_cost: preliminary total cost by standard rates.
-        comfort_cars_count: comfort class cars count (part of planned cars).
-        business_cars_count: business class cars count (part of planned cars)
-        vans_count: vans count (part of planned cars).
-        urgent_cars_count: urgent cars count.
-        is_extra_shift: flag of extra shift.
-        dry_cleaning_items_count: dry cleaning items count.
-        transferred_cars_threshold: min number of cars that must be
-                                    transferred during the shift.
-
-    Returns:
-        Total price of car transfer on the shift.
-    """
 
 
 T = TypeVar("T")
@@ -615,7 +584,7 @@ def get_cars_to_wash_statistics(
                 cars=shift_cars,
                 dry_cleaning_items_count=dry_cleaning_items_count,
                 prices=car_transporter_service_prices,
-                is_extra_shift=shift.is_extra_shift,
+                is_extra_shift=shift.is_extra,
                 transferred_cars_min_count=shift.transferred_cars_threshold,
             )
         else:
