@@ -42,6 +42,8 @@ class BonusSettings(models.Model):
 
     @property
     def is_bonus_enabled(self):
+        if self.min_cars_count is None or self.bonus_amount is None:
+            return False
         return self.min_cars_count > 0 and self.bonus_amount > 0
 
     @classmethod
