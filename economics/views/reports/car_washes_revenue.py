@@ -10,10 +10,10 @@ from economics.serializers import (
 )
 from economics.services.reports import get_car_washes_sales_report
 
-__all__ = ("ServiceCostsApi",)
+__all__ = ("CarWashesRevenueApi",)
 
 
-class ServiceCostsApi(APIView):
+class CarWashesRevenueApi(APIView):
     def get(self, request: Request) -> Response:
         serializer = CarWashesRevenueReportInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)

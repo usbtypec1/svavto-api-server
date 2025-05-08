@@ -2,7 +2,7 @@ from django.urls import include, path
 
 from economics.views import (
     CarTransporterPenaltyListCreateApi,
-    ServiceCostsApi,
+    CarWashesRevenueApi,
     StaffShiftsStatisticsReportApi,
     CarTransporterSurchargeListCreateApi,
     CarWashPenaltyListCreateApi,
@@ -17,7 +17,7 @@ from economics.views import (
 reports_urlpatterns = [
     path(
         r"service-costs/",
-        ServiceCostsApi.as_view(),
+        CarWashesRevenueApi.as_view(),
         name="service-costs",
     ),
     path(
