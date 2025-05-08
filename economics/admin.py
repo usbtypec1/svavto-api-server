@@ -2,6 +2,7 @@ from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
+from core.admin import SingleRowMixin
 from economics.models import (
     CarTransporterPenalty,
     StaffServicePrice,
@@ -9,6 +10,7 @@ from economics.models import (
     CarWashPenalty,
     CarWashSurcharge,
     PenaltyPhoto,
+    CarTransporterAndWasherServicePrices,
 )
 
 
@@ -49,7 +51,6 @@ class CarTransporterSurchargeResource(ModelResource):
             "amount",
             "created_at",
         )
-
 
 
 @admin.register(PenaltyPhoto)
@@ -150,3 +151,11 @@ class CarWashSurchargeAdmin(ImportExportModelAdmin):
     )
     search_fields = ("car_wash__name", "reason")
     search_help_text = "Search by car wash name, reason"
+
+
+@admin.register(CarTransporterAndWasherServicePrices)
+class CarTransporterAndWasherServicePricesAdmin(
+    SingleRowMixin,
+    admin.ModelAdmin,
+):
+    pass

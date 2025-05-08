@@ -118,35 +118,33 @@ class CarTransporterSurcharge(models.Model):
         return self.reason
 
 
-class CarTransporterAndWasherServicePrice(models.Model):
-    class ServiceType(models.TextChoices):
-        COMFORT_CLASS_CAR_TRANSFER = (
-            'comfort_class_car_transfer',
-            _("Comfort class car transfer"),
-        )
-        BUSINESS_CLASS_CAR_TRANSFER = (
-            'business_class_car_transfer',
-            _("Business class car transfer"),
-        )
-        VAN_TRANSFER = 'van_transfer', _("Van transfer")
-        URGENT_CAR_WASH = 'urgent_wash', _("Urgent wash")
-        ITEM_DRY_CLEAN = 'item_dry_clean', _("Item dry clean")
-
-    service = models.CharField(
-        max_length=255,
-        choices=ServiceType.choices,
-        unique=True,
+class CarTransporterAndWasherServicePrices(models.Model):
+    comfort_class_car_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Comfort class car transfer"),
     )
-    price = models.PositiveIntegerField()
+    business_class_car_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Business class car transfer"),
+    )
+    van_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Van transfer"),
+    )
+    urgent_car_wash = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Urgent car wash"),
+    )
+    item_dry_clean = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Item dry clean"),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = _("Car transporter and washer service price")
         verbose_name_plural = _("Car transporter and washer service prices")
-
-    def __str__(self):
-        return self.get_service_display()
 
 
 class StaffServicePrice(models.Model):
