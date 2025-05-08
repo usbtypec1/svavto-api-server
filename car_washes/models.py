@@ -13,13 +13,60 @@ class CarWash(models.Model):
     Can have multiple services and specific prices for each service.
     """
 
-    name = models.CharField(max_length=100, unique=True)
-    comfort_class_car_washing_price = models.PositiveIntegerField()
-    business_class_car_washing_price = models.PositiveIntegerField()
-    van_washing_price = models.PositiveIntegerField()
-    windshield_washer_price_per_bottle = models.PositiveIntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        verbose_name=_("Car wash name"),
+    )
+    comfort_class_car_washing_price = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Car transporter comform class price"),
+    )
+    business_class_car_washing_price = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Car transporter business class price"),
+    )
+    van_washing_price = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Car transporter van price"),
+    )
+    windshield_washer_price_per_bottle = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Windshield washer price per bottle"),
+    )
+    car_transporters_and_washers_comfort_class_price = (
+        models.PositiveIntegerField(
+            default=0,
+            verbose_name=_('Car transporters and washers comfort class price')
+        )
+    )
+    car_transporters_and_washers_business_class_price = (
+        models.PositiveIntegerField(
+            default=0,
+            verbose_name=_('Car transporters and washers business class price')
+        )
+    )
+    car_transporters_and_washers_van_price = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_('Car transporters and washers van price')
+    )
+    car_transporters_and_washers_windshield_washer_price_per_bottle = (
+        models.PositiveIntegerField(
+            default=0,
+            verbose_name=_(
+                'Car transporters and washers windshield washer price per'
+                ' bottle'
+            )
+        )
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at'),
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Updated at'),
+    )
 
     class Meta:
         verbose_name = _("car wash")

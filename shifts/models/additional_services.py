@@ -20,7 +20,12 @@ class CarToWashAdditionalService(models.Model):
         verbose_name=_("additional service"),
     )
     price = models.PositiveIntegerField(
-        verbose_name=_("price"),
+        verbose_name=_("Price for car transporters"),
+        help_text=_("price of additional service at the moment"),
+    )
+    price_for_car_transporters_and_washers = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Price for car transporters and washers"),
         help_text=_("price of additional service at the moment"),
     )
     count = models.PositiveSmallIntegerField(
