@@ -2,9 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-__all__ = ("Staff", "AdminStaff", "StaffRegisterRequest")
-
-
 class StaffType(models.IntegerChoices):
     CAR_TRANSPORTER = 1, _("Car transporter")
     CAR_TRANSPORTER_AND_WASHER = 2, _("Car transporter and washer")

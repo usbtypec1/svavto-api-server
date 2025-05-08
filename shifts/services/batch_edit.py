@@ -8,8 +8,9 @@ from django.db.models import Q, QuerySet
 from typing_extensions import TypedDict
 
 from car_washes.models import CarWash, CarWashServicePrice
-from shifts.models import CarToWash, CarToWashAdditionalService
-from shifts.use_cases.transferred_car_create import compute_car_transfer_price
+from shifts.models import CarToWash, CarToWashAdditionalService, Shift
+from shifts.services.transferred_cars.create import \
+    calculate_car_transfer_price
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -230,19 +231,32 @@ class BatchEditService:
 
     @transaction.atomic
     def create_cars(self):
+        cars_to_create = self.get_cars_to_create()
+        shift_ids = {
+            self.__shift_id_and_number_to_item[car]['shift_id']
+            for car in cars_to_create
+        }
+        shift_id_to_staff_type = {
+            shift.id: shift.staff.type
+            for shift in
+            Shift.objects.filter(id__in=shift_ids).select_related('staff')
+        }
+
         service_id_to_price = self.get_service_id_to_price()
 
         transferred_cars = []
 
-        for car in self.get_cars_to_create():
+        for car in cars_to_create:
             item = self.__shift_id_and_number_to_item[car]
+            shift_id = item['shift_id']
             car_wash = self.get_car_wash_by_id(item['car_wash_id'])
             if car_wash is None:
                 continue
-            transfer_price = compute_car_transfer_price(
+            transfer_price = calculate_car_transfer_price(
                 class_type=item['class_type'],
                 wash_type=item['wash_type'],
-                is_extra_shift=item['shift_id'] in self.__extra_shift_ids,
+                is_extra_shift=shift_id in self.__extra_shift_ids,
+                staff_type=shift_id_to_staff_type[shift_id]
             )
             transferred_car = CarToWash(
                 shift_id=item['shift_id'],

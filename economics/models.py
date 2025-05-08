@@ -3,18 +3,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from car_washes.models import CarWash
+from core.models import SingleRowModelMixin
 from shifts.models import Shift
-
-
-__all__ = (
-    "CarTransporterPenalty",
-    "CarTransporterSurcharge",
-    "StaffServicePrice",
-    "CarWashPenalty",
-    "CarWashSurcharge",
-    "PenaltyPhoto",
-)
-
 from staff.models import Staff
 
 
@@ -118,7 +108,7 @@ class CarTransporterSurcharge(models.Model):
         return self.reason
 
 
-class CarTransporterAndWasherServicePrices(models.Model):
+class CarTransporterAndWasherServicePrices(SingleRowModelMixin, models.Model):
     comfort_class_car_transfer = models.PositiveIntegerField(
         default=0,
         verbose_name=_("Comfort class car transfer"),
@@ -131,13 +121,13 @@ class CarTransporterAndWasherServicePrices(models.Model):
         default=0,
         verbose_name=_("Van transfer"),
     )
-    urgent_car_wash = models.PositiveIntegerField(
+    urgent_car_transfer = models.PositiveIntegerField(
         default=0,
-        verbose_name=_("Urgent car wash"),
+        verbose_name=_("Urgent car transfer"),
     )
-    item_dry_clean = models.PositiveIntegerField(
+    item_dry_cleaning = models.PositiveIntegerField(
         default=0,
-        verbose_name=_("Item dry clean"),
+        verbose_name=_("Item dry cleaning"),
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -147,40 +137,38 @@ class CarTransporterAndWasherServicePrices(models.Model):
         verbose_name_plural = _("Car transporter and washer service prices")
 
 
-class StaffServicePrice(models.Model):
-    class ServiceType(models.TextChoices):
-        COMFORT_CLASS_CAR_TRANSFER = (
-            "comfort_class_car_transfer",
-            _("comfort class car transfer"),
-        )
-        BUSINESS_CLASS_CAR_TRANSFER = (
-            "business_class_car_transfer",
-            _("business class car transfer"),
-        )
-        VAN_TRANSFER = "van_transfer", _("van transfer")
-        CAR_TRANSPORTER_EXTRA_SHIFT = (
-            "car_transporter_extra_shift",
-            _("car transporter extra shift"),
-        )
-        URGENT_CAR_WASH = "urgent_wash", _("urgent wash")
-        ITEM_DRY_CLEAN = "item_dry_clean", _("item dry clean")
-        UNDER_PLAN_PLANNED_CAR_TRANSFER = (
-            "under_plan_planned_car_transfer",
-            _("under plan planned car transfer"),
-        )
-
-    service = models.CharField(
-        max_length=255,
-        choices=ServiceType.choices,
-        unique=True,
+class CarTransporterServicePrices(SingleRowModelMixin, models.Model):
+    comfort_class_car_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Comfort class car transfer"),
     )
-    price = models.PositiveIntegerField()
+    business_class_car_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Business class car transfer"),
+    )
+    van_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Van transfer"),
+    )
+    extra_shift = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Extra shift"),
+    )
+    urgent_car_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Urgent car transfer"),
+    )
+    item_dry_cleaning = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Item dry cleaning"),
+    )
+    under_plan_planned_car_transfer = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Under plan planned car transfer"),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _("staff service price")
-        verbose_name_plural = _("staff service prices")
-
-    def __str__(self):
-        return self.get_service_display()
+        verbose_name = _("Car transporter service price")
+        verbose_name_plural = _("Car transporter service prices")

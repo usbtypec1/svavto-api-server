@@ -5,12 +5,12 @@ from import_export.resources import ModelResource
 from core.admin import SingleRowMixin
 from economics.models import (
     CarTransporterPenalty,
-    StaffServicePrice,
     CarTransporterSurcharge,
     CarWashPenalty,
     CarWashSurcharge,
     PenaltyPhoto,
     CarTransporterAndWasherServicePrices,
+    CarTransporterServicePrices,
 )
 
 
@@ -100,23 +100,6 @@ class CarTransporterSurchargeAdmin(ImportExportModelAdmin):
     search_help_text = "Search by staff full name, staff id, reason"
 
 
-@admin.register(StaffServicePrice)
-class StaffServicePriceAdmin(admin.ModelAdmin):
-    list_display = (
-        "service",
-        "price",
-        "updated_at",
-    )
-    ordering = ("service",)
-    readonly_fields = ("service", "updated_at")
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, *args):
-        return False
-
-
 @admin.register(CarWashPenalty)
 class CarWashPenaltyAdmin(ImportExportModelAdmin):
     resource_class = CarWashPenaltyResource
@@ -158,4 +141,9 @@ class CarTransporterAndWasherServicePricesAdmin(
     SingleRowMixin,
     admin.ModelAdmin,
 ):
+    pass
+
+
+@admin.register(CarTransporterServicePrices)
+class CarTransporterServicePricesAdmin(SingleRowMixin, admin.ModelAdmin):
     pass

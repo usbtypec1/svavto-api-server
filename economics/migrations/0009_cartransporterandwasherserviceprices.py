@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('comfort_class_car_transfer', models.PositiveIntegerField(default=0, verbose_name='Comfort class car transfer')),
                 ('business_class_car_transfer', models.PositiveIntegerField(default=0, verbose_name='Business class car transfer')),
                 ('van_transfer', models.PositiveIntegerField(default=0, verbose_name='Van transfer')),
-                ('urgent_car_wash', models.PositiveIntegerField(default=0, verbose_name='Urgent car wash')),
+                ('urgent_car_transfer', models.PositiveIntegerField(default=0, verbose_name='Urgent car wash')),
                 ('item_dry_clean', models.PositiveIntegerField(default=0, verbose_name='Item dry clean')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
