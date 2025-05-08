@@ -50,15 +50,6 @@ class CarWash(models.Model):
         default=0,
         verbose_name=_('Car transporters and washers van price')
     )
-    car_transporters_and_washers_windshield_washer_price_per_bottle = (
-        models.PositiveIntegerField(
-            default=0,
-            verbose_name=_(
-                'Car transporters and washers windshield washer price per'
-                ' bottle'
-            )
-        )
-    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('Created at'),
