@@ -44,6 +44,38 @@ class CarWashAdmin(ImportExportModelAdmin):
     search_fields = ("name",)
     inlines = (CarWashServicePriceInline,)
     readonly_fields = ("id",)
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "id",
+                    "name",
+                    'windshield_washer_price_per_bottle',
+                )
+            },
+        ),
+        (
+            _("Car transporters"),
+            {
+                "fields": (
+                    'comfort_class_car_washing_price',
+                    'business_class_car_washing_price',
+                    'van_washing_price',
+                )
+            },
+        ),
+        (
+            _("Car transporters and washers"),
+            {
+                "fields": (
+                    'car_transporters_and_washers_comfort_class_price',
+                    'car_transporters_and_washers_business_class_price',
+                    'car_transporters_and_washers_van_price',
+                )
+            }
+        )
+    )
 
 
 @admin.register(CarWashServicePrice)
