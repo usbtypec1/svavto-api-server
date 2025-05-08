@@ -152,7 +152,7 @@ S3_ENDPOINT = env.str("S3_ENDPOINT").rstrip("/")
 ROOT_PATH = env.str("ROOT_PATH", default="")
 
 if ROOT_PATH:
-    ROOT_PATH = f"{ROOT_PATH.strip('/')}/"
+    ROOT_PATH = f"{ROOT_PATH.strip('/')}"
 
 if SENTRY_DSN:
     import sentry_sdk
