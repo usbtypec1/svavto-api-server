@@ -18,15 +18,6 @@ class StaffRetrieveUpdateApi(APIView):
         is_banned = serializers.BooleanField()
         type = serializers.ChoiceField(choices=StaffType.choices)
 
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        full_name = serializers.CharField(max_length=100)
-        car_sharing_phone_number = serializers.CharField(max_length=16)
-        console_phone_number = serializers.CharField(max_length=16)
-        created_at = serializers.DateTimeField()
-        type = serializers.ChoiceField(choices=StaffType.choices)
-        is_banned = serializers.BooleanField()
-
     def get(self, request: Request, staff_id: int) -> Response:
         staff = get_staff_by_id(staff_id)
         update_last_activity_time(staff_id=staff_id)

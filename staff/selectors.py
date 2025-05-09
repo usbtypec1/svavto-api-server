@@ -25,6 +25,7 @@ class StaffItem:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    type: int
     created_at: datetime.datetime
     banned_at: datetime.datetime | None
 
@@ -144,6 +145,7 @@ def get_staff(
             full_name=staff.full_name,
             car_sharing_phone_number=staff.car_sharing_phone_number,
             console_phone_number=staff.console_phone_number,
+            type=staff.type,
             created_at=staff.created_at,
             banned_at=staff.banned_at,
         )

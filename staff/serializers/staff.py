@@ -57,6 +57,7 @@ class StaffRetrieveOutputSerializer(serializers.ModelSerializer):
             "full_name",
             "car_sharing_phone_number",
             "console_phone_number",
+            'type',
             "banned_at",
             "created_at",
             "last_activity_at",
