@@ -349,31 +349,35 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
 
     @cached_property
     def comfort_cars_count(self) -> int:
-        return sum(
-            car.car_class == TransferredCar.CarType.COMFORT
-            for car in self.cars
-        )
+        count = 0
+        for car in self.cars:
+            if car.car_class == TransferredCar.CarType.COMFORT:
+                count += 1
+        return count
 
     @cached_property
     def business_cars_count(self) -> int:
-        return sum(
-            car.car_class == TransferredCar.CarType.BUSINESS
-            for car in self.cars
-        )
+        count = 0
+        for car in self.cars:
+            if car.car_class == TransferredCar.CarType.BUSINESS:
+                count += 1
+        return count
 
     @cached_property
     def vans_count(self) -> int:
-        return sum(
-            car.car_class == TransferredCar.CarType.VAN
-            for car in self.cars
-        )
+        count = 0
+        for car in self.cars:
+            if car.car_class == TransferredCar.CarType.VAN:
+                count += 1
+        return count
 
     @cached_property
     def urgent_cars_count(self) -> int:
-        return sum(
-            car.wash_type == TransferredCar.WashType.URGENT
-            for car in self.cars
-        )
+        count = 0
+        for car in self.cars:
+            if car.wash_type == TransferredCar.WashType.URGENT:
+                count += 1
+        return count
 
     @cached_property
     def precalculated_total_cost(self) -> int:
