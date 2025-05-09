@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
-from functools import cached_property
 from typing import override, Protocol, TypeVar
 
 from economics.models import (
@@ -604,9 +603,9 @@ def get_cars_to_wash_statistics(
             shift_id=shift.id,
             shift_date=shift.date,
             washed_cars_total_cost=calculator.calculate_total_cost(),
-            planned_comfort_cars_washed_count=calculator.planned_cars_count,
+            planned_comfort_cars_washed_count=calculator.comfort_cars_count,
             planned_business_cars_washed_count=calculator.business_cars_count,
-            planned_vans_washed_count=calculator.planned_cars_count,
+            planned_vans_washed_count=calculator.vans_count,
             urgent_cars_washed_count=calculator.urgent_cars_count,
             dry_cleaning_items_count=dry_cleaning_items_count,
             is_extra_shift=shift.is_extra,
