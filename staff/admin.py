@@ -24,6 +24,8 @@ class NotBannedStaffListFilter(admin.SimpleListFilter):
         return result
 
     def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
         filters = {self.lookup_field: self.value()}
         return queryset.filter(**filters)
 
