@@ -10,7 +10,6 @@ from economics.models import (
     CarTransporterServicePrices, CarTransporterSurcharge, CarWashPenalty,
     CarWashSurcharge, PenaltyPhoto,
 )
-from staff.admin import NotBannedStaffListFilter
 
 
 class CarWashPenaltyResource(ModelResource):
@@ -77,7 +76,7 @@ class CarTransporterPenaltyAdmin(ImportExportModelAdmin):
                 title=_('Date'),
             )
         ),
-        NotBannedStaffListFilter,
+        "staff",
         "reason",
         "consequence",
     )
@@ -104,7 +103,7 @@ class CarTransporterSurchargeAdmin(ImportExportModelAdmin):
                 title=_('Date'),
             )
         ),
-        NotBannedStaffListFilter,
+        "staff",
         "reason",
     )
     search_fields = ("staff__full_name", "staff__id", "reason")
