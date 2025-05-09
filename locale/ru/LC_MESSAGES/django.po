@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-08 20:42+0300\n"
+"POT-Creation-Date: 2025-05-09 14:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
 #: bonuses/admin.py:26
 msgid "Bonus enabled"
 msgstr "Премии активны"
@@ -35,7 +36,9 @@ msgstr "Минимальное количество авто"
 msgid ""
 "Minimum number of cars required to apply the bonus. Set to 0 to disable "
 "bonus."
-msgstr "Минимальное количество авто для применения премии. Установите 0, чтобы отключить премию."
+msgstr ""
+"Минимальное количество авто для применения премии. Установите 0, чтобы "
+"отключить премию."
 
 #: bonuses/models.py:21
 msgid "Bonus amount"
@@ -119,7 +122,8 @@ msgstr "Мойка авто бизнес класса для перегонщи�
 msgid "Car transporters and washers van price"
 msgstr "Мойка фургона для перегонщика-мойщика"
 
-#: car_washes/models.py:55
+#: car_washes/models.py:55 economics/models.py:23 economics/models.py:49
+#: economics/models.py:100 economics/models.py:123
 msgid "Created at"
 msgstr "Дата создания"
 
@@ -265,7 +269,8 @@ msgstr "Ноябрь"
 msgid "December"
 msgstr "Декабрь"
 
-#: deposits/models.py:42 economics/models.py:58 economics/models.py:96
+#: deposits/models.py:42 economics/models.py:69 economics/models.py:113
+#: staff/admin.py:11
 msgid "Staff"
 msgstr "Сотрудник"
 
@@ -380,6 +385,11 @@ msgstr "Запросы на химчистку"
 msgid "Car number %(car_number)s - shift %(shift_date)s"
 msgstr "Гос.номер %(car_number)s - смена %(shift_date)s"
 
+#: economics/admin.py:77 economics/admin.py:104 economics/models.py:20
+#: economics/models.py:46 economics/models.py:71 economics/models.py:117
+msgid "Date"
+msgstr "Дата"
+
 #: economics/apps.py:8
 msgid "economics"
 msgstr "Экономика"
@@ -396,95 +406,121 @@ msgstr "Штраф перегонщику не найден"
 msgid "Car transfer surcharge not found"
 msgstr "Доплата перегонщику на найдена"
 
-#: economics/models.py:23
+#: economics/models.py:16 economics/models.py:39
+msgid "Car wash"
+msgstr "Мойка"
+
+#: economics/models.py:18 economics/models.py:43 economics/models.py:72
+#: economics/models.py:119
+msgid "Reason"
+msgstr "Причина"
+
+#: economics/models.py:19 economics/models.py:45 economics/models.py:73
+#: economics/models.py:120
+msgid "Amount"
+msgstr "Сумма"
+
+#: economics/models.py:27
 msgid "car wash penalty"
 msgstr "Штраф мойке"
 
-#: economics/models.py:24
+#: economics/models.py:28
 msgid "car wash penalties"
 msgstr "Штрафы мойкам"
 
-#: economics/models.py:42
+#: economics/models.py:53
 msgid "car wash surcharge"
 msgstr "Доплата мойке"
 
-#: economics/models.py:43
+#: economics/models.py:54
 msgid "car wash surcharges"
 msgstr "Доплаты мойкам"
 
-#: economics/models.py:51
+#: economics/models.py:62
 msgid "dismissal"
 msgstr "Увольнение"
 
-#: economics/models.py:52
+#: economics/models.py:63
 msgid "warn"
 msgstr "Предупреждение"
 
-#: economics/models.py:72
+#: economics/models.py:79
+msgid "Consequence"
+msgstr "Последствие"
+
+#: economics/models.py:84
 msgid "Car transporter penalty"
 msgstr "Штраф перегонщику"
 
-#: economics/models.py:73
+#: economics/models.py:85
 msgid "Car transporter penalties"
 msgstr "Штрафы перегонщикам"
 
-#: economics/models.py:87
+#: economics/models.py:95
+msgid "Penalty"
+msgstr "Штраф"
+
+#: economics/models.py:97
+msgid "Photo URL"
+msgstr "Ссылка на фото"
+
+#: economics/models.py:104
 msgid "penalty photo"
 msgstr "Фото штрафа"
 
-#: economics/models.py:88
+#: economics/models.py:105
 msgid "penalty photos"
 msgstr "Фото штрафов"
 
-#: economics/models.py:104
+#: economics/models.py:127
 msgid "Car transporter surcharge"
 msgstr "Доплаты перегонщику"
 
-#: economics/models.py:105
+#: economics/models.py:128
 msgid "Car transporter surcharges"
 msgstr "Доплаты перегонщикам"
 
-#: economics/models.py:114 economics/models.py:143
+#: economics/models.py:137 economics/models.py:166
 msgid "Comfort class car transfer"
 msgstr "Перегон авто комфорт класса"
 
-#: economics/models.py:118 economics/models.py:147
+#: economics/models.py:141 economics/models.py:170
 msgid "Business class car transfer"
 msgstr "Перегон авто бизнес класса"
 
-#: economics/models.py:122 economics/models.py:151
+#: economics/models.py:145 economics/models.py:174
 msgid "Van transfer"
 msgstr "Перегон фургона"
 
-#: economics/models.py:126 economics/models.py:159
+#: economics/models.py:149 economics/models.py:182
 msgid "Urgent car transfer"
 msgstr "Перегон срочки"
 
-#: economics/models.py:130 economics/models.py:163
+#: economics/models.py:153 economics/models.py:186
 msgid "Item dry cleaning"
-msgstr "Химчистка одного предмета"
+msgstr "Химчистка одного элемента"
 
-#: economics/models.py:136
+#: economics/models.py:159
 msgid "Car transporter and washer service price"
 msgstr "Цена услуги перегонщика-мойщика"
 
-#: economics/models.py:137
+#: economics/models.py:160
 msgid "Car transporter and washer service prices"
 msgstr "Цены услуг перегонщика-мойщика"
 
-#: economics/models.py:155
+#: economics/models.py:178
 msgid "Extra shift"
 msgstr "Доп.смена"
 
-#: economics/models.py:167
+#: economics/models.py:190
 msgid "Under plan planned car transfer"
 msgstr "Цена за перегон запланированного авто меньше мин.плана"
 
-#: economics/models.py:173
+#: economics/models.py:196
 msgid "Car transporter service price"
 msgstr "Цена услуги перегонщика"
 
-#: economics/models.py:174
+#: economics/models.py:197
 msgid "Car transporter service prices"
 msgstr "Цены услуг перегонщика"
 
@@ -508,7 +544,7 @@ msgstr "Фото не загружено"
 msgid "current shift"
 msgstr "Текуща смена"
 
-#: shifts/admin.py:48 shifts/admin.py:185 shifts/admin.py:203 staff/admin.py:31
+#: shifts/admin.py:48 shifts/admin.py:185 shifts/admin.py:203 staff/admin.py:52
 msgid "yes"
 msgstr "Да"
 
@@ -563,7 +599,7 @@ msgstr "Цена бутылки незамерзайки в момент доб�
 msgid "started"
 msgstr "Начата"
 
-#: shifts/admin.py:186 shifts/admin.py:204 staff/admin.py:32
+#: shifts/admin.py:186 shifts/admin.py:204 staff/admin.py:53
 msgid "no"
 msgstr "Нет"
 
@@ -833,7 +869,7 @@ msgstr "Незамерзайка видна"
 msgid "from_date should be less than or equal to to_date"
 msgstr "from_date должен быть меньше или равен to_date"
 
-#: staff/admin.py:26
+#: staff/admin.py:47
 msgid "banned"
 msgstr "Заблокирован"
 

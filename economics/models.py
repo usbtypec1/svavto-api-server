@@ -13,11 +13,15 @@ class CarWashPenalty(models.Model):
         to=CarWash,
         on_delete=models.CASCADE,
         related_name="penalties",
+        verbose_name=_("Car wash"),
     )
-    reason = models.TextField(max_length=1024)
-    amount = models.PositiveIntegerField()
-    date = models.DateField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField(max_length=1024, verbose_name=_("Reason"))
+    amount = models.PositiveIntegerField(verbose_name=_("Amount"))
+    date = models.DateField(verbose_name=_("Date"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created at"),
+    )
 
     class Meta:
         verbose_name = _("car wash penalty")
@@ -32,11 +36,18 @@ class CarWashSurcharge(models.Model):
         to=CarWash,
         on_delete=models.CASCADE,
         related_name="surcharges",
+        verbose_name=_("Car wash"),
     )
-    reason = models.TextField(max_length=1024)
-    amount = models.PositiveIntegerField()
-    date = models.DateField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField(
+        max_length=1024,
+        verbose_name=_("Reason"),
+    )
+    amount = models.PositiveIntegerField(verbose_name=_("Amount"))
+    date = models.DateField(verbose_name=_("Date"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created at"),
+    )
 
     class Meta:
         verbose_name = _("car wash surcharge")
@@ -57,14 +68,15 @@ class CarTransporterPenalty(models.Model):
         related_name="penalties",
         verbose_name=_("Staff"),
     )
-    date = models.DateField(default=timezone.localdate)
-    reason = models.CharField(max_length=255)
-    amount = models.PositiveIntegerField()
+    date = models.DateField(default=timezone.localdate, verbose_name=_("Date"))
+    reason = models.CharField(max_length=255, verbose_name=_("Reason"))
+    amount = models.PositiveIntegerField(verbose_name=_("Amount"))
     consequence = models.CharField(
         max_length=255,
         choices=Consequence.choices,
         null=True,
         blank=True,
+        verbose_name=_("Consequence"),
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -78,10 +90,15 @@ class CarTransporterPenalty(models.Model):
 
 class PenaltyPhoto(models.Model):
     penalty = models.ForeignKey(
-        CarTransporterPenalty, on_delete=models.CASCADE
+        to=CarTransporterPenalty,
+        on_delete=models.CASCADE,
+        verbose_name=_("Penalty"),
     )
-    photo_url = models.URLField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    photo_url = models.URLField(verbose_name=_("Photo URL"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created at"),
+    )
 
     class Meta:
         verbose_name = _("penalty photo")
@@ -95,10 +112,16 @@ class CarTransporterSurcharge(models.Model):
         related_name="surcharges",
         verbose_name=_("Staff"),
     )
-    date = models.DateField(default=timezone.localdate)
-    reason = models.CharField(max_length=255)
-    amount = models.PositiveIntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(
+        default=timezone.localdate,
+        verbose_name=_("Date"),
+    )
+    reason = models.CharField(max_length=255, verbose_name=_("Reason"))
+    amount = models.PositiveIntegerField(verbose_name=_("Amount"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created at"),
+    )
 
     class Meta:
         verbose_name = _("Car transporter surcharge")

@@ -1,17 +1,16 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
+from rangefilter.filters import DateTimeRangeFilterBuilder
 
 from core.admin import SingleRowMixin
 from economics.models import (
-    CarTransporterPenalty,
-    CarTransporterSurcharge,
-    CarWashPenalty,
-    CarWashSurcharge,
-    PenaltyPhoto,
-    CarTransporterAndWasherServicePrices,
-    CarTransporterServicePrices,
+    CarTransporterAndWasherServicePrices, CarTransporterPenalty,
+    CarTransporterServicePrices, CarTransporterSurcharge, CarWashPenalty,
+    CarWashSurcharge, PenaltyPhoto,
 )
+from staff.admin import NotBannedStaffListFilter
 
 
 class CarWashPenaltyResource(ModelResource):
@@ -72,7 +71,13 @@ class CarTransporterPenaltyAdmin(ImportExportModelAdmin):
     autocomplete_fields = ("staff",)
     list_select_related = ("staff",)
     list_filter = (
-        "staff",
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
+        NotBannedStaffListFilter,
         "reason",
         "consequence",
     )
@@ -93,7 +98,13 @@ class CarTransporterSurchargeAdmin(ImportExportModelAdmin):
     autocomplete_fields = ("staff",)
     list_select_related = ("staff",)
     list_filter = (
-        "staff",
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
+        NotBannedStaffListFilter,
         "reason",
     )
     search_fields = ("staff__full_name", "staff__id", "reason")
@@ -111,6 +122,12 @@ class CarWashPenaltyAdmin(ImportExportModelAdmin):
     )
     autocomplete_fields = ("car_wash",)
     list_filter = (
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
         "car_wash",
         "reason",
     )
@@ -129,6 +146,12 @@ class CarWashSurchargeAdmin(ImportExportModelAdmin):
     )
     autocomplete_fields = ("car_wash",)
     list_filter = (
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
         "car_wash",
         "reason",
     )
