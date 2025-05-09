@@ -347,7 +347,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
     dry_cleaning_items_count: int
     prices: HasItemDryCleaningPrice
 
-    @cached_property
+    @property
     def comfort_cars_count(self) -> int:
         count = 0
         for car in self.cars:
@@ -355,7 +355,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
                 count += 1
         return count
 
-    @cached_property
+    @property
     def business_cars_count(self) -> int:
         count = 0
         for car in self.cars:
@@ -363,7 +363,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
                 count += 1
         return count
 
-    @cached_property
+    @property
     def vans_count(self) -> int:
         count = 0
         for car in self.cars:
@@ -371,7 +371,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
                 count += 1
         return count
 
-    @cached_property
+    @property
     def urgent_cars_count(self) -> int:
         count = 0
         for car in self.cars:
@@ -379,11 +379,11 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
                 count += 1
         return count
 
-    @cached_property
+    @property
     def precalculated_total_cost(self) -> int:
         return sum(car.transfer_price for car in self.cars)
 
-    @cached_property
+    @property
     def planned_cars_count(self) -> int:
         return (
                 self.comfort_cars_count
@@ -391,7 +391,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
                 + self.vans_count
         )
 
-    @cached_property
+    @property
     def total_cars_count(self) -> int:
         return self.planned_cars_count + self.urgent_cars_count
 
