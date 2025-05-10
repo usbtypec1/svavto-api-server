@@ -1,7 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-__all__ = ("Staff", "AdminStaff", "StaffRegisterRequest")
+
+class StaffType(models.IntegerChoices):
+    CAR_TRANSPORTER = 1, _("Car transporter")
+    CAR_TRANSPORTER_AND_WASHER = 2, _("Car transporter and washer")
 
 
 class Staff(models.Model):
@@ -10,6 +13,10 @@ class Staff(models.Model):
     car_sharing_phone_number = models.CharField(max_length=32)
     console_phone_number = models.CharField(max_length=32)
     banned_at = models.DateTimeField(null=True, blank=True)
+    type = models.PositiveSmallIntegerField(
+        choices=StaffType.choices,
+        default=StaffType.CAR_TRANSPORTER,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     last_activity_at = models.DateTimeField(auto_now=True)
 
@@ -39,6 +46,10 @@ class StaffRegisterRequest(models.Model):
     full_name = models.CharField(max_length=100)
     car_sharing_phone_number = models.CharField(max_length=32)
     console_phone_number = models.CharField(max_length=32)
+    staff_type = models.PositiveSmallIntegerField(
+        choices=StaffType.choices,
+        default=StaffType.CAR_TRANSPORTER,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

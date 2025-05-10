@@ -1,14 +1,14 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
+from rangefilter.filters import DateTimeRangeFilterBuilder
 
+from core.admin import SingleRowMixin
 from economics.models import (
-    CarTransporterPenalty,
-    StaffServicePrice,
-    CarTransporterSurcharge,
-    CarWashPenalty,
-    CarWashSurcharge,
-    PenaltyPhoto,
+    CarTransporterAndWasherServicePrices, CarTransporterPenalty,
+    CarTransporterServicePrices, CarTransporterSurcharge, CarWashPenalty,
+    CarWashSurcharge, PenaltyPhoto,
 )
 
 
@@ -51,7 +51,6 @@ class CarTransporterSurchargeResource(ModelResource):
         )
 
 
-
 @admin.register(PenaltyPhoto)
 class PenaltyPhotoAdmin(admin.ModelAdmin):
     pass
@@ -71,6 +70,12 @@ class CarTransporterPenaltyAdmin(ImportExportModelAdmin):
     autocomplete_fields = ("staff",)
     list_select_related = ("staff",)
     list_filter = (
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
         "staff",
         "reason",
         "consequence",
@@ -92,28 +97,17 @@ class CarTransporterSurchargeAdmin(ImportExportModelAdmin):
     autocomplete_fields = ("staff",)
     list_select_related = ("staff",)
     list_filter = (
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
         "staff",
         "reason",
     )
     search_fields = ("staff__full_name", "staff__id", "reason")
     search_help_text = "Search by staff full name, staff id, reason"
-
-
-@admin.register(StaffServicePrice)
-class StaffServicePriceAdmin(admin.ModelAdmin):
-    list_display = (
-        "service",
-        "price",
-        "updated_at",
-    )
-    ordering = ("service",)
-    readonly_fields = ("service", "updated_at")
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, *args):
-        return False
 
 
 @admin.register(CarWashPenalty)
@@ -127,6 +121,12 @@ class CarWashPenaltyAdmin(ImportExportModelAdmin):
     )
     autocomplete_fields = ("car_wash",)
     list_filter = (
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
         "car_wash",
         "reason",
     )
@@ -145,8 +145,27 @@ class CarWashSurchargeAdmin(ImportExportModelAdmin):
     )
     autocomplete_fields = ("car_wash",)
     list_filter = (
+        (
+            "date",
+            DateTimeRangeFilterBuilder(
+                title=_('Date'),
+            )
+        ),
         "car_wash",
         "reason",
     )
     search_fields = ("car_wash__name", "reason")
     search_help_text = "Search by car wash name, reason"
+
+
+@admin.register(CarTransporterAndWasherServicePrices)
+class CarTransporterAndWasherServicePricesAdmin(
+    SingleRowMixin,
+    admin.ModelAdmin,
+):
+    pass
+
+
+@admin.register(CarTransporterServicePrices)
+class CarTransporterServicePricesAdmin(SingleRowMixin, admin.ModelAdmin):
+    pass

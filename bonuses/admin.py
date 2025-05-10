@@ -4,6 +4,7 @@ from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
 
 from bonuses.models import BonusSettings
+from core.admin import SingleRowMixin
 
 
 class BonusSettingsResource(ModelResource):
@@ -15,7 +16,7 @@ class BonusSettingsResource(ModelResource):
 
 
 @admin.register(BonusSettings)
-class BonusSettingsAdmin(ImportExportModelAdmin):
+class BonusSettingsAdmin(SingleRowMixin, ImportExportModelAdmin):
     resource_class = BonusSettingsResource
     list_display = ("min_cars_count", "bonus_amount", "is_bonus_enabled")
     list_display_links = ("min_cars_count", "bonus_amount")
@@ -25,9 +26,6 @@ class BonusSettingsAdmin(ImportExportModelAdmin):
     @admin.display(boolean=True, description=_("Bonus enabled"))
     def is_bonus_enabled(self, obj: BonusSettings):
         return obj.is_bonus_enabled
-
-    def has_add_permission(self, request):
-        return not BonusSettings.objects.exists()
 
     def generate_log_entries(self, result, request):
         """Stub function to avoid logging errors"""

@@ -4,6 +4,7 @@ from functools import lru_cache
 
 from bonuses.models import BonusSettings
 from shifts.models import Shift
+from staff.models import StaffType
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -37,6 +38,9 @@ class BonusAmountComputeInteractor:
         return self.get_bonus_settings() is not None
 
     def execute(self) -> int:
+        if self.shift.staff.type == StaffType.CAR_TRANSPORTER_AND_WASHER:
+            return 0
+
         if self.shift.is_test or self.shift.is_extra:
             return 0
 

@@ -31,6 +31,7 @@ class StaffCreateResult:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    type: int
     created_at: datetime.datetime
     banned_at: datetime.datetime | None
     last_activity_at: datetime.datetime
@@ -43,6 +44,7 @@ class StaffRegisterRequestCreateResult:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    staff_type: int
     created_at: datetime.datetime
 
 
@@ -52,6 +54,7 @@ class StaffRegisterRequestCreateInteractor:
     full_name: str
     car_sharing_phone_number: str
     console_phone_number: str
+    staff_type: int
 
     def execute(self):
         ensure_staff_not_exists(self.staff_id)
@@ -61,6 +64,7 @@ class StaffRegisterRequestCreateInteractor:
             full_name=self.full_name,
             car_sharing_phone_number=self.car_sharing_phone_number,
             console_phone_number=self.console_phone_number,
+            staff_type=self.staff_type,
         )
 
         try:
@@ -73,8 +77,11 @@ class StaffRegisterRequestCreateInteractor:
             id=staff_register_request.id,
             staff_id=staff_register_request.staff_id,
             full_name=staff_register_request.full_name,
-            car_sharing_phone_number=(staff_register_request.car_sharing_phone_number),
+            car_sharing_phone_number=(
+                staff_register_request.car_sharing_phone_number
+            ),
             console_phone_number=staff_register_request.console_phone_number,
+            staff_type=staff_register_request.staff_type,
             created_at=staff_register_request.created_at,
         )
 
@@ -99,6 +106,7 @@ class StaffRegisterRequestAcceptInteractor:
             full_name=staff_register_request.full_name,
             car_sharing_phone_number=(staff_register_request.car_sharing_phone_number),
             console_phone_number=(staff_register_request.console_phone_number),
+            type=staff_register_request.staff_type,
         )
         staff.full_clean()
         staff.save()
@@ -119,6 +127,7 @@ class StaffRegisterRequestAcceptInteractor:
             full_name=staff.full_name,
             car_sharing_phone_number=staff.car_sharing_phone_number,
             console_phone_number=staff.console_phone_number,
+            type=staff.type,
             created_at=staff.created_at,
             banned_at=staff.banned_at,
             last_activity_at=staff.last_activity_at,
@@ -151,6 +160,7 @@ def update_staff(
     *,
     staff_id: int,
     is_banned: bool,
+    staff_type: int,
 ) -> None:
     banned_at = timezone.now() if is_banned else None
 
@@ -160,7 +170,10 @@ def update_staff(
             from_date=banned_at,
         ).execute()
 
-    is_updated = Staff.objects.filter(id=staff_id).update(banned_at=banned_at)
+    is_updated = Staff.objects.filter(id=staff_id).update(
+        banned_at=banned_at,
+        type=staff_type,
+    )
     update_last_activity_time(staff_id=staff_id)
     if not is_updated:
         raise StaffNotFoundError

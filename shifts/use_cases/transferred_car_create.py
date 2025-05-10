@@ -1,45 +1,19 @@
-from dataclasses import dataclass
-from uuid import UUID
 from collections.abc import Iterable
+from dataclasses import dataclass
 from typing import TypedDict
+from uuid import UUID
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
-from shifts.models import CarToWash, CarToWashAdditionalService
-from economics.models import StaffServicePrice
-from shifts.exceptions import (
-    StaffServicePriceNotFoundError,
-    CarAlreadyWashedOnShiftError,
-)
+from shifts.exceptions import CarAlreadyWashedOnShiftError
+from shifts.models import CarToWashAdditionalService, TransferredCar
 from shifts.selectors import get_staff_current_shift
 from shifts.services.cars_to_wash import get_car_wash_service_prices
-
-
-def compute_car_transfer_price(
-    *,
-    class_type: str,
-    wash_type: str,
-    is_extra_shift: bool,
-) -> int:
-    if wash_type == CarToWash.WashType.URGENT:
-        service_name = StaffServicePrice.ServiceType.URGENT_CAR_WASH
-    else:
-        if is_extra_shift:
-            service_name = StaffServicePrice.ServiceType.CAR_TRANSPORTER_EXTRA_SHIFT
-        else:
-            car_class_type_to_service_name: dict[str, str] = {
-                CarToWash.CarType.COMFORT: StaffServicePrice.ServiceType.COMFORT_CLASS_CAR_TRANSFER,
-                CarToWash.CarType.BUSINESS: StaffServicePrice.ServiceType.BUSINESS_CLASS_CAR_TRANSFER,
-                CarToWash.CarType.VAN: StaffServicePrice.ServiceType.VAN_TRANSFER,
-            }
-            service_name = car_class_type_to_service_name[class_type]
-
-    try:
-        staff_service_price = StaffServicePrice.objects.get(service=service_name)
-    except StaffServicePrice.DoesNotExist:
-        raise StaffServicePriceNotFoundError(f"Not found {service_name}")
-    return staff_service_price.price
+from shifts.services.transferred_cars.create import (
+    calculate_car_transfer_price,
+)
+from staff.models import StaffType
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,8 +36,8 @@ class TransferredCarCreateResultDto:
 
 
 def map_create_result_to_dto(
-    transferred_car: CarToWash,
-    additional_services: Iterable[CarToWashAdditionalService],
+        transferred_car: TransferredCar,
+        additional_services: Iterable[CarToWashAdditionalService],
 ) -> TransferredCarCreateResultDto:
     additional_services_dto = [
         TransferredCarAdditionalServiceDto(
@@ -105,13 +79,33 @@ class TransferredCarCreateUseCase:
     @transaction.atomic
     def execute(self) -> TransferredCarCreateResultDto:
         shift = get_staff_current_shift(self.staff_id)
-        transfer_price = compute_car_transfer_price(
+
+        transfer_price = calculate_car_transfer_price(
             class_type=self.car_class,
             wash_type=self.wash_type,
             is_extra_shift=shift.is_extra,
+            staff_type=shift.staff.type,
         )
         car_wash = shift.car_wash
-        transferred_car = CarToWash(
+
+        if shift.staff.type == StaffType.CAR_TRANSPORTER:
+            comfort_class_car_washing_price = (
+                car_wash.comfort_class_car_washing_price
+            )
+            business_class_car_washing_price = (
+                car_wash.business_class_car_washing_price
+            )
+            van_washing_price = car_wash.van_washing_price
+        else:
+            comfort_class_car_washing_price = (
+                car_wash.car_transporters_and_washers_comfort_class_price
+            )
+            business_class_car_washing_price = (
+                car_wash.car_transporters_and_washers_business_class_price)
+
+            van_washing_price = car_wash.car_transporters_and_washers_van_price
+
+        transferred_car = TransferredCar(
             shift_id=shift.id,
             number=self.number.lower(),
             car_class=self.car_class,
@@ -122,10 +116,12 @@ class TransferredCarCreateUseCase:
             ),
             transfer_price=transfer_price,
             car_wash=car_wash,
-            comfort_class_car_washing_price=car_wash.comfort_class_car_washing_price,
-            business_class_car_washing_price=car_wash.business_class_car_washing_price,
-            van_washing_price=car_wash.van_washing_price,
-            windshield_washer_price_per_bottle=car_wash.windshield_washer_price_per_bottle,
+            comfort_class_car_washing_price=comfort_class_car_washing_price,
+            business_class_car_washing_price=business_class_car_washing_price,
+            van_washing_price=van_washing_price,
+            windshield_washer_price_per_bottle=(
+                car_wash.windshield_washer_price_per_bottle
+            ),
         )
         try:
             transferred_car.full_clean()

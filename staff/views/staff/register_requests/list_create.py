@@ -34,6 +34,7 @@ class StaffRegisterRequestListCreateApi(APIView):
             full_name=data["full_name"],
             car_sharing_phone_number=data["car_sharing_phone_number"],
             console_phone_number=data["console_phone_number"],
+            staff_type=data['staff_type'],
         )
         staff_register_request = interactor.execute()
 

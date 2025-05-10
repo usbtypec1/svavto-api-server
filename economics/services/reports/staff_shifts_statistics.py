@@ -1,21 +1,28 @@
 import datetime
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Protocol, TypeVar
+from typing import override, Protocol, TypeVar
 
-from economics.models import StaffServicePrice
+from economics.models import (
+    CarTransporterAndWasherServicePrices,
+    CarTransporterServicePrices,
+)
 from economics.selectors import (
     StaffPenaltiesOrSurchargesForSpecificShift,
 )
-from shifts.models import CarToWash, CarToWashAdditionalService, Shift
+from shifts.models import (
+    CarToWashAdditionalService,
+    Shift,
+    TransferredCar,
+)
 from shifts.services.report_periods import ReportPeriod
-from staff.models import Staff
+from staff.models import Staff, StaffType
 from staff.selectors import StaffItem
 
 
 __all__ = (
-    "get_shift_dates",
     "get_shifts_dry_cleaning_items",
     "group_by_shift_id",
     "group_by_staff_id",
@@ -23,7 +30,6 @@ __all__ = (
     "get_cars_to_wash_statistics",
     "map_shift_statistics_with_penalty_and_surcharge",
     "merge_shifts_statistics_and_penalties_and_surcharges",
-    "compute_washed_cars_total_cost",
 )
 
 
@@ -32,10 +38,6 @@ class HasShiftDate(Protocol):
 
 
 HasShiftDateT = TypeVar("HasShiftDateT", bound=HasShiftDate)
-
-
-def get_shift_dates(items: Iterable[HasShiftDateT]) -> set[datetime.date]:
-    return {item.shift_date for item in items}
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -334,109 +336,138 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
     )
 
 
-class StaffServicePricesSet:
+class HasItemDryCleaningPrice(Protocol):
+    item_dry_cleaning: int
 
-    def __init__(self, staff_service_prices: Iterable[StaffServicePrice]):
-        self.__service_type_to_price = {
-            service_price.service: service_price.price
-            for service_price in staff_service_prices
-        }
 
-    @property
-    def extra_shift_planned_car_transfer_price(self) -> int:
-        return self.__service_type_to_price[
-            StaffServicePrice.ServiceType.CAR_TRANSPORTER_EXTRA_SHIFT
-        ]
+@dataclass(kw_only=True)
+class ShiftTransferredCarsTotalCostCalculator(ABC):
+    cars: Iterable[TransferredCar]
+    dry_cleaning_items_count: int
+    prices: HasItemDryCleaningPrice
 
     @property
-    def urgent_car_transfer_price(self) -> int:
-        return self.__service_type_to_price[
-            StaffServicePrice.ServiceType.URGENT_CAR_WASH
-        ]
+    def comfort_cars_count(self) -> int:
+        count = 0
+        for car in self.cars:
+            if car.car_class == TransferredCar.CarType.COMFORT:
+                count += 1
+        return count
 
     @property
-    def dry_cleaning_item_price(self) -> int:
-        return self.__service_type_to_price[
-            StaffServicePrice.ServiceType.ITEM_DRY_CLEAN
-        ]
+    def business_cars_count(self) -> int:
+        count = 0
+        for car in self.cars:
+            if car.car_class == TransferredCar.CarType.BUSINESS:
+                count += 1
+        return count
 
     @property
-    def under_plan_planned_car_transfer_price(self) -> int:
-        return self.__service_type_to_price[
-            StaffServicePrice.ServiceType.UNDER_PLAN_PLANNED_CAR_TRANSFER
-        ]
+    def vans_count(self) -> int:
+        count = 0
+        for car in self.cars:
+            if car.car_class == TransferredCar.CarType.VAN:
+                count += 1
+        return count
+
+    @property
+    def urgent_cars_count(self) -> int:
+        count = 0
+        for car in self.cars:
+            if car.wash_type == TransferredCar.WashType.URGENT:
+                count += 1
+        return count
+
+    @property
+    def precalculated_total_cost(self) -> int:
+        return sum(car.transfer_price for car in self.cars)
+
+    @property
+    def planned_cars_count(self) -> int:
+        return (
+                self.comfort_cars_count
+                + self.business_cars_count
+                + self.vans_count
+        )
+
+    @property
+    def total_cars_count(self) -> int:
+        return self.planned_cars_count + self.urgent_cars_count
+
+    def calculate_dry_cleaning_cost(self) -> int:
+        return self.prices.item_dry_cleaning * self.dry_cleaning_items_count
+
+    @abstractmethod
+    def calculate_total_cost(self):
+        pass
 
 
-def compute_washed_cars_total_cost(
-        *,
-        total_cost: int,
-        comfort_cars_count: int,
-        business_cars_count: int,
-        vans_count: int,
-        urgent_cars_count: int,
-        is_extra_shift: int,
-        dry_cleaning_items_count: int,
-        prices: StaffServicePricesSet,
-        transferred_cars_threshold: int,
-) -> int:
-    """
-    Compute total price of car transfer on the shift.
+@dataclass(kw_only=True)
+class CarTransporterAndWasherTransferredCarsTotalCostCalculator(
+    ShiftTransferredCarsTotalCostCalculator
+):
+    prices: CarTransporterAndWasherServicePrices
 
-    Keyword Args:
-        total_cost: preliminary total cost by standard rates.
-        comfort_cars_count: comfort class cars count (part of planned cars).
-        business_cars_count: business class cars count (part of planned cars)
-        vans_count: vans count (part of planned cars).
-        urgent_cars_count: urgent cars count.
-        is_extra_shift: flag of extra shift.
-        dry_cleaning_items_count: dry cleaning items count.
-        transferred_cars_threshold: min number of cars that must be
-                                    transferred during the shift.
+    @override
+    def calculate_total_cost(self) -> int:
+        return (
+                self.precalculated_total_cost +
+                self.calculate_dry_cleaning_cost()
+        )
 
-    Returns:
-        Total price of car transfer on the shift.
-    """
-    planned_cars_count = (
-            comfort_cars_count
-            + business_cars_count
-            + vans_count
-    )
 
-    dry_cleaning_cost = (
-            prices.dry_cleaning_item_price
-            * dry_cleaning_items_count
-    )
-    if is_extra_shift:
+@dataclass(kw_only=True)
+class CarTransporterTransferredCarsTotalCostCalculator(
+    ShiftTransferredCarsTotalCostCalculator
+):
+    prices: CarTransporterServicePrices
+    is_extra_shift: bool
+    transferred_cars_min_count: int
+
+    @property
+    def is_min_plan_completed(self) -> bool:
+        return self.total_cars_count >= self.transferred_cars_min_count
+
+    def calculate_min_plan_not_completed(self) -> int:
         planned_cars_transfer_cost = (
-                prices.extra_shift_planned_car_transfer_price
-                * planned_cars_count
+                self.prices.under_plan_planned_car_transfer
+                * self.planned_cars_count
         )
         urgent_cars_transfer_cost = (
-                prices.urgent_car_transfer_price * urgent_cars_count
-        )
-        car_transfer_cost = (
-                planned_cars_transfer_cost +
-                urgent_cars_transfer_cost
-        )
-        return dry_cleaning_cost + car_transfer_cost
-
-    total_cars_count = planned_cars_count + urgent_cars_count
-
-    if total_cars_count < transferred_cars_threshold:
-        planned_cars_transfer_cost = (
-                prices.under_plan_planned_car_transfer_price
-                * planned_cars_count
-        )
-        urgent_cars_transfer_cost = (
-                prices.urgent_car_transfer_price * urgent_cars_count
+                self.prices.urgent_car_transfer * self.urgent_cars_count
         )
         car_transfer_cost = (
                 planned_cars_transfer_cost
                 + urgent_cars_transfer_cost
         )
-        return dry_cleaning_cost + car_transfer_cost
+        return car_transfer_cost + self.calculate_dry_cleaning_cost()
 
-    return total_cost + dry_cleaning_cost
+    def calculate_extra_shift(self) -> int:
+        planned_cars_transfer_cost = (
+                self.prices.extra_shift
+                * self.planned_cars_count
+        )
+        urgent_cars_transfer_cost = (
+                self.prices.urgent_car_transfer * self.urgent_cars_count
+        )
+        car_transfer_cost = (
+                planned_cars_transfer_cost + urgent_cars_transfer_cost
+        )
+        return car_transfer_cost + self.calculate_dry_cleaning_cost()
+
+    def calculate_regular_shift(self) -> int:
+        return (
+                self.precalculated_total_cost
+                + self.calculate_dry_cleaning_cost()
+        )
+
+    @override
+    def calculate_total_cost(self) -> int:
+        if self.is_extra_shift:
+            return self.calculate_extra_shift()
+        if not self.is_min_plan_completed:
+            return self.calculate_min_plan_not_completed()
+        return self.calculate_regular_shift()
 
 
 T = TypeVar("T")
@@ -511,14 +542,12 @@ def get_cars_to_wash_statistics(
         to_date: datetime.date,
         staff_ids: Iterable[int] | None = None,
 ) -> list[ShiftStatistics]:
-    prices = StaffServicePricesSet(StaffServicePrice.objects.all())
-
-    cars_to_wash = CarToWash.objects.filter(
+    cars_to_wash = TransferredCar.objects.filter(
         shift__date__range=(from_date, to_date),
     )
     if staff_ids is not None:
         cars_to_wash = cars_to_wash.filter(shift__staff_id__in=staff_ids)
-    shift_id_to_cars: dict[int, list[CarToWash]] = group_by_shift_id(
+    shift_id_to_cars: dict[int, list[TransferredCar]] = group_by_shift_id(
         cars_to_wash
     )
 
@@ -541,6 +570,11 @@ def get_cars_to_wash_statistics(
 
     shifts_statistics: list[ShiftStatistics] = []
 
+    car_transporter_service_prices = CarTransporterServicePrices.get()
+    car_transporter_and_washer_service_prices = (
+        CarTransporterAndWasherServicePrices.get()
+    )
+
     for shift in shifts:
         shift_cars = shift_id_to_cars.get(shift.id, [])
         key: tuple[int, int] = (shift.id, shift.staff_id)
@@ -548,40 +582,31 @@ def get_cars_to_wash_statistics(
             shift_id_and_staff_id_to_dry_cleaning_items_count.get(key, 0)
         )
 
-        car_counts = defaultdict(int)
-        for car in shift_cars:
-            if car.wash_type == CarToWash.WashType.PLANNED:
-                car_counts[car.car_class] += 1
-            elif car.wash_type == CarToWash.WashType.URGENT:
-                car_counts["urgent"] += 1
-
-        comfort_cars_washed_count = car_counts[CarToWash.CarType.COMFORT]
-        business_cars_washed_count = car_counts[CarToWash.CarType.BUSINESS]
-        vans_washed_count = car_counts[CarToWash.CarType.VAN]
-        urgent_cars_washed_count = car_counts["urgent"]
-
-        preliminary_total_cost = sum(car.transfer_price for car in shift_cars)
-        washed_cars_total_cost = compute_washed_cars_total_cost(
-            total_cost=preliminary_total_cost,
-            comfort_cars_count=comfort_cars_washed_count,
-            business_cars_count=business_cars_washed_count,
-            vans_count=vans_washed_count,
-            urgent_cars_count=urgent_cars_washed_count,
-            is_extra_shift=shift.is_extra,
-            dry_cleaning_items_count=dry_cleaning_items_count,
-            prices=prices,
-            transferred_cars_threshold=shift.transferred_cars_threshold,
-        )
-
+        if shift.staff.type == StaffType.CAR_TRANSPORTER:
+            calculator = CarTransporterTransferredCarsTotalCostCalculator(
+                cars=shift_cars,
+                dry_cleaning_items_count=dry_cleaning_items_count,
+                prices=car_transporter_service_prices,
+                is_extra_shift=shift.is_extra,
+                transferred_cars_min_count=shift.transferred_cars_threshold,
+            )
+        else:
+            calculator = (
+                CarTransporterAndWasherTransferredCarsTotalCostCalculator(
+                    cars=shift_cars,
+                    dry_cleaning_items_count=dry_cleaning_items_count,
+                    prices=car_transporter_and_washer_service_prices,
+                )
+            )
         shift_statistics = ShiftStatistics(
             staff_id=shift.staff_id,
             shift_id=shift.id,
             shift_date=shift.date,
-            washed_cars_total_cost=washed_cars_total_cost,
-            planned_comfort_cars_washed_count=comfort_cars_washed_count,
-            planned_business_cars_washed_count=business_cars_washed_count,
-            planned_vans_washed_count=vans_washed_count,
-            urgent_cars_washed_count=urgent_cars_washed_count,
+            washed_cars_total_cost=calculator.calculate_total_cost(),
+            planned_comfort_cars_washed_count=calculator.comfort_cars_count,
+            planned_business_cars_washed_count=calculator.business_cars_count,
+            planned_vans_washed_count=calculator.vans_count,
+            urgent_cars_washed_count=calculator.urgent_cars_count,
             dry_cleaning_items_count=dry_cleaning_items_count,
             is_extra_shift=shift.is_extra,
         )

@@ -1,42 +1,14 @@
 from rest_framework import serializers
 
-from staff.models import AdminStaff, Staff
+from staff.models import Staff
+
 
 __all__ = (
     "StaffListOutputSerializer",
     "StaffListInputSerializer",
     "StaffRetrieveOutputSerializer",
-    "AdminStaffListSerializer",
-    "StaffRegisterRequestListCreateOutputSerializer",
-    "StaffRegisterRequestCreateInputSerializer",
-    "StaffRegisterRequestAcceptInputSerializer",
     "StaffItemSerializer",
-    "StaffRegisterRequestRejectInputSerializer",
 )
-
-
-class StaffRegisterRequestRejectInputSerializer(serializers.Serializer):
-    staff_register_request_id = serializers.IntegerField()
-
-
-class StaffRegisterRequestAcceptInputSerializer(serializers.Serializer):
-    staff_register_request_id = serializers.IntegerField()
-
-
-class StaffRegisterRequestCreateInputSerializer(serializers.Serializer):
-    staff_id = serializers.IntegerField()
-    full_name = serializers.CharField(max_length=255)
-    car_sharing_phone_number = serializers.CharField(max_length=32)
-    console_phone_number = serializers.CharField(max_length=32)
-
-
-class StaffRegisterRequestListCreateOutputSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    staff_id = serializers.IntegerField()
-    full_name = serializers.CharField(max_length=255)
-    car_sharing_phone_number = serializers.CharField(max_length=32)
-    console_phone_number = serializers.CharField(max_length=32)
-    created_at = serializers.DateTimeField()
 
 
 class StaffListInputSerializer(serializers.Serializer):
@@ -85,13 +57,8 @@ class StaffRetrieveOutputSerializer(serializers.ModelSerializer):
             "full_name",
             "car_sharing_phone_number",
             "console_phone_number",
+            'type',
             "banned_at",
             "created_at",
             "last_activity_at",
         )
-
-
-class AdminStaffListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AdminStaff
-        fields = ("id", "name")

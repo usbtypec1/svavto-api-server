@@ -10,7 +10,7 @@ from .car_washes import (
     CarWashSurchargeDeleteApi,
     CarWashSurchargeListCreateApi,
 )
-from .reports import ServiceCostsApi, StaffShiftsStatisticsReportApi
+from .reports import CarWashesRevenueApi, StaffShiftsStatisticsReportApi
 
 
 __all__ = (
@@ -22,6 +22,6 @@ __all__ = (
     "CarTransporterPenaltyListCreateApi",
     "CarTransporterSurchargeDeleteApi",
     "CarTransporterSurchargeListCreateApi",
-    "ServiceCostsApi",
+    "CarWashesRevenueApi",
     "StaffShiftsStatisticsReportApi",
 )

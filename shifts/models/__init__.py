@@ -5,6 +5,7 @@ from .finish_photos import ShiftFinishPhoto
 from .shift_cars_threshold import ShiftCarsThreshold
 from .shifts import Shift
 from .windshield_washer_hide import WindshieldWasherHidden
+from .transferred_cars import TransferredCar
 
 
 __all__ = (
@@ -15,4 +16,5 @@ __all__ = (
     "Shift",
     "ShiftCarsThreshold",
     "WindshieldWasherHidden",
+    "TransferredCar",
 )

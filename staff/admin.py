@@ -7,6 +7,29 @@ from shifts.models import Shift
 from staff.models import AdminStaff, Staff, StaffRegisterRequest
 
 
+class NotBannedStaffListFilter(admin.SimpleListFilter):
+    title = _("Staff")
+    parameter_name = "staff_id"
+    lookup_field = "staff_id"
+
+    def lookups(self, request, model_admin):
+        result = []
+        staff_list = (
+            Staff.objects
+            .filter(banned_at__isnull=True)
+            .values('id', 'full_name')
+        )
+        for staff in staff_list:
+            result.append((staff['id'], staff['full_name']))
+        return result
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        filters = {self.lookup_field: self.value()}
+        return queryset.filter(**filters)
+
+
 class StaffResource(ModelResource):
     class Meta:
         model = Staff
