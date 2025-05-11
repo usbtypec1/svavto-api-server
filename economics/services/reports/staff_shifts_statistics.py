@@ -341,10 +341,16 @@ class HasItemDryCleaningPrice(Protocol):
     item_dry_cleaning: int
 
 
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CarAdditionalServices:
+    car_id: int
+    count: int
+
+
 @dataclass(kw_only=True)
 class ShiftTransferredCarsTotalCostCalculator(ABC):
     cars: Iterable[TransferredCar]
-    dry_cleaning_items_count: int
+    cars_additional_services: Iterable[CarAdditionalServices]
     prices: HasItemDryCleaningPrice
 
     @cached_property
@@ -406,7 +412,15 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
         return self.planned_cars_count + self.urgent_cars_count
 
     def calculate_dry_cleaning_cost(self) -> int:
-        return self.prices.item_dry_cleaning * self.dry_cleaning_items_count
+        car_id_to_additional_services_count = {
+            car_additional_services.car_id: car_additional_services.count
+            for car_additional_services in self.cars_additional_services
+        }
+        total_dry_cleaning_price = 0
+        for car in self.cars:
+            count = car_id_to_additional_services_count[car.id]
+            total_dry_cleaning_price += count * car.item_dry_cleaning_price
+        return total_dry_cleaning_price
 
     @abstractmethod
     def calculate_total_cost(self):
@@ -501,7 +515,7 @@ def get_shifts_dry_cleaning_items(
         from_date: datetime.date,
         to_date: datetime.date,
         staff_ids: Iterable[int] | None = None,
-) -> list[ShiftDryCleaningItems]:
+) -> list[CarAdditionalServices]:
     """Get dry cleaning items count by shifts of staff.
 
     Keyword Args:
@@ -524,24 +538,17 @@ def get_shifts_dry_cleaning_items(
             car__shift__staff_id__in=staff_ids
         )
 
-    shift_id_and_staff_id_to_items_count = defaultdict(int)
+    car_id_to_count = defaultdict(int)
 
-    for additional_service in shifts_dry_cleaning_items:
-        key = (
-            additional_service.car.shift_id,
-            additional_service.car.shift.staff_id,
-        )
-        shift_id_and_staff_id_to_items_count[key] += additional_service.count
+    for service in shifts_dry_cleaning_items:
+        car_id_to_count[service.car_id] += service.count
+
     return [
-        ShiftDryCleaningItems(
-            staff_id=staff_id,
-            shift_id=shift_id,
-            items_count=items_count,
+        CarAdditionalServices(
+            car_id=car_id,
+            count=count,
         )
-        for (
-            shift_id,
-            staff_id,
-        ), items_count in shift_id_and_staff_id_to_items_count.items()
+        for car_id, count in car_id_to_count.items()
     ]
 
 
@@ -564,18 +571,11 @@ def get_cars_to_wash_statistics(
     if staff_ids is not None:
         shifts = shifts.filter(staff_id__in=staff_ids)
 
-    shifts_dry_cleaning_items = get_shifts_dry_cleaning_items(
+    cars_additional_services = get_shifts_dry_cleaning_items(
         from_date=from_date,
         to_date=to_date,
         staff_ids=staff_ids,
     )
-    shift_id_and_staff_id_to_dry_cleaning_items_count = {
-        (
-            shift_dry_cleaning_items.shift_id,
-            shift_dry_cleaning_items.staff_id,
-        ): shift_dry_cleaning_items.items_count
-        for shift_dry_cleaning_items in shifts_dry_cleaning_items
-    }
 
     shifts_statistics: list[ShiftStatistics] = []
 
@@ -586,15 +586,11 @@ def get_cars_to_wash_statistics(
 
     for shift in shifts:
         shift_cars = shift_id_to_cars.get(shift.id, [])
-        key: tuple[int, int] = (shift.id, shift.staff_id)
-        dry_cleaning_items_count = (
-            shift_id_and_staff_id_to_dry_cleaning_items_count.get(key, 0)
-        )
 
         if shift.staff.type == StaffType.CAR_TRANSPORTER:
             calculator = CarTransporterTransferredCarsTotalCostCalculator(
                 cars=shift_cars,
-                dry_cleaning_items_count=dry_cleaning_items_count,
+                cars_additional_services=cars_additional_services,
                 prices=car_transporter_service_prices,
                 is_extra_shift=shift.is_extra,
                 transferred_cars_min_count=shift.transferred_cars_threshold,
@@ -603,7 +599,7 @@ def get_cars_to_wash_statistics(
             calculator = (
                 CarTransporterAndWasherTransferredCarsTotalCostCalculator(
                     cars=shift_cars,
-                    dry_cleaning_items_count=dry_cleaning_items_count,
+                    cars_additional_services=cars_additional_services,
                     prices=car_transporter_and_washer_service_prices,
                 )
             )

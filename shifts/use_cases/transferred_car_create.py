@@ -6,6 +6,10 @@ from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
+from economics.models import (
+    CarTransporterAndWasherServicePrices,
+    CarTransporterServicePrices,
+)
 from shifts.exceptions import CarAlreadyWashedOnShiftError
 from shifts.models import CarToWashAdditionalService, TransferredCar
 from shifts.selectors import get_staff_current_shift
@@ -96,14 +100,19 @@ class TransferredCarCreateUseCase:
                 car_wash.business_class_car_washing_price
             )
             van_washing_price = car_wash.van_washing_price
+            item_dry_cleaning_price = (
+                CarTransporterServicePrices.get().item_dry_cleaning
+            )
         else:
             comfort_class_car_washing_price = (
                 car_wash.car_transporters_and_washers_comfort_class_price
             )
             business_class_car_washing_price = (
                 car_wash.car_transporters_and_washers_business_class_price)
-
             van_washing_price = car_wash.car_transporters_and_washers_van_price
+            item_dry_cleaning_price = (
+                CarTransporterAndWasherServicePrices.get().item_dry_cleaning
+            )
 
         transferred_car = TransferredCar(
             shift_id=shift.id,
@@ -122,6 +131,7 @@ class TransferredCarCreateUseCase:
             windshield_washer_price_per_bottle=(
                 car_wash.windshield_washer_price_per_bottle
             ),
+            item_dry_cleaning_price=item_dry_cleaning_price,
         )
         try:
             transferred_car.full_clean()
