@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import override, Protocol, TypeVar
+from typing import Protocol, TypeVar
 
 from economics.models import (
     CarTransporterAndWasherServicePrices,
@@ -408,7 +408,6 @@ class CarTransporterAndWasherTransferredCarsTotalCostCalculator(
 ):
     prices: CarTransporterAndWasherServicePrices
 
-    @override
     def calculate_total_cost(self) -> int:
         return (
                 self.precalculated_total_cost +
@@ -461,7 +460,6 @@ class CarTransporterTransferredCarsTotalCostCalculator(
                 + self.calculate_dry_cleaning_cost()
         )
 
-    @override
     def calculate_total_cost(self) -> int:
         if self.is_extra_shift:
             return self.calculate_extra_shift()
