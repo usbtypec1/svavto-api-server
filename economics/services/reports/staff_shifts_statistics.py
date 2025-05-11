@@ -24,7 +24,7 @@ from staff.selectors import StaffItem
 
 
 __all__ = (
-    "get_shifts_dry_cleaning_items",
+    "get_cars_dry_cleaning_items",
     "group_by_shift_id",
     "group_by_staff_id",
     "group_shifts_statistics_by_staff",
@@ -342,7 +342,7 @@ class HasItemDryCleaningPrice(Protocol):
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class CarAdditionalServices:
+class CarDryCleaningItems:
     car_id: int
     count: int
 
@@ -350,8 +350,12 @@ class CarAdditionalServices:
 @dataclass(kw_only=True)
 class ShiftTransferredCarsTotalCostCalculator(ABC):
     cars: Iterable[TransferredCar]
-    cars_additional_services: Iterable[CarAdditionalServices]
+    cars_dry_cleaning_items: Iterable[CarDryCleaningItems]
     prices: HasItemDryCleaningPrice
+
+    @property
+    def dry_cleaning_items_count(self) -> int:
+        return sum(car.count for car in self.cars_dry_cleaning_items)
 
     @cached_property
     def planned_cars(self) -> list[TransferredCar]:
@@ -412,13 +416,13 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
         return self.planned_cars_count + self.urgent_cars_count
 
     def calculate_dry_cleaning_cost(self) -> int:
-        car_id_to_additional_services_count = {
-            car_additional_services.car_id: car_additional_services.count
-            for car_additional_services in self.cars_additional_services
+        car_id_to_dry_cleaning_items_count = {
+            car_dry_cleaning_items.car_id: car_dry_cleaning_items.count
+            for car_dry_cleaning_items in self.cars_dry_cleaning_items
         }
         total_dry_cleaning_price = 0
         for car in self.cars:
-            count = car_id_to_additional_services_count[car.id]
+            count = car_id_to_dry_cleaning_items_count.get(car.id, 0)
             total_dry_cleaning_price += count * car.item_dry_cleaning_price
         return total_dry_cleaning_price
 
@@ -510,12 +514,12 @@ def group_by_staff_id(items: Iterable[T]) -> dict[int, list[T]]:
     return dict(result)
 
 
-def get_shifts_dry_cleaning_items(
+def get_cars_dry_cleaning_items(
         *,
         from_date: datetime.date,
         to_date: datetime.date,
         staff_ids: Iterable[int] | None = None,
-) -> list[CarAdditionalServices]:
+) -> list[CarDryCleaningItems]:
     """Get dry cleaning items count by shifts of staff.
 
     Keyword Args:
@@ -544,7 +548,7 @@ def get_shifts_dry_cleaning_items(
         car_id_to_count[service.car_id] += service.count
 
     return [
-        CarAdditionalServices(
+        CarDryCleaningItems(
             car_id=car_id,
             count=count,
         )
@@ -571,7 +575,7 @@ def get_cars_to_wash_statistics(
     if staff_ids is not None:
         shifts = shifts.filter(staff_id__in=staff_ids)
 
-    cars_additional_services = get_shifts_dry_cleaning_items(
+    cars_dry_cleaning_items = get_cars_dry_cleaning_items(
         from_date=from_date,
         to_date=to_date,
         staff_ids=staff_ids,
@@ -590,7 +594,7 @@ def get_cars_to_wash_statistics(
         if shift.staff.type == StaffType.CAR_TRANSPORTER:
             calculator = CarTransporterTransferredCarsTotalCostCalculator(
                 cars=shift_cars,
-                cars_additional_services=cars_additional_services,
+                cars_dry_cleaning_items=cars_dry_cleaning_items,
                 prices=car_transporter_service_prices,
                 is_extra_shift=shift.is_extra,
                 transferred_cars_min_count=shift.transferred_cars_threshold,
@@ -599,7 +603,7 @@ def get_cars_to_wash_statistics(
             calculator = (
                 CarTransporterAndWasherTransferredCarsTotalCostCalculator(
                     cars=shift_cars,
-                    cars_additional_services=cars_additional_services,
+                    cars_dry_cleaning_items=cars_dry_cleaning_items,
                     prices=car_transporter_and_washer_service_prices,
                 )
             )
@@ -612,7 +616,7 @@ def get_cars_to_wash_statistics(
             planned_business_cars_washed_count=calculator.business_cars_count,
             planned_vans_washed_count=calculator.vans_count,
             urgent_cars_washed_count=calculator.urgent_cars_count,
-            dry_cleaning_items_count=dry_cleaning_items_count,
+            dry_cleaning_items_count=calculator.dry_cleaning_items_count,
             is_extra_shift=shift.is_extra,
         )
         shifts_statistics.append(shift_statistics)
