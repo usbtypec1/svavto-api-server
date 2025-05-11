@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
+from functools import cached_property
 from typing import Protocol, TypeVar
 
 from economics.models import (
@@ -346,43 +347,53 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
     dry_cleaning_items_count: int
     prices: HasItemDryCleaningPrice
 
-    @property
+    @cached_property
+    def planned_cars(self) -> list[TransferredCar]:
+        return [
+            car for car in self.cars
+            if car.wash_type == TransferredCar.WashType.PLANNED
+        ]
+
+    @cached_property
+    def urgent_cars(self) -> list[TransferredCar]:
+        return [
+            car for car in self.cars
+            if car.wash_type == TransferredCar.WashType.URGENT
+        ]
+
+    @cached_property
     def comfort_cars_count(self) -> int:
         count = 0
-        for car in self.cars:
+        for car in self.planned_cars:
             if car.car_class == TransferredCar.CarType.COMFORT:
                 count += 1
         return count
 
-    @property
+    @cached_property
     def business_cars_count(self) -> int:
         count = 0
-        for car in self.cars:
+        for car in self.planned_cars:
             if car.car_class == TransferredCar.CarType.BUSINESS:
                 count += 1
         return count
 
-    @property
+    @cached_property
     def vans_count(self) -> int:
         count = 0
-        for car in self.cars:
+        for car in self.planned_cars:
             if car.car_class == TransferredCar.CarType.VAN:
                 count += 1
         return count
 
-    @property
+    @cached_property
     def urgent_cars_count(self) -> int:
-        count = 0
-        for car in self.cars:
-            if car.wash_type == TransferredCar.WashType.URGENT:
-                count += 1
-        return count
+        return len(self.urgent_cars)
 
-    @property
+    @cached_property
     def precalculated_total_cost(self) -> int:
         return sum(car.transfer_price for car in self.cars)
 
-    @property
+    @cached_property
     def planned_cars_count(self) -> int:
         return (
                 self.comfort_cars_count
@@ -390,7 +401,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
                 + self.vans_count
         )
 
-    @property
+    @cached_property
     def total_cars_count(self) -> int:
         return self.planned_cars_count + self.urgent_cars_count
 
