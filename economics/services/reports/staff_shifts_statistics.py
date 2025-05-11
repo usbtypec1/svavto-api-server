@@ -353,9 +353,20 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
     cars_dry_cleaning_items: Iterable[CarDryCleaningItems]
     prices: HasItemDryCleaningPrice
 
-    @property
-    def dry_cleaning_items_count(self) -> int:
-        return sum(car.count for car in self.cars_dry_cleaning_items)
+
+    @cached_property
+    def car_id_to_dry_cleaing_items_count(self) -> dict[int, int]:
+        return {
+            car_dry_cleaning_items.car_id: car_dry_cleaning_items.count
+            for car_dry_cleaning_items in self.cars_dry_cleaning_items
+        }
+
+    def get_dry_cleaning_items_count_by_shift_id(self, shift_id: int) -> int:
+        count = 0
+        for car in self.cars:
+            if car.shift_id == shift_id:
+                count += self.car_id_to_dry_cleaing_items_count.get(car.id, 0)
+        return count
 
     @cached_property
     def planned_cars(self) -> list[TransferredCar]:
@@ -416,13 +427,9 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
         return self.planned_cars_count + self.urgent_cars_count
 
     def calculate_dry_cleaning_cost(self) -> int:
-        car_id_to_dry_cleaning_items_count = {
-            car_dry_cleaning_items.car_id: car_dry_cleaning_items.count
-            for car_dry_cleaning_items in self.cars_dry_cleaning_items
-        }
         total_dry_cleaning_price = 0
         for car in self.cars:
-            count = car_id_to_dry_cleaning_items_count.get(car.id, 0)
+            count = self.car_id_to_dry_cleaing_items_count.get(car.id, 0)
             total_dry_cleaning_price += count * car.item_dry_cleaning_price
         return total_dry_cleaning_price
 
@@ -618,7 +625,9 @@ def get_cars_to_wash_statistics(
             planned_business_cars_washed_count=calculator.business_cars_count,
             planned_vans_washed_count=calculator.vans_count,
             urgent_cars_washed_count=calculator.urgent_cars_count,
-            dry_cleaning_items_count=calculator.dry_cleaning_items_count,
+            dry_cleaning_items_count=(
+                calculator.get_dry_cleaning_items_count_by_shift_id(shift.id)
+            ),
             is_extra_shift=shift.is_extra,
         )
         shifts_statistics.append(shift_statistics)
