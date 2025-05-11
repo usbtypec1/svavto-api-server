@@ -187,11 +187,7 @@ msgstr "Доп.услуги"
 
 #: car_washes/models.py:146
 msgid "price"
-msgstr "Цена (перегонщик)"
-
-#: car_washes/models.py:151
-msgid "Price per transporter and washer"
-msgstr "Цена (перегонщик-мойщик)"
+msgstr "Цена"
 
 #: car_washes/models.py:158
 msgid "car wash service price"
