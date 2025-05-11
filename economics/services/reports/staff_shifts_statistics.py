@@ -545,7 +545,9 @@ def get_cars_dry_cleaning_items(
     car_id_to_count = defaultdict(int)
 
     for service in shifts_dry_cleaning_items:
-        car_id_to_count[service.car_id] += service.count
+        car_id_to_count[service.car_id] = (
+                car_id_to_count[service.car_id] + service.count
+        )
 
     return [
         CarDryCleaningItems(
