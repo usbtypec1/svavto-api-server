@@ -77,6 +77,10 @@ class CarToWash(models.Model):
     windshield_washer_price_per_bottle = models.PositiveIntegerField(
         help_text=_("price of windshield washer per bottle at the moment")
     )
+    item_dry_cleaning_price = models.PositiveIntegerField(
+        default=50,
+        help_text=_("price of item dry cleaning at the moment")
+    )
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
