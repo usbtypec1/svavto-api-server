@@ -51,20 +51,43 @@ class CarWashListOutputSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField()
     updated_at = serializers.DateTimeField()
 
-class CarWashRetrieveOutputSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CarWash
-        fields = (
-            "id",
-            "name",
-            "comfort_class_car_washing_price",
-            "business_class_car_washing_price",
-            "van_washing_price",
-            "windshield_washer_price_per_bottle",
-            "is_hidden",
-            "created_at",
-            "updated_at",
-        )
+
+class CarWashRetrieveServiceParentSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+
+
+class CarWashRetrieveServiceSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    is_countable = serializers.BooleanField()
+    price = serializers.IntegerField()
+    parent = CarWashRetrieveServiceParentSerializer(allow_null=None)
+    max_count = serializers.IntegerField()
+
+
+class CarWashRetrieveOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    car_transporters_comfort_class_car_washing_price = (
+        serializers.IntegerField()
+    )
+    car_transporters_business_class_car_washing_price = (
+        serializers.IntegerField()
+    )
+    car_transporters_van_washing_price = serializers.IntegerField()
+    car_transporters_and_washers_comfort_class_price = (
+        serializers.IntegerField()
+    )
+    car_transporters_and_washers_business_class_price = (
+        serializers.IntegerField()
+    )
+    car_transporters_and_washers_van_price = serializers.IntegerField()
+    windshield_washer_price_per_bottle = serializers.IntegerField()
+    is_hidden = serializers.BooleanField()
+    services = CarWashRetrieveServiceSerializer(many=True)
+    created_at = serializers.DateTimeField()
+    updated_at = serializers.DateTimeField()
 
 
 class CarWashUpdateInputSerializer(serializers.Serializer):
