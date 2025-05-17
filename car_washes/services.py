@@ -47,7 +47,7 @@ def create_car_wash(
     try:
         car_wash.full_clean()
         car_wash.save()
-    except IntegrityError as error:
+    except (ValidationError, IntegrityError) as error:
         if 'unique_car_wash_name' in str(error):
             raise CarWashAlreadyExistsError
         raise

@@ -82,10 +82,24 @@ class CarWashUpdateOutputSerializer(serializers.Serializer):
 
 class CarWashCreateInputSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
-    comfort_class_car_washing_price = serializers.IntegerField(min_value=0)
-    business_class_car_washing_price = serializers.IntegerField(min_value=0)
-    van_washing_price = serializers.IntegerField(min_value=0)
-    windshield_washer_price_per_bottle = serializers.IntegerField(min_value=0)
+    car_transporters_comfort_class_car_washing_price = (
+        serializers.IntegerField(default=0)
+    )
+    car_transporters_business_class_car_washing_price = (
+        serializers.IntegerField(default=0)
+    )
+    car_transporters_van_washing_price = serializers.IntegerField()
+    car_transporters_and_washers_comfort_class_price = (
+        serializers.IntegerField(default=0)
+    )
+    car_transporters_and_washers_business_class_price = (
+        serializers.IntegerField(default=0)
+    )
+    car_transporters_and_washers_van_price = (
+        serializers.IntegerField(default=0)
+    )
+    windshield_washer_price_per_bottle = serializers.IntegerField(default=0)
+    is_hidden = serializers.BooleanField(default=False)
 
 
 class CarWashCreateOutputSerializer(serializers.Serializer):
