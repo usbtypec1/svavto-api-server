@@ -40,6 +40,7 @@ class CarWashRetrieveUpdateDeleteApi(APIView):
         windshield_washer_price_per_bottle: int = serialized_data[
             "windshield_washer_price_per_bottle"
         ]
+        is_hidden: bool = serialized_data["is_hidden"]
 
         car_wash = get_car_wash_by_id(car_wash_id)
 
@@ -50,6 +51,7 @@ class CarWashRetrieveUpdateDeleteApi(APIView):
             business_class_car_washing_price=business_class_car_washing_price,
             van_washing_price=van_washing_price,
             windshield_washer_price_per_bottle=windshield_washer_price_per_bottle,
+            is_hidden=is_hidden,
         )
         serializer = CarWashUpdateOutputSerializer(car_wash)
         return Response(serializer.data, status=status.HTTP_200_OK)

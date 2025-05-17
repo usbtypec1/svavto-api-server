@@ -49,12 +49,14 @@ def update_car_wash(
     business_class_car_washing_price: int,
     van_washing_price: int,
     windshield_washer_price_per_bottle: int,
+    is_hidden: bool,
 ) -> CarWash:
     car_wash.name = name
     car_wash.comfort_class_car_washing_price = comfort_class_car_washing_price
     car_wash.business_class_car_washing_price = business_class_car_washing_price
     car_wash.van_washing_price = van_washing_price
     car_wash.windshield_washer_price_per_bottle = windshield_washer_price_per_bottle
+    car_wash.is_hidden = is_hidden
 
     try:
         car_wash.full_clean()
@@ -70,6 +72,7 @@ def update_car_wash(
             "business_class_car_washing_price",
             "van_washing_price",
             "windshield_washer_price_per_bottle",
+            "is_hidden",
             "updated_at",
         ),
     )

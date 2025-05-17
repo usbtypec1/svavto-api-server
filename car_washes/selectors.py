@@ -11,8 +11,11 @@ from car_washes.exceptions import (
 from car_washes.models import CarWash, CarWashService, CarWashServicePrice
 
 
-def get_car_washes() -> QuerySet[CarWash]:
-    return CarWash.objects.order_by("name")
+def get_car_washes(*, include_hidden: bool) -> QuerySet[CarWash]:
+    car_washes = CarWash.objects.all()
+    if not include_hidden:
+        car_washes = car_washes.filter(is_hidden=False)
+    return car_washes.order_by("name")
 
 
 def get_car_wash_by_id(car_wash_id: int) -> CarWash:

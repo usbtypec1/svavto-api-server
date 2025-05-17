@@ -23,6 +23,10 @@ class CarWashServiceSerializer(serializers.Serializer):
     max_count = serializers.IntegerField()
 
 
+class CarWashListInputSerializer(serializers.Serializer):
+    include_hidden = serializers.BooleanField(default=True)
+
+
 class CarWashListOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWash
@@ -33,6 +37,7 @@ class CarWashListOutputSerializer(serializers.ModelSerializer):
             "business_class_car_washing_price",
             "van_washing_price",
             "windshield_washer_price_per_bottle",
+            "is_hidden",
             "created_at",
             "updated_at",
         )
@@ -48,6 +53,7 @@ class CarWashRetrieveOutputSerializer(serializers.ModelSerializer):
             "business_class_car_washing_price",
             "van_washing_price",
             "windshield_washer_price_per_bottle",
+            "is_hidden",
             "created_at",
             "updated_at",
         )
@@ -59,6 +65,7 @@ class CarWashUpdateInputSerializer(serializers.Serializer):
     business_class_car_washing_price = serializers.IntegerField(min_value=0)
     van_washing_price = serializers.IntegerField(min_value=0)
     windshield_washer_price_per_bottle = serializers.IntegerField(min_value=0)
+    is_hidden = serializers.BooleanField()
 
 
 class CarWashUpdateOutputSerializer(serializers.Serializer):
@@ -68,6 +75,7 @@ class CarWashUpdateOutputSerializer(serializers.Serializer):
     business_class_car_washing_price = serializers.IntegerField()
     van_washing_price = serializers.IntegerField()
     windshield_washer_price_per_bottle = serializers.IntegerField()
+    is_hidden = serializers.BooleanField()
     created_at = serializers.DateTimeField()
     updated_at = serializers.DateTimeField()
 
@@ -90,6 +98,7 @@ class CarWashCreateOutputSerializer(serializers.ModelSerializer):
             "business_class_car_washing_price",
             "van_washing_price",
             "windshield_washer_price_per_bottle",
+            "is_hidden",
             "created_at",
             "updated_at",
         )

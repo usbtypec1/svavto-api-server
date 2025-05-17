@@ -7,7 +7,7 @@ from car_washes.selectors import get_car_washes
 from car_washes.serializers import (
     CarWashCreateInputSerializer,
     CarWashCreateOutputSerializer,
-    CarWashListOutputSerializer,
+    CarWashListInputSerializer, CarWashListOutputSerializer,
 )
 from car_washes.services import create_car_wash
 
@@ -16,7 +16,13 @@ __all__ = ("CarWashListCreateApi",)
 
 class CarWashListCreateApi(APIView):
     def get(self, request: Request) -> Response:
-        car_washes = get_car_washes()
+        serializer = CarWashListInputSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        data: dict = serializer.validated_data
+        include_hidden: bool = data["include_hidden"]
+
+        car_washes = get_car_washes(include_hidden=include_hidden)
+
         serializer = CarWashListOutputSerializer(car_washes, many=True)
         return Response({"car_washes": serializer.data})
 
