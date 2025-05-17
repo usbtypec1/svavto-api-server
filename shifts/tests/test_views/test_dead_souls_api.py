@@ -118,7 +118,7 @@ def test_month_not_available():
         "errors": [
             {
                 "code": "month_not_available",
-                "detail": "месяц не доступен",
+                "detail": "Месяц не доступен",
                 "extra": {
                     "month": 1,
                     "year": 2021,

@@ -59,7 +59,7 @@ def test_staff_not_found():
         'errors': [
             {
                 'code': 'staff_not_found',
-                'detail': 'сотрудник не найден',
+                'detail': 'Сотрудник не найден',
             },
         ],
         'type': 'client_error',
