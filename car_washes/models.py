@@ -50,6 +50,10 @@ class CarWash(models.Model):
         default=0,
         verbose_name=_('Car transporters and washers van price')
     )
+    is_hidden = models.BooleanField(
+        default=False,
+        verbose_name=_("Is hidden"),
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('Created at'),
