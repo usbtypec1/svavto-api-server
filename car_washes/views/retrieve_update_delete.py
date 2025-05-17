@@ -12,7 +12,11 @@ from car_washes.serializers import (
     CarWashUpdateInputSerializer,
     CarWashUpdateOutputSerializer,
 )
-from car_washes.services import delete_car_wash, update_car_wash
+from car_washes.services import delete_car_wash
+from car_washes.use_cases.car_wash_update import (
+    CarWashUpdateRequestData,
+    CarWashUpdateUseCase,
+)
 
 
 class CarWashRetrieveUpdateDeleteApi(APIView):
@@ -27,32 +31,13 @@ class CarWashRetrieveUpdateDeleteApi(APIView):
     def put(self, request: Request, car_wash_id: int) -> Response:
         serializer = CarWashUpdateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serialized_data: dict = serializer.data
+        data: CarWashUpdateRequestData = serializer.data
 
-        name: str = serialized_data["name"]
-        comfort_class_car_washing_price: int = serialized_data[
-            "comfort_class_car_washing_price"
-        ]
-        business_class_car_washing_price: int = serialized_data[
-            "business_class_car_washing_price"
-        ]
-        van_washing_price: int = serialized_data["van_washing_price"]
-        windshield_washer_price_per_bottle: int = serialized_data[
-            "windshield_washer_price_per_bottle"
-        ]
-        is_hidden: bool = serialized_data["is_hidden"]
+        car_wash = CarWashUpdateUseCase(
+            car_wash_id=car_wash_id,
+            data=data,
+        ).execute()
 
-        car_wash = get_car_wash_by_id(car_wash_id)
-
-        car_wash = update_car_wash(
-            car_wash=car_wash,
-            name=name,
-            comfort_class_car_washing_price=comfort_class_car_washing_price,
-            business_class_car_washing_price=business_class_car_washing_price,
-            van_washing_price=van_washing_price,
-            windshield_washer_price_per_bottle=windshield_washer_price_per_bottle,
-            is_hidden=is_hidden,
-        )
         serializer = CarWashUpdateOutputSerializer(car_wash)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

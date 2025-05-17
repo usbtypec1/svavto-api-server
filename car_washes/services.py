@@ -58,39 +58,45 @@ def update_car_wash(
         *,
         car_wash: CarWash,
         name: str,
-        comfort_class_car_washing_price: int,
-        business_class_car_washing_price: int,
-        van_washing_price: int,
+        car_transporters_comfort_class_car_washing_price: int,
+        car_transporters_business_class_car_washing_price: int,
+        car_transporters_van_washing_price: int,
+        car_transporters_and_washers_comfort_class_price: int,
+        car_transporters_and_washers_business_class_price: int,
+        car_transporters_and_washers_van_price: int,
         windshield_washer_price_per_bottle: int,
         is_hidden: bool,
 ) -> CarWash:
     car_wash.name = name
-    car_wash.comfort_class_car_washing_price = comfort_class_car_washing_price
+    car_wash.comfort_class_car_washing_price = (
+        car_transporters_comfort_class_car_washing_price
+    )
     car_wash.business_class_car_washing_price = (
-        business_class_car_washing_price)
-    car_wash.van_washing_price = van_washing_price
+        car_transporters_business_class_car_washing_price
+    )
+    car_wash.van_washing_price = car_transporters_van_washing_price
+    car_wash.car_transporters_and_washers_comfort_class_price = (
+        car_transporters_and_washers_comfort_class_price
+    )
+    car_wash.car_transporters_and_washers_business_class_price = (
+        car_transporters_and_washers_business_class_price
+    )
+    car_wash.car_transporters_and_washers_van_price = (
+        car_transporters_and_washers_van_price
+    )
     car_wash.windshield_washer_price_per_bottle = (
-        windshield_washer_price_per_bottle)
+        windshield_washer_price_per_bottle
+    )
     car_wash.is_hidden = is_hidden
 
     try:
         car_wash.full_clean()
-    except ValidationError as error:
-        if "Car wash with this Name already exists." in error.messages:
+        car_wash.save()
+    except (ValidationError, IntegrityError) as error:
+        if 'unique_car_wash_name' in str(error):
             raise CarWashAlreadyExistsError
         raise
 
-    car_wash.save(
-        update_fields=(
-            "name",
-            "comfort_class_car_washing_price",
-            "business_class_car_washing_price",
-            "van_washing_price",
-            "windshield_washer_price_per_bottle",
-            "is_hidden",
-            "updated_at",
-        ),
-    )
     return car_wash
 
 
