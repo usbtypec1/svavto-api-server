@@ -7,14 +7,17 @@ from car_washes.selectors import get_car_washes
 from car_washes.serializers import (
     CarWashCreateInputSerializer,
     CarWashCreateOutputSerializer,
-    CarWashListInputSerializer, CarWashListOutputSerializer,
+    CarWashListInputSerializer,
+    CarWashListOutputSerializer,
 )
-from car_washes.services import create_car_wash
-
-__all__ = ("CarWashListCreateApi",)
+from car_washes.use_cases.car_wash_create import (
+    CarWashCreateRequestData,
+    CarWashCreateUseCase,
+)
 
 
 class CarWashListCreateApi(APIView):
+
     def get(self, request: Request) -> Response:
         serializer = CarWashListInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -29,26 +32,9 @@ class CarWashListCreateApi(APIView):
     def post(self, request: Request) -> Response:
         serializer = CarWashCreateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serialized_data: dict = serializer.data
+        data: CarWashCreateRequestData = serializer.data
 
-        name: str = serialized_data["name"]
-        comfort_class_car_washing_price: int = serialized_data[
-            "comfort_class_car_washing_price"
-        ]
-        business_class_car_washing_price: int = serialized_data[
-            "business_class_car_washing_price"
-        ]
-        van_washing_price: int = serialized_data["van_washing_price"]
-        windshield_washer_price_per_bottle: int = serialized_data[
-            "windshield_washer_price_per_bottle"
-        ]
+        car_wash = CarWashCreateUseCase(data=data).execute()
 
-        car_wash = create_car_wash(
-            name=name,
-            comfort_class_car_washing_price=comfort_class_car_washing_price,
-            business_class_car_washing_price=business_class_car_washing_price,
-            van_washing_price=van_washing_price,
-            windshield_washer_price_per_bottle=windshield_washer_price_per_bottle,
-        )
         serializer = CarWashCreateOutputSerializer(car_wash)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status.HTTP_201_CREATED)
