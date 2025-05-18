@@ -13,6 +13,7 @@ class CarWashRetrieveServiceSerializer(serializers.Serializer):
     price = serializers.IntegerField()
     parent = CarWashRetrieveServiceParentSerializer(allow_null=None)
     max_count = serializers.IntegerField()
+    is_dry_cleaning = serializers.BooleanField()
 
 
 class CarWashRetrieveOutputSerializer(serializers.Serializer):

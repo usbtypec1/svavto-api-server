@@ -127,6 +127,7 @@ class CarWashServiceDto:
     price: int
     max_count: int
     parent: CarWashServiceParentDto | None
+    is_dry_cleaning: bool
 
 
 def get_flatten_specific_car_wash_services(
@@ -149,6 +150,7 @@ def get_flatten_specific_car_wash_services(
             "parent__id",
             "parent__name",
             "max_count",
+            "is_dry_cleaning",
         )
         .order_by("parent", "-priority")
     )
@@ -176,6 +178,7 @@ def get_flatten_specific_car_wash_services(
                 price=service_id_to_price[service["id"]],
                 max_count=service["max_count"],
                 parent=parent,
+                is_dry_cleaning=service["is_dry_cleaning"],
             ),
         )
 
