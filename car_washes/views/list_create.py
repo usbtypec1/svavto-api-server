@@ -4,9 +4,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from car_washes.selectors import get_car_washes
-from car_washes.serializers import (
+from car_washes.serializers.car_washes.create import (
     CarWashCreateInputSerializer,
     CarWashCreateOutputSerializer,
+)
+from car_washes.serializers.car_washes.list import (
     CarWashListInputSerializer,
     CarWashListOutputSerializer,
 )

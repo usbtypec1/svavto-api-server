@@ -3,8 +3,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from car_washes.serializers import (
-    CarWashRetrieveOutputSerializer,
+from car_washes.serializers.car_washes.retrieve import (
+    CarWashRetrieveOutputSerializer
+)
+from car_washes.serializers.car_washes.update import (
     CarWashUpdateInputSerializer,
     CarWashUpdateOutputSerializer,
 )

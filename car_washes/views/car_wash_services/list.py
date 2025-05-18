@@ -2,11 +2,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from car_washes.use_cases import CarWashServiceListUseCase
-from car_washes.serializers import (
+from car_washes.serializers.car_wash_services.list import (
     CarWashServiceListInputSerializer,
     CarWashServiceSerializer,
 )
+from car_washes.use_cases import CarWashServiceListUseCase
 
 
 class CarWashAllServicesApi(APIView):
