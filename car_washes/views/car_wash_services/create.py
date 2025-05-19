@@ -7,20 +7,19 @@ from rest_framework.views import APIView
 
 from car_washes.models import CarWashServicePrice
 from car_washes.selectors import ensure_car_wash_exists, ensure_service_exists
-from car_washes.serializers import (
+from car_washes.serializers.car_wash_service_prices.update import (
     CarWashServicePriceUpsertInputSerializer,
     CarWashServicePriceUpsertOutputSerializer,
 )
 
-__all__ = ("SpecificCarWashServiceUpdateDeleteApi",)
-
 
 class SpecificCarWashServiceUpdateDeleteApi(APIView):
+
     def put(
-        self,
-        request: Request,
-        car_wash_id: int,
-        service_id: UUID,
+            self,
+            request: Request,
+            car_wash_id: int,
+            service_id: UUID,
     ) -> Response:
         serializer = CarWashServicePriceUpsertInputSerializer(
             data=request.data,
@@ -32,13 +31,14 @@ class SpecificCarWashServiceUpdateDeleteApi(APIView):
         ensure_service_exists(service_id)
         ensure_car_wash_exists(car_wash_id)
 
-        service_price, is_created = CarWashServicePrice.objects.update_or_create(
+        service_price, is_created = (
+            CarWashServicePrice.objects.update_or_create(
             car_wash_id=car_wash_id,
             service_id=service_id,
             defaults={
                 "price": price,
             },
-        )
+        ))
 
         if is_created:
             status_code = status.HTTP_201_CREATED
@@ -49,10 +49,10 @@ class SpecificCarWashServiceUpdateDeleteApi(APIView):
         return Response(serializer.data, status_code)
 
     def delete(
-        self,
-        request: Request,
-        car_wash_id: int,
-        service_id: UUID,
+            self,
+            request: Request,
+            car_wash_id: int,
+            service_id: UUID,
     ) -> Response:
         ensure_service_exists(service_id)
         ensure_car_wash_exists(car_wash_id)

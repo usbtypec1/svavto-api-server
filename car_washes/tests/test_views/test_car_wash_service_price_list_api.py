@@ -77,5 +77,10 @@ def test_car_wash_not_found():
     assert response.status_code == 404
     assert response.json() == {
         "type": "client_error",
-        "errors": [{"code": "car_wash_not_found", "detail": "мойка не найдена"}],
+        "errors": [
+            {
+                "code": "car_wash_not_found",
+                "detail": "Мойка не найдена",
+            },
+        ],
     }

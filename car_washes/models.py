@@ -1,6 +1,8 @@
 from uuid import uuid4
 
 from django.db import models
+from django.db.models.functions import Lower
+from django.db.models.constraints import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
 
@@ -15,7 +17,6 @@ class CarWash(models.Model):
 
     name = models.CharField(
         max_length=100,
-        unique=True,
         verbose_name=_("Car wash name"),
     )
     comfort_class_car_washing_price = models.PositiveIntegerField(
@@ -50,6 +51,10 @@ class CarWash(models.Model):
         default=0,
         verbose_name=_('Car transporters and washers van price')
     )
+    is_hidden = models.BooleanField(
+        default=False,
+        verbose_name=_("Is hidden"),
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('Created at'),
@@ -62,6 +67,12 @@ class CarWash(models.Model):
     class Meta:
         verbose_name = _("car wash")
         verbose_name_plural = _("car washes")
+        constraints = (
+            UniqueConstraint(
+                Lower("name"),
+                name="unique_car_wash_name",
+            ),
+        )
 
     def __str__(self):
         return self.name
