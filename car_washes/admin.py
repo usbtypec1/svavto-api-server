@@ -52,6 +52,7 @@ class CarWashAdmin(ImportExportModelAdmin):
                     "id",
                     "name",
                     'windshield_washer_price_per_bottle',
+                    "is_hidden",
                 )
             },
         ),
