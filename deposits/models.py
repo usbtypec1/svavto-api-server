@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.constraints import UniqueConstraint
+from django.db.models.constraints import CheckConstraint, UniqueConstraint
 from django.utils.translation import gettext_lazy as _, gettext
 
 from staff.models import Staff
@@ -59,5 +59,34 @@ class FineDepositException(models.Model):
             UniqueConstraint(
                 fields=("staff", "year", "month", "report_period_number"),
                 name="unique_fine_deposit_exception",
+            ),
+        )
+
+
+class RoadAccidentDepositException(models.Model):
+    staff = models.ForeignKey(
+        to=Staff,
+        on_delete=models.CASCADE,
+        verbose_name=_("Staff"),
+    )
+    from_date = models.DateField(
+        verbose_name=_("From date"),
+    )
+    to_date = models.DateField(verbose_name=_("To date"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created at"),
+    )
+
+    class Meta:
+        verbose_name = _("Road accident deposit exception")
+        verbose_name_plural = _("Road accident deposit exceptions")
+        constraints = (
+            CheckConstraint(
+                check=models.Q(from_date__lt=models.F("to_date")),
+                name="from_date_less_than_to_date",
+                violation_error_message=_(
+                    "From date must be less than to date.",
+                ),
             ),
         )
