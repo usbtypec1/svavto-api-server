@@ -51,15 +51,15 @@ class StaffShiftsStatisticsUseCase:
         staff_shifts_statistics = group_shifts_statistics_by_staff(
             shifts_statistics=shifts_statistics,
         )
-        fine_deposit_exceptions = (
+        staff_ids_excluded_from_fine_deposit = (
             get_staff_excluded_from_fine_deposit(
-                year=self.year,
-                month=self.month,
-                report_period_number=self.report_period_number,
+                from_date=period.from_date,
+                to_date=period.to_date,
             )
         )
-        FineDepositCalculator()
-
+        fine_deposit_calculator = FineDepositCalculator(
+            excluded_staff_ids=staff_ids_excluded_from_fine_deposit,
+        )
 
         staff_ids_excluded_from_road_accident_deposit = (
             get_staff_excluded_from_road_accident_deposit(
@@ -67,8 +67,6 @@ class StaffShiftsStatisticsUseCase:
                 to_date=period.to_date,
             )
         )
-
-
         road_accident_deposit_calculator = RoadAccidentDepositCalculator(
             excluded_staff_ids=staff_ids_excluded_from_road_accident_deposit,
         )
@@ -79,7 +77,7 @@ class StaffShiftsStatisticsUseCase:
                 penalties=penalties,
                 surcharges=surcharges,
                 staff_shifts_statistics=staff_shifts_statistics,
-                fine_deposit_exceptions=fine_deposit_exceptions,
+                fine_deposit_calculator=fine_deposit_calculator,
                 road_accident_deposit_calculator=road_accident_deposit_calculator,
             )
             for staff in staff_list

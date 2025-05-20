@@ -1,27 +1,22 @@
 import datetime
 
 from deposits.models import FineDepositException, RoadAccidentDepositException
-from staff.models import Staff
 
 
 def get_staff_excluded_from_fine_deposit(
         *,
         from_date: datetime.date,
         to_date: datetime.date,
-) -> list[Staff]:
+) -> set[int]:
     exceptions = (
         FineDepositException.objects
         .filter(
             from_date__lte=to_date,
             to_date__gte=from_date,
         )
-        .only('staff')
-        .all()
+        .values('staff_id')
     )
-    return [
-        exception.staff
-        for exception in exceptions
-    ]
+    return {exception['staff_id'] for exception in exceptions}
 
 
 def get_staff_excluded_from_road_accident_deposit(

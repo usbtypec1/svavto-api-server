@@ -217,7 +217,7 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         staff_shifts_statistics: Iterable[ShiftStatisticsGroupedByStaff],
         penalties: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
         surcharges: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
-        fine_deposit_exceptions: Iterable[Staff],
+        fine_deposit_calculator: FineDepositCalculator,
         road_accident_deposit_calculator: RoadAccidentDepositCalculator,
 ) -> StaffShiftsStatistics:
     date_to_penalty_amount = defaultdict(int)
@@ -313,11 +313,10 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         )
 
     shifts_count = len(date_to_shift_statistics)
-    fine_deposit_amount = compute_fine_deposit_amount(
+    fine_deposit_amount = fine_deposit_calculator.calculate_amount(
+        staff_id=staff.id,
         shifts_count=shifts_count,
         total_dirty_revenue=total_dirty_revenue,
-        fine_deposit_exceptions=fine_deposit_exceptions,
-        staff_id=staff.id,
     )
     road_accident_deposit_amount = (
         road_accident_deposit_calculator.calculate_amount(
