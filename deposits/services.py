@@ -4,18 +4,16 @@ from deposits.models import FineDepositException, RoadAccidentDepositException
 from staff.models import Staff
 
 
-def get_fine_deposit_exceptions_for_report_period(
+def get_staff_excluded_from_fine_deposit(
         *,
-        year: int,
-        month: int,
-        report_period_number: int,
+        from_date: datetime.date,
+        to_date: datetime.date,
 ) -> list[Staff]:
     exceptions = (
         FineDepositException.objects
         .filter(
-            year=year,
-            month=month,
-            report_period_number=report_period_number,
+            from_date__lte=to_date,
+            to_date__gte=from_date,
         )
         .only('staff')
         .all()

@@ -170,21 +170,29 @@ def map_shift_statistics_with_penalty_and_surcharge(
     )
 
 
-def compute_fine_deposit_amount(
-        staff_id: int,
-        shifts_count: int,
-        total_dirty_revenue: int,
-        fine_deposit_exceptions: Iterable[Staff],
-) -> int:
-    fine_deposit_exceptions_staff_ids = {
-        staff.id for staff in fine_deposit_exceptions
-    }
-    if staff_id in fine_deposit_exceptions_staff_ids:
-        return 0
-    any_shift = bool(shifts_count)
-    if not any_shift or total_dirty_revenue < 500:
-        return 0
-    return 500
+class FineDepositCalculator:
+
+    def __init__(self, excluded_staff_ids: Iterable[int]):
+        self.__excluded_staff_ids = set(excluded_staff_ids)
+
+    def calculate_amount(
+            self,
+            *,
+            staff_id: int,
+            shifts_count: int,
+            total_dirty_revenue: int,
+    ) -> int:
+        if staff_id in self.__excluded_staff_ids:
+            return 0
+
+        any_shift = bool(shifts_count)
+        if not any_shift:
+            return 0
+
+        if total_dirty_revenue < 500:
+            return 0
+
+        return 500
 
 
 class RoadAccidentDepositCalculator:
@@ -197,10 +205,10 @@ class RoadAccidentDepositCalculator:
             *,
             staff_id: int,
             total_dirty_revenue: int,
-    ) -> int:
+    ) -> float:
         if staff_id in self.__excluded_staff_ids:
             return 0
-        return int(round(total_dirty_revenue * 0.03, 2))
+        return round(total_dirty_revenue * 0.03, 2)
 
 
 def merge_shifts_statistics_and_penalties_and_surcharges(
