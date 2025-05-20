@@ -367,7 +367,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
     prices: HasItemDryCleaningPrice
 
     @cached_property
-    def car_id_to_dry_cleaing_items_count(self) -> dict[int, int]:
+    def car_id_to_dry_cleaning_items_count(self) -> dict[int, int]:
         return {
             car_dry_cleaning_items.car_id: car_dry_cleaning_items.count
             for car_dry_cleaning_items in self.cars_dry_cleaning_items
@@ -377,7 +377,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
         count = 0
         for car in self.cars:
             if car.shift_id == shift_id:
-                count += self.car_id_to_dry_cleaing_items_count.get(car.id, 0)
+                count += self.car_id_to_dry_cleaning_items_count.get(car.id, 0)
         return count
 
     @cached_property
@@ -441,7 +441,7 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
     def calculate_dry_cleaning_cost(self) -> int:
         total_dry_cleaning_price = 0
         for car in self.cars:
-            count = self.car_id_to_dry_cleaing_items_count.get(car.id, 0)
+            count = self.car_id_to_dry_cleaning_items_count.get(car.id, 0)
             total_dry_cleaning_price += count * car.item_dry_cleaning_price
         return total_dry_cleaning_price
 
