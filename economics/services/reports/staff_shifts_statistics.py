@@ -23,17 +23,6 @@ from staff.models import Staff, StaffType
 from staff.selectors import StaffItem
 
 
-__all__ = (
-    "get_cars_dry_cleaning_items",
-    "group_by_shift_id",
-    "group_by_staff_id",
-    "group_shifts_statistics_by_staff",
-    "get_cars_to_wash_statistics",
-    "map_shift_statistics_with_penalty_and_surcharge",
-    "merge_shifts_statistics_and_penalties_and_surcharges",
-)
-
-
 class HasShiftDate(Protocol):
     shift_date: datetime.date
 
@@ -55,10 +44,7 @@ class TotalStatistics:
     washed_cars_total_count: int
     dirty_revenue: int
     fine_deposit_amount: int
-
-    @property
-    def road_accident_deposit_amount(self) -> float:
-        return round(self.dirty_revenue * 0.03, 2)
+    road_accident_deposit_amount: float
 
     @property
     def net_revenue(self) -> float:
@@ -140,10 +126,6 @@ class DailyShiftStatistics:
                 - self.penalty_amount
         )
 
-    @property
-    def road_accident_deposit_amount(self) -> float:
-        return round(self.dirty_revenue * 0.03, 2)
-
 
 @dataclass(frozen=True, slots=True)
 class StaffShiftsStatistics:
@@ -154,7 +136,7 @@ class StaffShiftsStatistics:
 
 @dataclass(frozen=True, slots=True)
 class StaffShiftsStatisticsResponse:
-    staff_list: list[DailyShiftStatistics]
+    staff_list: list[StaffShiftsStatistics]
     report_period: ReportPeriod
 
 
@@ -205,6 +187,22 @@ def compute_fine_deposit_amount(
     return 500
 
 
+class RoadAccidentDepositCalculator:
+
+    def __init__(self, excluded_staff_ids: Iterable[int]):
+        self.__excluded_staff_ids = set(excluded_staff_ids)
+
+    def calculate_amount(
+            self,
+            *,
+            staff_id: int,
+            total_dirty_revenue: int,
+    ) -> int:
+        if staff_id in self.__excluded_staff_ids:
+            return 0
+        return int(round(total_dirty_revenue * 0.03, 2))
+
+
 def merge_shifts_statistics_and_penalties_and_surcharges(
         *,
         staff: StaffItem,
@@ -212,7 +210,8 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         penalties: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
         surcharges: Iterable[StaffPenaltiesOrSurchargesForSpecificShift],
         fine_deposit_exceptions: Iterable[Staff],
-) -> DailyShiftStatistics:
+        road_accident_deposit_calculator: RoadAccidentDepositCalculator,
+) -> StaffShiftsStatistics:
     date_to_penalty_amount = defaultdict(int)
     for penalty in penalties:
         if penalty.staff_id != staff.id:
@@ -312,6 +311,12 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         fine_deposit_exceptions=fine_deposit_exceptions,
         staff_id=staff.id,
     )
+    road_accident_deposit_amount = (
+        road_accident_deposit_calculator.calculate_amount(
+            staff_id=staff.id,
+            total_dirty_revenue=total_dirty_revenue,
+        )
+    )
 
     total_statistics = TotalStatistics(
         penalty_amount=total_penalty_amount,
@@ -328,6 +333,7 @@ def merge_shifts_statistics_and_penalties_and_surcharges(
         washed_cars_total_count=total_washed_cars_total_count,
         dirty_revenue=total_dirty_revenue,
         fine_deposit_amount=fine_deposit_amount,
+        road_accident_deposit_amount=road_accident_deposit_amount,
     )
 
     return StaffShiftsStatistics(
@@ -352,7 +358,6 @@ class ShiftTransferredCarsTotalCostCalculator(ABC):
     cars: Iterable[TransferredCar]
     cars_dry_cleaning_items: Iterable[CarDryCleaningItems]
     prices: HasItemDryCleaningPrice
-
 
     @cached_property
     def car_id_to_dry_cleaing_items_count(self) -> dict[int, int]:
