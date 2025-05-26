@@ -329,3 +329,4 @@ class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
     resource_class = ShiftFinishPhotoResource
     list_display = ("shift", "file_id")
     list_select_related = ("shift",)
+    list_filter = ("shift__car_wash",)
