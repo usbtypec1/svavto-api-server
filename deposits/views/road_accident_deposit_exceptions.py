@@ -1,7 +1,6 @@
 from django.http.response import Http404
-from rest_framework.viewsets import ModelViewSet
 from rest_framework import serializers
-from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
 from deposits.exceptions import RoadAccidentDepositExceptionNotFoundError
 from deposits.models import RoadAccidentDepositException
@@ -18,9 +17,9 @@ class RoadAccidentDepositExceptionViewSet(ModelViewSet):
     serializer_class = RoadAccidentDepositExceptionSerializer
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'road_accident_deposit_exceptions': serializer.data})
+        response = super().list(request, *args, **kwargs)
+        response.data = {'road_accident_deposit_exceptions': response.data}
+        return response
 
     def get_object(self):
         try:
