@@ -59,7 +59,7 @@ class StaffShiftsStatisticsUseCase:
         )
 
         staff_report_periods = get_report_periods_for_staff_ids(
-            staff_ids=self.staff_ids,
+            staff_ids=[staff.id for staff in staff_list],
             until=period.to_date,
         )
         fine_deposit_calculator = FineDepositCalculator(
