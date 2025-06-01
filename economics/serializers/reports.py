@@ -97,7 +97,6 @@ class ShiftStatisticsSerializer(serializers.Serializer):
     washed_cars_total_cost = serializers.IntegerField()
     washed_cars_total_count = serializers.IntegerField()
     dirty_revenue = serializers.IntegerField()
-    road_accident_deposit_amount = serializers.FloatField()
 
 
 class TotalStatisticsSerializer(serializers.Serializer):
