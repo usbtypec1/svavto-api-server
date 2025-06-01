@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 14:25+0300\n"
+"POT-Creation-Date: 2025-06-01 23:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,7 +52,7 @@ msgstr "Размер премии. Установите 0, чтобы отклю
 msgid "Excluded from bonuses staff"
 msgstr "Исключенные из премий сотрудники"
 
-#: bonuses/models.py:33 car_washes/models.py:59
+#: bonuses/models.py:33 car_washes/models.py:64
 msgid "Updated at"
 msgstr "Дата обновления"
 
@@ -64,15 +64,15 @@ msgstr "Настройки премий"
 msgid "search by name or id"
 msgstr "Поиск по названию или ID"
 
-#: car_washes/admin.py:59
+#: car_washes/admin.py:60
 msgid "Car transporters"
 msgstr "Перегонщики"
 
-#: car_washes/admin.py:69
+#: car_washes/admin.py:70
 msgid "Car transporters and washers"
 msgstr "Перегонщики-мойщики"
 
-#: car_washes/apps.py:8 car_washes/models.py:63 car_washes/models.py:137
+#: car_washes/apps.py:8 car_washes/models.py:68 car_washes/models.py:148
 #: shifts/admin.py:88 shifts/models/cars_to_wash.py:40
 #: shifts/models/shifts.py:53
 msgid "car wash"
@@ -83,6 +83,9 @@ msgid "car wash with this name already exists"
 msgstr "Мойка с этим названием уже существует"
 
 #: car_washes/exceptions.py:21
+#: car_washes/tests/test_views/test_car_wash_delete.py:34
+#: car_washes/tests/test_views/test_car_wash_retrieve.py:26
+#: car_washes/tests/test_views/test_car_wash_update.py:34
 msgid "car wash was not found"
 msgstr "Мойка не найдена"
 
@@ -90,110 +93,115 @@ msgstr "Мойка не найдена"
 msgid "car wash service was not found"
 msgstr "Услуга мойки не найдена"
 
-#: car_washes/models.py:19
+#: car_washes/models.py:20
 msgid "Car wash name"
 msgstr "Название мойки"
 
-#: car_washes/models.py:23
+#: car_washes/models.py:24
 msgid "Car transporter comform class price"
 msgstr "Мойка авто комфорт класса для перегонщика"
 
-#: car_washes/models.py:27
+#: car_washes/models.py:28
 msgid "Car transporter business class price"
 msgstr "Мойка авто бизнес класса для перегонщика"
 
-#: car_washes/models.py:31
+#: car_washes/models.py:32
 msgid "Car transporter van price"
 msgstr "Мойка фургона для перегонщика"
 
-#: car_washes/models.py:35
+#: car_washes/models.py:36
 msgid "Windshield washer price per bottle"
 msgstr "Цена за бутылку незамерзайки"
 
-#: car_washes/models.py:40
+#: car_washes/models.py:41
 msgid "Car transporters and washers comfort class price"
 msgstr "Мойка авто комфорт класса для перегонщика-мойщика"
 
-#: car_washes/models.py:46
+#: car_washes/models.py:47
 msgid "Car transporters and washers business class price"
 msgstr "Мойка авто бизнес класса для перегонщика-мойщика"
 
-#: car_washes/models.py:51
+#: car_washes/models.py:52
 msgid "Car transporters and washers van price"
 msgstr "Мойка фургона для перегонщика-мойщика"
 
-#: car_washes/models.py:55 economics/models.py:23 economics/models.py:49
-#: economics/models.py:100 economics/models.py:123
+#: car_washes/models.py:56 shifts/models/windshield_washer_hide.py:9
+msgid "Is hidden"
+msgstr "Скрыто"
+
+#: car_washes/models.py:60 deposits/models.py:25 deposits/models.py:54
+#: economics/models.py:23 economics/models.py:49 economics/models.py:100
+#: economics/models.py:123
 msgid "Created at"
 msgstr "Дата создания"
 
-#: car_washes/models.py:64
+#: car_washes/models.py:69
 msgid "car washes"
 msgstr "Мойки"
 
-#: car_washes/models.py:78
+#: car_washes/models.py:89
 msgid "car wash service id"
 msgstr "ID услуги мойки"
 
-#: car_washes/models.py:82 shifts/admin.py:62
+#: car_washes/models.py:93 shifts/admin.py:62
 msgid "car wash service name"
 msgstr "Название услуги мойки"
 
-#: car_washes/models.py:86
+#: car_washes/models.py:97
 msgid "is countable"
 msgstr "Исчисляемая услуга"
 
-#: car_washes/models.py:94
+#: car_washes/models.py:105
 msgid "parent service"
 msgstr "Родительская услуга"
 
-#: car_washes/models.py:98
+#: car_washes/models.py:109
 msgid "is dry cleaning"
 msgstr "Химчистка"
 
-#: car_washes/models.py:102
+#: car_washes/models.py:113
 msgid "priority"
 msgstr "Приоритет"
 
-#: car_washes/models.py:103
+#: car_washes/models.py:114
 msgid "the higher the number, the higher the priority"
 msgstr "Чем выше число, тем больше приоритет"
 
-#: car_washes/models.py:107
+#: car_washes/models.py:118
 msgid "Max count"
 msgstr "Максимальное количество"
 
-#: car_washes/models.py:111 shifts/admin.py:132
+#: car_washes/models.py:122 shifts/admin.py:132
 #: shifts/models/finish_photos.py:22 shifts/models/shifts.py:64
 msgid "created at"
 msgstr "Дата создания"
 
-#: car_washes/models.py:115
+#: car_washes/models.py:126
 msgid "updated at"
 msgstr "Дата обновления"
 
-#: car_washes/models.py:119
+#: car_washes/models.py:130
 msgid "car wash service"
 msgstr "Услуга мойки"
 
-#: car_washes/models.py:120
+#: car_washes/models.py:131
 msgid "car wash services"
 msgstr "Услуги мойки"
 
-#: car_washes/models.py:143 shifts/models/additional_services.py:20
+#: car_washes/models.py:154 shifts/models/additional_services.py:20
 #: shifts/models/additional_services.py:37
 msgid "additional service"
 msgstr "Доп.услуги"
 
-#: car_washes/models.py:146
+#: car_washes/models.py:157
 msgid "price"
 msgstr "Цена"
 
-#: car_washes/models.py:158
+#: car_washes/models.py:163
 msgid "car wash service price"
 msgstr "Цена услуги мойки"
 
-#: car_washes/models.py:159
+#: car_washes/models.py:164
 msgid "car wash service prices"
 msgstr "Цены услуги мойки"
 
@@ -201,94 +209,53 @@ msgstr "Цены услуги мойки"
 msgid "Deposits"
 msgstr "Удержания"
 
-#: deposits/models.py:11
-msgid "Report period number must be 1 or 2."
-msgstr "Номер отчетного периода должен быть 1 или 2."
+#: deposits/exceptions.py:9
+#| msgid "Fine deposit exception"
+msgid "Road accident deposit exception not found."
+msgstr "Исключение от удержаний не найдено"
 
-#: deposits/models.py:16
-msgid "Month must be between 1 and 12."
-msgstr "Месяц должен быть от 1 до 12."
+#: deposits/exceptions.py:15
+#| msgid "Fine deposit exception"
+msgid "Fine deposit exception not found."
+msgstr "Исключение от удержаний не найдено"
 
-#: deposits/models.py:22
-msgid "First half of month"
-msgstr "Первая половина месяца"
-
-#: deposits/models.py:23
-msgid "Second half of month"
-msgstr "Вторая половина месяца"
-
-#: deposits/models.py:26
-msgid "January"
-msgstr "Январь"
-
-#: deposits/models.py:27
-msgid "February"
-msgstr "Февраль"
-
-#: deposits/models.py:28
-msgid "March"
-msgstr "Март"
-
-#: deposits/models.py:29
-msgid "April"
-msgstr "Апрель"
-
-#: deposits/models.py:30
-msgid "May"
-msgstr "Май"
-
-#: deposits/models.py:31
-msgid "June"
-msgstr "Июнь"
-
-#: deposits/models.py:32
-msgid "July"
-msgstr "Июль"
-
-#: deposits/models.py:33
-msgid "August"
-msgstr "Август"
-
-#: deposits/models.py:34
-msgid "September"
-msgstr "Сентябрь"
-
-#: deposits/models.py:35
-msgid "October"
-msgstr "Октябрь"
-
-#: deposits/models.py:36
-msgid "November"
-msgstr "Ноябрь"
-
-#: deposits/models.py:37
-msgid "December"
-msgstr "Декабрь"
-
-#: deposits/models.py:42 economics/models.py:69 economics/models.py:113
-#: staff/admin.py:11
+#: deposits/models.py:13 deposits/models.py:46 economics/models.py:69
+#: economics/models.py:113 staff/admin.py:11
 msgid "Staff"
 msgstr "Сотрудник"
 
-#: deposits/models.py:44
-msgid "Year"
-msgstr "Год"
+#: deposits/models.py:16 deposits/models.py:49
+#| msgid "date"
+msgid "From date"
+msgstr "От"
 
-#: deposits/models.py:46
-msgid "Month"
-msgstr "Месяц"
+#: deposits/models.py:21 deposits/models.py:51
+#| msgid "date"
+msgid "To date"
+msgstr "До"
 
-#: deposits/models.py:50
-msgid "Report period"
-msgstr "Отчетный период"
-
-#: deposits/models.py:56
+#: deposits/models.py:29
 msgid "Fine deposit exception"
-msgstr "Исключение от удержаний"
+msgstr "Исключение от удержаний (штрафы)"
 
-#: deposits/models.py:57
+#: deposits/models.py:30
 msgid "Fine deposit exceptions"
-msgstr "Исключения от удержаний"
+msgstr "Исключения от удержаний (штрафы)"
+
+#: deposits/models.py:36 deposits/models.py:67
+#| msgid "from_date should be less than or equal to to_date"
+msgid "From date must be less than to date."
+msgstr "from_date должен быть меньше или равен to_date"
+
+#: deposits/models.py:58
+#| msgid "Fine deposit exception"
+msgid "Road accident deposit exception"
+msgstr "Исключение от удержаний (фонд ДТП)"
+
+#: deposits/models.py:59
+#| msgid "Fine deposit exceptions"
+msgid "Road accident deposit exceptions"
+msgstr "Исключения от удержаний (фонд ДТП)"
 
 #: dry_cleaning/apps.py:8
 msgid "Dry cleaning"
@@ -381,8 +348,9 @@ msgstr "Запросы на химчистку"
 msgid "Car number %(car_number)s - shift %(shift_date)s"
 msgstr "Гос.номер %(car_number)s - смена %(shift_date)s"
 
-#: economics/admin.py:77 economics/admin.py:104 economics/models.py:20
-#: economics/models.py:46 economics/models.py:71 economics/models.py:117
+#: economics/admin.py:76 economics/admin.py:103 economics/admin.py:127
+#: economics/admin.py:151 economics/models.py:20 economics/models.py:46
+#: economics/models.py:71 economics/models.py:117
 msgid "Date"
 msgstr "Дата"
 
@@ -540,7 +508,7 @@ msgstr "Фото не загружено"
 msgid "current shift"
 msgstr "Текуща смена"
 
-#: shifts/admin.py:48 shifts/admin.py:185 shifts/admin.py:203 staff/admin.py:52
+#: shifts/admin.py:48 shifts/admin.py:185 shifts/admin.py:203 staff/admin.py:54
 msgid "yes"
 msgstr "Да"
 
@@ -595,7 +563,7 @@ msgstr "Цена бутылки незамерзайки в момент доб�
 msgid "started"
 msgstr "Начата"
 
-#: shifts/admin.py:186 shifts/admin.py:204 staff/admin.py:53
+#: shifts/admin.py:186 shifts/admin.py:204 staff/admin.py:55
 msgid "no"
 msgstr "Нет"
 
@@ -684,7 +652,7 @@ msgstr "Время начала смены еще не настало"
 msgid "shift is already confirmed"
 msgstr "Смена уже подтверждена"
 
-#: shifts/models/additional_services.py:15 shifts/models/cars_to_wash.py:83
+#: shifts/models/additional_services.py:15 shifts/models/cars_to_wash.py:87
 msgid "car to wash"
 msgstr "Перегнанное авто"
 
@@ -761,16 +729,21 @@ msgstr "Тип незамерзайки"
 msgid "price of car transfer at the moment"
 msgstr "Цена перегона в момент добавления"
 
-#: shifts/models/cars_to_wash.py:84
+#: shifts/models/cars_to_wash.py:82
+#| msgid "price of van washing at the moment"
+msgid "price of item dry cleaning at the moment"
+msgstr "Цена химчистки одного элемента в момент добавления"
+
+#: shifts/models/cars_to_wash.py:88
 msgid "cars to wash"
 msgstr "Перегнанные авто"
 
-#: shifts/models/cars_to_wash.py:88
+#: shifts/models/cars_to_wash.py:92
 #, python-format
 msgid "car number: %(number)s"
 msgstr "Гос.номер: %(number)s"
 
-#: shifts/models/cars_to_wash.py:98
+#: shifts/models/cars_to_wash.py:102
 msgid "unknown car class"
 msgstr "Неизвестный класс авто"
 
@@ -843,10 +816,6 @@ msgstr "Минимальное количество авто которое до
 msgid "shifts"
 msgstr "Смены"
 
-#: shifts/models/windshield_washer_hide.py:9
-msgid "Is hidden"
-msgstr "Скрыто"
-
 #: shifts/models/windshield_washer_hide.py:10
 msgid "Indicates if the windshield washer is hidden."
 msgstr "Показывает скрыта ли незамерзайка."
@@ -865,7 +834,7 @@ msgstr "Незамерзайка видна"
 msgid "from_date should be less than or equal to to_date"
 msgstr "from_date должен быть меньше или равен to_date"
 
-#: staff/admin.py:47
+#: staff/admin.py:49
 msgid "banned"
 msgstr "Заблокирован"
 
@@ -936,3 +905,60 @@ msgstr "Значение"
 #: texts/models.py:28
 msgid "Text"
 msgstr "Текст"
+
+#~ msgid "Report period number must be 1 or 2."
+#~ msgstr "Номер отчетного периода должен быть 1 или 2."
+
+#~ msgid "Month must be between 1 and 12."
+#~ msgstr "Месяц должен быть от 1 до 12."
+
+#~ msgid "First half of month"
+#~ msgstr "Первая половина месяца"
+
+#~ msgid "Second half of month"
+#~ msgstr "Вторая половина месяца"
+
+#~ msgid "January"
+#~ msgstr "Январь"
+
+#~ msgid "February"
+#~ msgstr "Февраль"
+
+#~ msgid "March"
+#~ msgstr "Март"
+
+#~ msgid "April"
+#~ msgstr "Апрель"
+
+#~ msgid "May"
+#~ msgstr "Май"
+
+#~ msgid "June"
+#~ msgstr "Июнь"
+
+#~ msgid "July"
+#~ msgstr "Июль"
+
+#~ msgid "August"
+#~ msgstr "Август"
+
+#~ msgid "September"
+#~ msgstr "Сентябрь"
+
+#~ msgid "October"
+#~ msgstr "Октябрь"
+
+#~ msgid "November"
+#~ msgstr "Ноябрь"
+
+#~ msgid "December"
+#~ msgstr "Декабрь"
+
+#~ msgid "Year"
+#~ msgstr "Год"
+
+#~ msgid "Month"
+#~ msgstr "Месяц"
+
+#~ msgid "Report period"
+#~ msgstr "Отчетный период"

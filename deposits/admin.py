@@ -15,6 +15,9 @@ class FineDepositExceptionResource(ModelResource):
 class FineDepositExceptionAdmin(ImportExportModelAdmin):
     resource_class = FineDepositExceptionResource
     autocomplete_fields = ('staff',)
+    list_display = ('staff', 'from_date', 'to_date')
+    list_select_related = ('staff',)
+    readonly_fields = ("created_at",)
 
 
 class RoadAccidentDepositExceptionResource(ModelResource):
@@ -27,3 +30,6 @@ class RoadAccidentDepositExceptionResource(ModelResource):
 class RoadAccidentDepositExceptionAdmin(ImportExportModelAdmin):
     resource_class = RoadAccidentDepositExceptionResource
     autocomplete_fields = ('staff',)
+    list_display = ('staff', 'from_date', 'to_date')
+    list_select_related = ('staff',)
+    readonly_fields = ("created_at",)
