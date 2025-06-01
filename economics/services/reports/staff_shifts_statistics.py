@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import Protocol, TypeVar
 
+from deposits.services import StaffReportPeriods
 from economics.models import (
     CarTransporterAndWasherServicePrices,
     CarTransporterServicePrices,
@@ -172,8 +173,17 @@ def map_shift_statistics_with_penalty_and_surcharge(
 
 class FineDepositCalculator:
 
-    def __init__(self, excluded_staff_ids: Iterable[int]):
+    def __init__(
+            self,
+            excluded_staff_ids: Iterable[int],
+            staff_report_periods: Iterable[StaffReportPeriods],
+    ):
         self.__excluded_staff_ids = set(excluded_staff_ids)
+        self.__staff_id_to_report_periods_count = {
+            staff_report_period.staff_id:
+                staff_report_period.report_periods_count
+            for staff_report_period in staff_report_periods
+        }
 
     def calculate_amount(
             self,
@@ -190,6 +200,13 @@ class FineDepositCalculator:
             return 0
 
         if total_dirty_revenue < 500:
+            return 0
+
+        report_periods_count = self.__staff_id_to_report_periods_count.get(
+            staff_id,
+            0,
+        )
+        if report_periods_count > 6:
             return 0
 
         return 500

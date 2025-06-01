@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from deposits.services import (
-    get_staff_excluded_from_fine_deposit,
+    get_report_periods_for_staff_ids, get_staff_excluded_from_fine_deposit,
     get_staff_excluded_from_road_accident_deposit,
 )
 from economics.selectors import (
@@ -57,8 +57,14 @@ class StaffShiftsStatisticsUseCase:
                 to_date=period.to_date,
             )
         )
+
+        staff_report_periods = get_report_periods_for_staff_ids(
+            staff_ids=self.staff_ids,
+            until=period.to_date,
+        )
         fine_deposit_calculator = FineDepositCalculator(
             excluded_staff_ids=staff_ids_excluded_from_fine_deposit,
+            staff_report_periods=staff_report_periods,
         )
 
         staff_ids_excluded_from_road_accident_deposit = (
