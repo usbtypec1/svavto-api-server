@@ -1,3 +1,4 @@
+import os.path
 import sqlite3
 
 from django.core.management.base import BaseCommand
@@ -9,7 +10,7 @@ from shifts.models import ShiftFinishPhoto
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        path = settings.ROOT_PATH / "photos.db"
+        path = os.path.join(settings.ROOT_PATH, "photos.db")
         with sqlite3.connect(path) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT file_id, url FROM data;")
