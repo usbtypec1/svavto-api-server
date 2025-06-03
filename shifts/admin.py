@@ -1,21 +1,24 @@
+from io import BytesIO
+
+import httpx
+import openpyxl
 from django.contrib import admin, messages
 from django.db.models import QuerySet
+from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
-from import_export import resources, fields
+from import_export import fields, resources
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
+from openpyxl.drawing.image import Image as OpenPyxlImage
+from openpyxl.utils import get_column_letter
+from PIL import Image as PILImage
 from rangefilter.filters import DateTimeRangeFilterBuilder
 
 from core.services import get_current_shift_date
 from shifts.exceptions import StaffHasActiveShiftError
 from shifts.models import (
-    AvailableDate,
-    CarToWash,
-    CarToWashAdditionalService,
-    Shift,
-    ShiftFinishPhoto,
-    ShiftCarsThreshold,
-    WindshieldWasherHidden,
+    AvailableDate, CarToWash, CarToWashAdditionalService, Shift,
+    ShiftCarsThreshold, ShiftFinishPhoto, WindshieldWasherHidden,
 )
 from shifts.services.shifts.validators import ensure_staff_has_no_active_shift
 
@@ -342,9 +345,80 @@ class HasUrlFilter(admin.SimpleListFilter):
         return queryset
 
 
+
+
+@admin.action(description="Download selected rows as XLSX")
+def download_xlsx(modeladmin, request, queryset):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "MyModel Data"
+
+    headers = ['ID', 'URL', 'Photo']
+    ws.append(headers)
+
+    row_num = 2
+
+    for obj in queryset:
+        # Write ID and URL
+        ws.cell(row=row_num, column=1, value=obj.id)
+        ws.cell(row=row_num, column=2, value=obj.url)
+
+        try:
+            img_response = httpx.get(obj.url)
+            img_response.raise_for_status()
+
+            # Validate and load image
+            img_pil = PILImage.open(BytesIO(img_response.content))
+            img_width_px, img_height_px = img_pil.size
+
+            # Save image as PNG in memory
+            img_io = BytesIO()
+            img_pil.save(img_io, format='JPEG')
+            img_io.seek(0)
+
+            # Insert image
+            excel_img = OpenPyxlImage(img_io)
+            ws.add_image(excel_img, f"C{row_num}")
+
+            # --- Resize row and column to fit image --- #
+
+            # Convert pixels to Excel units
+            # Excel row height unit = ~0.75 points per pixel
+            # Excel column width unit ≈ pixel_width / 7 (approx.)
+
+            row_height_points = img_height_px * 0.75
+            col_width = img_width_px / 7.0
+
+            ws.row_dimensions[row_num].height = row_height_points
+
+            col_letter = get_column_letter(3)
+            ws.column_dimensions[col_letter].width = col_width
+
+        except Exception:
+            ws.cell(row=row_num, column=3, value="Image Error")
+
+        row_num += 1
+
+    # Optional: widen ID and URL columns
+    ws.column_dimensions[get_column_letter(1)].width = 15
+    ws.column_dimensions[get_column_letter(2)].width = 40
+
+    # Save to stream
+    stream = BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+
+    return HttpResponse(
+        stream.read(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers={'Content-Disposition': 'attachment; filename="data.xlsx"'}
+    )
+
+
 @admin.register(ShiftFinishPhoto)
 class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
     resource_class = ShiftFinishPhotoResource
     list_display = ("shift", "url")
     list_select_related = ("shift",)
     list_filter = ("shift__car_wash", HasUrlFilter)
+    actions = [download_xlsx]
