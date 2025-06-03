@@ -1,6 +1,5 @@
 import datetime
 from collections.abc import Iterable
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID
@@ -8,7 +7,6 @@ from uuid import UUID
 from django.conf import settings
 from django.db import transaction
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from telebot import TeleBot
 
 from dry_cleaning.models import (
     DryCleaningRequest,
@@ -20,6 +18,7 @@ from photo_upload.services import upload_via_urls
 from shifts.services.shifts.validators import ensure_shift_exists
 from telegram.services import (
     get_dry_cleaning_telegram_bot,
+    get_file_urls,
     get_telegram_bot,
     try_send_message,
     try_send_photos_media_group,
@@ -52,11 +51,6 @@ class DryCleaningRequestCreateResponseDto:
     response_comment: str | None
     created_at: datetime.datetime
     updated_at: datetime.datetime
-
-
-def get_file_urls(bot: TeleBot, file_ids: Iterable[str]) -> list[str]:
-    with ThreadPoolExecutor() as executor:
-        return list(executor.map(bot.get_file_url, file_ids))
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -124,7 +118,8 @@ class DryCleaningRequestCreateInteractor:
         user_ids = DryCleaningAdmin.objects.values_list("id", flat=True)
         for chat_id in user_ids:
             try_send_photos_media_group(
-                bot=bot, file_ids=photo_urls, chat_id=chat_id, caption="\n".join(lines)
+                bot=bot, file_ids=photo_urls, chat_id=chat_id,
+                caption="\n".join(lines)
             )
 
             try_send_message(
