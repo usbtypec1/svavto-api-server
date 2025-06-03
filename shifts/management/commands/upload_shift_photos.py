@@ -36,14 +36,14 @@ class Command(BaseCommand):
 
                 telegram_file_url = telegram_file_urls[0]
 
-                url = upload_via_url(
+                uploaded_file = upload_via_url(
                     url=telegram_file_url,
                     folder="shift_finish_photos",
                 )
                 updated = (
                     ShiftFinishPhoto.objects
                     .filter(file_id=file_id)
-                    .update(url=url)
+                    .update(url=uploaded_file.url)
                 )
                 self.stdout.write(self.style.SUCCESS(
                     f"Updated {updated} row(s) for file_id: {file_id}")
