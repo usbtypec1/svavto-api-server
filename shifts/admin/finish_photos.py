@@ -108,7 +108,10 @@ def download_xlsx(
         stream.read(),
         content_type='application/vnd.openxmlformats-officedocument'
                      '.spreadsheetml.sheet',
-        headers={'Content-Disposition': 'attachment; filename="data.xlsx"'}
+        headers={
+            'Content-Disposition': 'attachment; '
+                                   'filename="shift_finish_photos.xlsx"'
+        }
     )
 
 
