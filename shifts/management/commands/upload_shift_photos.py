@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand
+
+from photo_upload.services import upload_via_url
 from shifts.models import ShiftFinishPhoto
 from telegram.services import get_file_urls, get_telegram_bot
 
@@ -25,18 +27,23 @@ class Command(BaseCommand):
             self.stdout.write(f"[{i}/{total}] Processing file_id: {file_id}")
 
             try:
-                file_urls = get_file_urls(bot=bot, file_ids=[file_id])
-                if not file_urls:
+                telegram_file_urls = get_file_urls(bot=bot, file_ids=[file_id])
+                if not telegram_file_urls:
                     self.stdout.write(self.style.WARNING(
-                        f"No URL returned for file_id: {file_id}")
+                        f"No Telegram URL returned for file_id: {file_id}")
                     )
                     continue
 
-                file_url = file_urls[0]
+                telegram_file_url = telegram_file_urls[0]
+
+                url = upload_via_url(
+                    url=telegram_file_url,
+                    folder="shift_finish_photos",
+                )
                 updated = (
                     ShiftFinishPhoto.objects
                     .filter(file_id=file_id)
-                    .update(url=file_url)
+                    .update(url=url)
                 )
                 self.stdout.write(self.style.SUCCESS(
                     f"Updated {updated} row(s) for file_id: {file_id}")
