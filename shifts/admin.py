@@ -324,9 +324,27 @@ class CarToWashAdditionalServiceAdmin(ImportExportModelAdmin):
         return obj.car.shift.date
 
 
+class HasUrlFilter(admin.SimpleListFilter):
+    title = _("Has url")
+    parameter_name = "has_url"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("true", _("yes")),
+            ("false", _("no")),
+        )
+
+    def queryset(self, request, queryset: QuerySet):
+        if self.value() == "true":
+            return queryset.exclude(url__isnull=True)
+        if self.value() == "false":
+            return queryset.filter(url__isnull=True)
+        return queryset
+
+
 @admin.register(ShiftFinishPhoto)
 class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
     resource_class = ShiftFinishPhotoResource
-    list_display = ("shift", "file_id")
+    list_display = ("shift", "url")
     list_select_related = ("shift",)
-    list_filter = ("shift__car_wash",)
+    list_filter = ("shift__car_wash", HasUrlFilter)
