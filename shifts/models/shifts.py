@@ -78,9 +78,6 @@ class Shift(models.Model):
         verbose_name_plural = _("shifts")
         unique_together = ("staff", "date", "is_test")
 
-    def __str__(self):
-        return f"{self.date:%d.%m.%Y} - {self.staff}"
-
     @property
     def is_started(self) -> bool:
         return self.started_at is not None
