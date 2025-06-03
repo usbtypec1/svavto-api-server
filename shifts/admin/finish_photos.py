@@ -12,7 +12,8 @@ from import_export.admin import ImportExportModelAdmin
 from openpyxl.drawing.image import Image as OpenPyxlImage, PILImage
 from openpyxl.utils.cell import get_column_letter
 
-from shifts.models import ShiftFinishPhoto
+from shifts.mixins import ShiftModelStaffSelectRelatedMixin
+from shifts.models import Shift, ShiftFinishPhoto
 
 
 class ShiftFinishPhotoResource(resources.ModelResource):
@@ -116,9 +117,13 @@ def download_xlsx(
 
 
 @admin.register(ShiftFinishPhoto)
-class ShiftFinishPhotoAdmin(ImportExportModelAdmin):
+class ShiftFinishPhotoAdmin(
+    ShiftModelStaffSelectRelatedMixin,
+    ImportExportModelAdmin,
+):
     resource_class = ShiftFinishPhotoResource
     list_display = ("shift", "url")
-    list_select_related = ("shift",)
+    list_select_related = ("shift", "shift__staff")
     list_filter = ("shift__car_wash", HasUrlFilter)
     actions = [download_xlsx]
+    autocomplete_fields = ("shift",)

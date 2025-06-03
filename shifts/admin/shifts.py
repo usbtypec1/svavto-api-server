@@ -99,8 +99,8 @@ class ShiftAdmin(ImportExportModelAdmin):
         IsFinishedFilter,
     )
     inlines = (ShiftFinishPhotoInline, CarToWashInline)
-    search_fields = ("staff__full_name", "staff__id")
-    search_help_text = _("you can search by staff name or staff id")
+    search_fields = ("id", "date", "staff__full_name", "staff__id")
+    search_help_text = _("Search by shift ID or date, staff ID or full name")
     date_hierarchy = "date"
     autocomplete_fields = ("staff", "car_wash")
 
