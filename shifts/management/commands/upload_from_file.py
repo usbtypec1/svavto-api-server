@@ -10,7 +10,7 @@ from shifts.models import ShiftFinishPhoto
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        path = os.path.join(settings.ROOT_PATH, "photos.db")
+        path = settings.BASE_DIR / "photos.db"
         with sqlite3.connect(path) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT file_id, url FROM data;")
