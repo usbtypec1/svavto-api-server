@@ -126,3 +126,4 @@ class CarToWashAdmin(
     search_help_text = _("search by shift ID, car number and shift date")
     list_select_related = ("shift", "car_wash")
     list_per_page = 100
+    autocomplete_fields = ("shift", "car_wash")
