@@ -17,6 +17,12 @@ class ShiftFinishPhoto(models.Model):
         max_length=255,
         verbose_name=_("file id"),
     )
+    url = models.URLField(
+        max_length=1024,
+        verbose_name=_("photo URL"),
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("created at"),

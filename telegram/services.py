@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor
 
 from django.conf import settings
 from telebot import TeleBot
@@ -11,6 +12,7 @@ __all__ = (
     "try_send_photos_media_group",
     "try_get_chat_username",
     "get_dry_cleaning_telegram_bot",
+    "get_file_urls",
 )
 
 
@@ -95,3 +97,8 @@ def try_get_chat_username(
             return None
     else:
         return None
+
+
+def get_file_urls(bot: TeleBot, file_ids: Iterable[str]) -> list[str]:
+    with ThreadPoolExecutor() as executor:
+        return list(executor.map(bot.get_file_url, file_ids))
