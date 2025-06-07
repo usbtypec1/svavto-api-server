@@ -45,20 +45,37 @@ def download_xlsx(
         request: HttpRequest,
         queryset: QuerySet[ShiftFinishPhoto],
 ):
+    queryset = queryset.select_related(
+        "shift",
+        "shift__staff",
+        "shift__car_wash",
+    )
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "MyModel Data"
 
-    headers = ['ID', 'URL', 'Photo']
+    headers = [
+        'ID',
+        'URL фотографии',
+        'Фотография',
+        'Дата смены',
+        'ФИО сотрудника',
+        'Адрес мойки',
+    ]
     ws.append(headers)
 
     row_num = 2
 
     with httpx.Client() as http_client:
         for obj in queryset:
+            obj: ShiftFinishPhoto
+
             # Write ID and URL
             ws.cell(row=row_num, column=1, value=obj.id)
             ws.cell(row=row_num, column=2, value=obj.url)
+            ws.cell(row_num, column=4, value=obj.shift.date)
+            ws.cell(row_num, column=5, value=obj.shift.staff.full_name)
+            ws.cell(row_num, column=6, value=obj.shift.car_wash.name)
 
             try:
                 img_response = http_client.get(obj.url)
