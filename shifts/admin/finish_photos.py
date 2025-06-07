@@ -57,10 +57,10 @@ def download_xlsx(
     headers = [
         'ID',
         'URL фотографии',
-        'Фотография',
         'Дата смены',
         'ФИО сотрудника',
         'Адрес мойки',
+        'Фотография',
     ]
     ws.append(headers)
 
@@ -73,9 +73,9 @@ def download_xlsx(
             # Write ID and URL
             ws.cell(row=row_num, column=1, value=obj.id)
             ws.cell(row=row_num, column=2, value=obj.url)
-            ws.cell(row_num, column=4, value=obj.shift.date)
-            ws.cell(row_num, column=5, value=obj.shift.staff.full_name)
-            ws.cell(row_num, column=6, value=obj.shift.car_wash.name)
+            ws.cell(row=row_num, column=3, value=obj.shift.date)
+            ws.cell(row=row_num, column=4, value=obj.shift.staff.full_name)
+            ws.cell(row=row_num, column=5, value=obj.shift.car_wash.name)
 
             try:
                 img_response = http_client.get(obj.url)
@@ -105,17 +105,20 @@ def download_xlsx(
 
                 ws.row_dimensions[row_num].height = row_height_points
 
-                col_letter = get_column_letter(3)
+                col_letter = get_column_letter(6)
                 ws.column_dimensions[col_letter].width = col_width
 
             except Exception:
-                ws.cell(row=row_num, column=3, value="Image Error")
+                ws.cell(row=row_num, column=6, value="Image Error")
 
             row_num += 1
 
     # Optional: widen ID and URL columns
     ws.column_dimensions[get_column_letter(1)].width = 15
     ws.column_dimensions[get_column_letter(2)].width = 40
+    ws.column_dimensions[get_column_letter(3)].width = 15
+    ws.column_dimensions[get_column_letter(4)].width = 25
+    ws.column_dimensions[get_column_letter(5)].width = 30
 
     # Save to stream
     stream = io.BytesIO()
