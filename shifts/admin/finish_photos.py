@@ -92,7 +92,7 @@ def download_xlsx(
 
                 # Insert image
                 excel_img = OpenPyxlImage(img_io)
-                ws.add_image(excel_img, f"C{row_num}")
+                ws.add_image(excel_img, f"F{row_num}")
 
                 # --- Resize row and column to fit image --- #
 
