@@ -1,4 +1,6 @@
 import io
+import zipfile
+from collections import defaultdict
 
 import httpx
 import openpyxl
@@ -136,6 +138,44 @@ def download_xlsx(
     )
 
 
+@admin.action(description="Download selected photos as ZIP")
+def download_photos_zip(
+        modeladmin,
+        request,
+        queryset: QuerySet[ShiftFinishPhoto],
+):
+    buffer = io.BytesIO()
+    queryset = queryset.select_related("shift", "shift__staff")
+
+    last_photo_number = defaultdict(int)
+    with (
+        zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file,
+        httpx.Client() as http_client
+    ):
+        for photo in queryset:
+            if not photo.url:
+                continue
+            try:
+                response = http_client.get(photo.url, timeout=10)
+                response.raise_for_status()
+
+                filename = (
+                    f"{photo.shift.date.isoformat()}"
+                    f"_{photo.shift.staff.full_name.replace(' ', '_')}"
+                )
+                last_photo_number[filename] += 1
+                filename = f"{filename}_{last_photo_number[filename]}.jpg"
+                zip_file.writestr(filename, response.content)
+            except Exception as e:
+                print(e)
+                continue
+
+    buffer.seek(0)
+    response = HttpResponse(buffer.read(), content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="shift_photos.zip"'
+    return response
+
+
 @admin.register(ShiftFinishPhoto)
 class ShiftFinishPhotoAdmin(
     ShiftModelStaffSelectRelatedMixin,
@@ -145,5 +185,5 @@ class ShiftFinishPhotoAdmin(
     list_display = ("shift", "url")
     list_select_related = ("shift", "shift__staff")
     list_filter = ("shift__car_wash", HasUrlFilter)
-    actions = [download_xlsx]
+    actions = [download_xlsx, download_photos_zip]
     autocomplete_fields = ("shift",)
